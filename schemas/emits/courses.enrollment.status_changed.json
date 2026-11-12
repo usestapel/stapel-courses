@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "courses.enrollment.status_changed",
+  "description": "An enrollment moved along its lifecycle (pending, active, completed, expired, cancelled). actor: learner, staff, order (an order fact) or system (completion, expiry). Key = enrollment id.",
+  "type": "object",
+  "properties": {
+    "enrollment_id": {"type": "string"},
+    "course_id": {"type": "string"},
+    "user_id": {"type": "string", "maxLength": 64},
+    "from": {"type": "string", "enum": ["pending", "active", "completed", "expired", "cancelled"]},
+    "to": {"type": "string", "enum": ["pending", "active", "completed", "expired", "cancelled"]},
+    "actor": {"type": "string", "enum": ["learner", "staff", "order", "system"]},
+    "reason": {"type": "string", "maxLength": 200}
+  },
+  "required": ["enrollment_id", "course_id", "user_id", "from", "to", "actor"],
+  "additionalProperties": false
+}

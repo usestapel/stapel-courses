@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "courses.certificate.issued",
+  "description": "A certificate record was issued on completion (once per course and learner). The number is the public verification key. Key = certificate id.",
+  "type": "object",
+  "properties": {
+    "certificate_id": {"type": "string"},
+    "number": {"type": "string", "maxLength": 32},
+    "course_id": {"type": "string"},
+    "user_id": {"type": "string", "maxLength": 64},
+    "issued_at": {"type": "string", "format": "date-time"}
+  },
+  "required": ["certificate_id", "number", "course_id", "user_id", "issued_at"],
+  "additionalProperties": false
+}

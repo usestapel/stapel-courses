@@ -1,0 +1,259 @@
+{
+  "module": "stapel-courses",
+  "version": "0.1.0",
+  "provides": "Courses for a Stapel education product: Course -> Module -> Lesson (ordered, typed content blocks: text, video and attachments by opaque media id, embeds), enrollment with a lifecycle (pending, active, completed, expired, cancelled), a source (free, purchase, entitlement, staff grant) and an optional expiry, and an access gate per course chosen from a strategy registry (free, enrolled, purchased through stapel-orders, entitlement through stapel-billing). The outline names a lock reason for every lesson (sign in, enroll, buy, plan, drip date, previous lesson). Lesson progress is an idempotent upsert with a per-enrollment progress cache; drip by days since enrollment or by fixed date and a sequential-unlock switch pace a course. Quizzes on a lesson or module (single and multiple choice, true/false, short text) are graded on the server with attempt limits, a pass mark and a stored shuffle seed; answers never leave before submission. Completing every required lesson and quiz completes the course and issues a certificate with a public verification endpoint. A course is sold as orders purchasable type 'course' (resolver Function courses.purchasables); the order facts activate and cancel the enrollment. Courses never imports orders or billing.",
+  "axes": [
+    {
+      "key": "DEFAULT_ACCESS",
+      "kind": "enum",
+      "default": "enrolled",
+      "group": "courses.access",
+      "gates": {
+        "operations": [],
+        "co_gates": [],
+        "behavior": "Sets Course.access on creation; the strategy decides POST enroll/ (purchased refuses with error.403.course_purchase_required) and gates lesson content with a lock reason."
+      },
+      "curated": {
+        "summary": "The access mode a new course starts with (each course can change it). free: anyone reads the lessons. enrolled (default): learners enroll for free, then read. purchased: learners buy the course through the shop first. entitlement: a paid plan includes it. Values: free, enrolled, purchased, entitlement.",
+        "business_label": "Who can open a new course"
+      }
+    },
+    {
+      "key": "DEFAULT_DRIP",
+      "kind": "enum",
+      "default": "none",
+      "group": "courses.pacing",
+      "gates": {
+        "operations": [],
+        "co_gates": [],
+        "behavior": "Sets Course.drip on creation; a lesson not yet released is locked with reason drip and its unlocks_at."
+      },
+      "curated": {
+        "summary": "How a new course releases lessons. none (default): all at once. days: each lesson opens N days after the learner enrolls. date: each lesson opens on a fixed date. Values: none, days, date.",
+        "business_label": "Release lessons over time"
+      }
+    },
+    {
+      "key": "DEFAULT_SEQUENTIAL",
+      "kind": "bool",
+      "default": false,
+      "group": "courses.pacing",
+      "gates": {
+        "operations": [],
+        "co_gates": [],
+        "behavior": "Sets Course.sequential on creation; a blocked lesson is locked with reason sequential and the lesson or quiz to finish first."
+      },
+      "curated": {
+        "summary": "false (default): learners open lessons in any order. true: a lesson opens only after every earlier required lesson is completed and its required quizzes are passed. Values: true, false.",
+        "business_label": "Lessons in order"
+      }
+    },
+    {
+      "key": "AUTHORING",
+      "kind": "enum",
+      "default": "staff",
+      "group": "courses.authoring",
+      "gates": {
+        "operations": [],
+        "co_gates": [],
+        "behavior": "staff: POST author/courses/ answers error.403.course_authoring_forbidden to non-staff; members: any non-guest account creates courses it then authors."
+      },
+      "curated": {
+        "summary": "staff (default): only staff create courses. members: any signed-in member creates and edits their own courses (a marketplace of teachers). Values: staff, members.",
+        "business_label": "Who creates courses"
+      }
+    },
+    {
+      "key": "ENROLLMENT_REQUIRES_ACCOUNT",
+      "kind": "bool",
+      "default": true,
+      "group": "courses.access",
+      "gates": {
+        "operations": [],
+        "co_gates": [],
+        "behavior": "true: enroll/progress/attempt endpoints answer error.403.enrollment_requires_account to a guest session; false: guests are treated like learners."
+      },
+      "curated": {
+        "summary": "true (default): a guest must sign in to enroll, save progress or take a quiz. false: guests can, and their progress moves to the account when they sign in. Values: true, false.",
+        "business_label": "Guests can learn"
+      }
+    },
+    {
+      "key": "PURCHASE_ACTIVATION",
+      "kind": "enum",
+      "default": "paid",
+      "group": "courses.purchase",
+      "gates": {
+        "operations": [],
+        "co_gates": [],
+        "behavior": "Selects which orders fact moves a purchase enrollment from pending to active; a cancelled or refunded order always cancels it."
+      },
+      "curated": {
+        "summary": "paid (default): when the order is paid. confirmed: also when staff confirm an order by hand (shops without online payment). placed: as soon as the order is placed. Values: paid, confirmed, placed.",
+        "business_label": "When a bought course opens"
+      }
+    },
+    {
+      "key": "CERTIFICATES",
+      "kind": "bool",
+      "default": true,
+      "group": "courses.certificates",
+      "gates": {
+        "operations": [],
+        "co_gates": [],
+        "behavior": "true: completion issues a Certificate once and emits courses.certificate.issued; false: completion is recorded without a certificate."
+      },
+      "curated": {
+        "summary": "true (default): completing a course issues a certificate with a public verification page. false: no certificates. Values: true, false.",
+        "business_label": "Certificates"
+      }
+    }
+  ],
+  "extension_points": [
+    {
+      "name": "ACCESS_STRATEGIES",
+      "kind": "merge_registry",
+      "summary": "Access gate strategies by name, merged over free / enrolled / purchased / entitlement; a dotted path under a built-in name replaces it, None removes it. A strategy answers whether a learner may enroll themself (and with which source) and whether they see the content (with a lock reason)."
+    },
+    {
+      "name": "BLOCK_TYPES",
+      "kind": "merge_registry",
+      "summary": "Lesson content block validators by type, merged over text / video / attachment / embed. A validator takes the raw block dict and returns the cleaned dict to store or raises BlockInvalid."
+    },
+    {
+      "name": "COMPLETION_RULE",
+      "kind": "strategy",
+      "summary": "Dotted path (enrollment) -> bool deciding completion after a lesson completion or a quiz pass; default: every required lesson completed and every required quiz passed."
+    },
+    {
+      "name": "HOLDER_NAME_RESOLVER",
+      "kind": "strategy",
+      "summary": "Dotted path (user_id) -> str: the name printed on a certificate (default: the user's full name, else empty)."
+    },
+    {
+      "name": "STAPEL_COURSES_COURSE_PRESENTER / _ENROLLMENT_ / _LESSON_ / _QUIZ_ / _ATTEMPT_ / _CERTIFICATE_PRESENTER",
+      "kind": "presenter",
+      "summary": "Swap keys (STAPEL_SWAP) for the learner API presenters, so a host changes what the API shows without forking a view."
+    },
+    {
+      "name": "courses.purchasables",
+      "kind": "comm_function",
+      "summary": "The orders purchasable resolver for type 'course': {keys: [course id]} -> {id: {title, price, currency, available, max_quantity: 1, seller_id, image, url}}."
+    },
+    {
+      "name": "courses.enrollment.activated",
+      "kind": "comm_event",
+      "summary": "A learner gained access (self-enrollment, entitlement, paid order, staff grant): enrollment, course, user, source, order, expiry."
+    },
+    {
+      "name": "courses.course.completed",
+      "kind": "comm_event",
+      "summary": "A learner met the completion rule; emitted once per enrollment."
+    },
+    {
+      "name": "courses.certificate.issued",
+      "kind": "comm_event",
+      "summary": "A certificate record was issued; its number is the public verification key."
+    },
+    {
+      "name": "orders.order.placed",
+      "kind": "comm_event",
+      "summary": "Consumed: course lines open a pending enrollment for the buyer; orders.order.paid (or .status_changed to confirmed, per PURCHASE_ACTIVATION) activates it; cancelled/refunded cancels the enrollment that order granted."
+    }
+  ],
+  "surface": [
+    {
+      "name": "get_strategy",
+      "kind": "factory",
+      "path": "stapel_courses.access.get_strategy",
+      "intent": "The strategy instance for a name; an unknown name gates like 'enrolled' (fail closed)."
+    },
+    {
+      "name": "strategy_names",
+      "kind": "predicate",
+      "path": "stapel_courses.access.strategy_names",
+      "intent": "The access names a course may carry; the author API refuses others with error.400.course_access_unknown."
+    },
+    {
+      "name": "strategy_paths",
+      "kind": "predicate",
+      "path": "stapel_courses.access.strategy_paths",
+      "intent": "The effective access strategy registry (built-ins <- ACCESS_STRATEGIES), name -> dotted path."
+    },
+    {
+      "name": "attachment_block",
+      "kind": "gate_function",
+      "path": "stapel_courses.blocks.attachment_block",
+      "intent": "Built-in validator of an attachment block (opaque media_id, file name)."
+    },
+    {
+      "name": "block_type_paths",
+      "kind": "predicate",
+      "path": "stapel_courses.blocks.block_type_paths",
+      "intent": "The effective block type registry (built-ins <- BLOCK_TYPES), type -> validator dotted path."
+    },
+    {
+      "name": "clean_blocks",
+      "kind": "gate_function",
+      "path": "stapel_courses.blocks.clean_blocks",
+      "intent": "Validate a lesson's blocks list with the registry; raises BlockInvalid carrying the index and a machine reason. Use it instead of storing author JSON unchecked."
+    },
+    {
+      "name": "embed_block",
+      "kind": "gate_function",
+      "path": "stapel_courses.blocks.embed_block",
+      "intent": "Built-in validator of an embed block (https URL, host in EMBED_HOSTS when set)."
+    },
+    {
+      "name": "text_block",
+      "kind": "gate_function",
+      "path": "stapel_courses.blocks.text_block",
+      "intent": "Built-in validator of a text block (text, format markdown|plain)."
+    },
+    {
+      "name": "validator",
+      "kind": "factory",
+      "path": "stapel_courses.blocks.validator",
+      "intent": "The validator callable of a block type, or None when the type is not registered."
+    },
+    {
+      "name": "video_block",
+      "kind": "gate_function",
+      "path": "stapel_courses.blocks.video_block",
+      "intent": "Built-in validator of a video block (opaque media_id, caption)."
+    }
+  ],
+  "operations_total": 38,
+  "requires": [
+    {
+      "module": "stapel-core",
+      "optional": false,
+      "reason": "comm bus (courses.* emits, purchasable/status/verify Functions, orders and user.merged consumers), AnchorPagination, GDPR owner protocol, AppSettings, swappable presenters"
+    },
+    {
+      "module": "stapel-auth",
+      "optional": true,
+      "reason": "learners are request.user; a guest is a stapel-auth anonymous account, and user.merged moves a guest's enrollments, progress, attempts and certificates to the account on sign-in"
+    },
+    {
+      "module": "stapel-orders",
+      "optional": true,
+      "reason": "sells courses: register purchasable type 'course' with resolver courses.purchasables (stapel_courses.preset.SETTINGS_DEFAULTS); orders.order.placed/paid/status_changed activate and cancel enrollments"
+    },
+    {
+      "module": "stapel-billing",
+      "optional": true,
+      "reason": "answers billing.check_entitlement for courses with the 'entitlement' access mode (a plan includes the course)"
+    },
+    {
+      "module": "stapel-cdn",
+      "optional": true,
+      "reason": "resolves the opaque media ids of cover images, video and attachment blocks (the frontend asks it; courses never does)"
+    },
+    {
+      "module": "stapel-notifications",
+      "optional": true,
+      "reason": "delivers courses.enrollment_activated, courses.completed and courses.certificate_issued"
+    }
+  ]
+}

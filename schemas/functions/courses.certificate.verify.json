@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "courses.certificate.verify",
+  "description": "The public verification view of a certificate number, as GET certificates/{number}/ answers it: {number, valid, holder_name, course_title, course_slug, issued_at}; a field PUBLIC_VERIFY_FIELDS does not name is null. An unknown number is a lookup error.",
+  "type": "object",
+  "properties": {
+    "number": {"type": "string", "minLength": 1, "maxLength": 32}
+  },
+  "required": ["number"],
+  "additionalProperties": false
+}

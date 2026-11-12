@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "orders.order.status_changed",
+  "description": "Consumed from stapel-orders (read side only): to == 'cancelled' cancels the enrollments the order granted; to == 'confirmed' activates them under PURCHASE_ACTIVATION='confirmed' (an order confirmed by hand with PAYMENT='none').",
+  "type": "object",
+  "properties": {
+    "order_id": {"type": "string"},
+    "to": {"type": "string"}
+  },
+  "required": ["order_id", "to"],
+  "additionalProperties": true
+}

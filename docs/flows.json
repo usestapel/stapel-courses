@@ -1,0 +1,600 @@
+[
+  {
+    "id": "courses.author",
+    "title": "Build and run a course",
+    "title_key": "flow.courses.author.title",
+    "description": "An author (or staff) creates a course, its modules, lessons, quizzes and questions, publishes it, grants enrollments by hand, reviews lessons that need a reviewer, and revokes a certificate.",
+    "description_key": "flow.courses.author.description",
+    "actors": [
+      "Author",
+      "Staff"
+    ],
+    "steps": [
+      {
+        "kind": "http",
+        "order": 1,
+        "note": "List the courses I may edit",
+        "note_key": "flow.courses.author.step.1.note",
+        "ref": "stapel_courses.views.AuthorCoursesView.get",
+        "endpoints": [
+          {
+            "method": "GET",
+            "path": "/courses/api/v1/author/courses/"
+          }
+        ]
+      },
+      {
+        "kind": "http",
+        "order": 2,
+        "note": "Create a draft course",
+        "note_key": "flow.courses.author.step.2.note",
+        "ref": "stapel_courses.views.AuthorCoursesView.post",
+        "endpoints": [
+          {
+            "method": "POST",
+            "path": "/courses/api/v1/author/courses/"
+          }
+        ]
+      },
+      {
+        "kind": "http",
+        "order": 3,
+        "note": "Add modules, lessons, quizzes and questions",
+        "note_key": "flow.courses.author.step.3.note",
+        "ref": "stapel_courses.views.AuthorModulesView.post",
+        "endpoints": [
+          {
+            "method": "POST",
+            "path": "/courses/api/v1/author/courses/<int:course_id>/modules/"
+          }
+        ]
+      },
+      {
+        "kind": "http",
+        "order": 4,
+        "note": "Publish the course",
+        "note_key": "flow.courses.author.step.4.note",
+        "ref": "stapel_courses.views.AuthorCoursePublishView.post",
+        "endpoints": [
+          {
+            "method": "POST",
+            "path": "/courses/api/v1/author/courses/<int:course_id>/publish/"
+          }
+        ]
+      },
+      {
+        "kind": "http",
+        "order": 5,
+        "note": "Grant a learner access by hand",
+        "note_key": "flow.courses.author.step.5.note",
+        "ref": "stapel_courses.views.AuthorEnrollmentsView.post",
+        "endpoints": [
+          {
+            "method": "POST",
+            "path": "/courses/api/v1/author/courses/<int:course_id>/enrollments/"
+          }
+        ]
+      },
+      {
+        "kind": "http",
+        "order": 6,
+        "note": "Accept or return a submitted lesson",
+        "note_key": "flow.courses.author.step.6.note",
+        "ref": "stapel_courses.views.AuthorLessonReviewView.post",
+        "endpoints": [
+          {
+            "method": "POST",
+            "path": "/courses/api/v1/author/lessons/<int:lesson_id>/review/"
+          }
+        ]
+      },
+      {
+        "kind": "http",
+        "order": 8,
+        "note": "Revoke a certificate",
+        "note_key": "flow.courses.author.step.8.note",
+        "ref": "stapel_courses.views.AuthorCertificateRevokeView.post",
+        "endpoints": [
+          {
+            "method": "POST",
+            "path": "/courses/api/v1/author/certificates/<str:number>/revoke/"
+          }
+        ]
+      },
+      {
+        "kind": "http",
+        "order": 9,
+        "note": "Archive the course: out of the catalog, learners keep it",
+        "note_key": "flow.courses.author.step.9.note",
+        "ref": "stapel_courses.views.AuthorCourseArchiveView.post",
+        "endpoints": [
+          {
+            "method": "POST",
+            "path": "/courses/api/v1/author/courses/<int:course_id>/archive/"
+          }
+        ]
+      },
+      {
+        "kind": "http",
+        "order": 10,
+        "note": "Open the course tree with lessons and quizzes",
+        "note_key": "flow.courses.author.step.10.note",
+        "ref": "stapel_courses.views.AuthorCourseView.get",
+        "endpoints": [
+          {
+            "method": "GET",
+            "path": "/courses/api/v1/author/courses/<int:course_id>/"
+          }
+        ]
+      },
+      {
+        "kind": "http",
+        "order": 11,
+        "note": "Edit the course",
+        "note_key": "flow.courses.author.step.11.note",
+        "ref": "stapel_courses.views.AuthorCourseView.patch",
+        "endpoints": [
+          {
+            "method": "PATCH",
+            "path": "/courses/api/v1/author/courses/<int:course_id>/"
+          }
+        ]
+      },
+      {
+        "kind": "http",
+        "order": 12,
+        "note": "Delete a draft course nobody enrolled in",
+        "note_key": "flow.courses.author.step.12.note",
+        "ref": "stapel_courses.views.AuthorCourseView.delete",
+        "endpoints": [
+          {
+            "method": "DELETE",
+            "path": "/courses/api/v1/author/courses/<int:course_id>/"
+          }
+        ]
+      },
+      {
+        "kind": "http",
+        "order": 13,
+        "note": "Rename or reorder a module",
+        "note_key": "flow.courses.author.step.13.note",
+        "ref": "stapel_courses.views.AuthorModuleView.patch",
+        "endpoints": [
+          {
+            "method": "PATCH",
+            "path": "/courses/api/v1/author/modules/<int:module_id>/"
+          }
+        ]
+      },
+      {
+        "kind": "http",
+        "order": 14,
+        "note": "Delete a module",
+        "note_key": "flow.courses.author.step.14.note",
+        "ref": "stapel_courses.views.AuthorModuleView.delete",
+        "endpoints": [
+          {
+            "method": "DELETE",
+            "path": "/courses/api/v1/author/modules/<int:module_id>/"
+          }
+        ]
+      },
+      {
+        "kind": "http",
+        "order": 15,
+        "note": "Add a lesson with typed content blocks",
+        "note_key": "flow.courses.author.step.15.note",
+        "ref": "stapel_courses.views.AuthorLessonsView.post",
+        "endpoints": [
+          {
+            "method": "POST",
+            "path": "/courses/api/v1/author/modules/<int:module_id>/lessons/"
+          }
+        ]
+      },
+      {
+        "kind": "http",
+        "order": 16,
+        "note": "Edit a lesson",
+        "note_key": "flow.courses.author.step.16.note",
+        "ref": "stapel_courses.views.AuthorLessonView.patch",
+        "endpoints": [
+          {
+            "method": "PATCH",
+            "path": "/courses/api/v1/author/lessons/<int:lesson_id>/"
+          }
+        ]
+      },
+      {
+        "kind": "http",
+        "order": 17,
+        "note": "Delete a lesson",
+        "note_key": "flow.courses.author.step.17.note",
+        "ref": "stapel_courses.views.AuthorLessonView.delete",
+        "endpoints": [
+          {
+            "method": "DELETE",
+            "path": "/courses/api/v1/author/lessons/<int:lesson_id>/"
+          }
+        ]
+      },
+      {
+        "kind": "http",
+        "order": 18,
+        "note": "Add a quiz to a lesson or a module",
+        "note_key": "flow.courses.author.step.18.note",
+        "ref": "stapel_courses.views.AuthorQuizzesView.post",
+        "endpoints": [
+          {
+            "method": "POST",
+            "path": "/courses/api/v1/author/quizzes/"
+          }
+        ]
+      },
+      {
+        "kind": "http",
+        "order": 19,
+        "note": "Open a quiz with its right answers",
+        "note_key": "flow.courses.author.step.19.note",
+        "ref": "stapel_courses.views.AuthorQuizView.get",
+        "endpoints": [
+          {
+            "method": "GET",
+            "path": "/courses/api/v1/author/quizzes/<int:quiz_id>/"
+          }
+        ]
+      },
+      {
+        "kind": "http",
+        "order": 20,
+        "note": "Edit a quiz's rules",
+        "note_key": "flow.courses.author.step.20.note",
+        "ref": "stapel_courses.views.AuthorQuizView.patch",
+        "endpoints": [
+          {
+            "method": "PATCH",
+            "path": "/courses/api/v1/author/quizzes/<int:quiz_id>/"
+          }
+        ]
+      },
+      {
+        "kind": "http",
+        "order": 21,
+        "note": "Delete a quiz",
+        "note_key": "flow.courses.author.step.21.note",
+        "ref": "stapel_courses.views.AuthorQuizView.delete",
+        "endpoints": [
+          {
+            "method": "DELETE",
+            "path": "/courses/api/v1/author/quizzes/<int:quiz_id>/"
+          }
+        ]
+      },
+      {
+        "kind": "http",
+        "order": 22,
+        "note": "Add a question",
+        "note_key": "flow.courses.author.step.22.note",
+        "ref": "stapel_courses.views.AuthorQuestionsView.post",
+        "endpoints": [
+          {
+            "method": "POST",
+            "path": "/courses/api/v1/author/quizzes/<int:quiz_id>/questions/"
+          }
+        ]
+      },
+      {
+        "kind": "http",
+        "order": 23,
+        "note": "Edit a question",
+        "note_key": "flow.courses.author.step.23.note",
+        "ref": "stapel_courses.views.AuthorQuestionView.patch",
+        "endpoints": [
+          {
+            "method": "PATCH",
+            "path": "/courses/api/v1/author/questions/<int:question_id>/"
+          }
+        ]
+      },
+      {
+        "kind": "http",
+        "order": 24,
+        "note": "Delete a question",
+        "note_key": "flow.courses.author.step.24.note",
+        "ref": "stapel_courses.views.AuthorQuestionView.delete",
+        "endpoints": [
+          {
+            "method": "DELETE",
+            "path": "/courses/api/v1/author/questions/<int:question_id>/"
+          }
+        ]
+      },
+      {
+        "kind": "http",
+        "order": 25,
+        "note": "See who is enrolled",
+        "note_key": "flow.courses.author.step.25.note",
+        "ref": "stapel_courses.views.AuthorEnrollmentsView.get",
+        "endpoints": [
+          {
+            "method": "GET",
+            "path": "/courses/api/v1/author/courses/<int:course_id>/enrollments/"
+          }
+        ]
+      },
+      {
+        "kind": "http",
+        "order": 26,
+        "note": "Cancel, expire or reactivate an enrollment",
+        "note_key": "flow.courses.author.step.26.note",
+        "ref": "stapel_courses.views.AuthorEnrollmentTransitionView.post",
+        "endpoints": [
+          {
+            "method": "POST",
+            "path": "/courses/api/v1/author/enrollments/<int:enrollment_id>/transition/"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "courses.learn",
+    "title": "Take a course",
+    "title_key": "flow.courses.learn.title",
+    "description": "A visitor browses the catalog, opens a course outline that says which lessons are open and why the others are locked, enrolls (free, through a plan entitlement, or after buying it), works through the lessons while the progress is saved, and is told when the course is complete.",
+    "description_key": "flow.courses.learn.description",
+    "actors": [
+      "Learner (guests only when ENROLLMENT_REQUIRES_ACCOUNT is off)"
+    ],
+    "steps": [
+      {
+        "kind": "http",
+        "order": 1,
+        "note": "Browse the catalog",
+        "note_key": "flow.courses.learn.step.1.note",
+        "ref": "stapel_courses.views.CatalogView.get",
+        "endpoints": [
+          {
+            "method": "GET",
+            "path": "/courses/api/v1/courses/"
+          }
+        ]
+      },
+      {
+        "kind": "http",
+        "order": 2,
+        "note": "Open the outline: what is open, what is locked and why",
+        "note_key": "flow.courses.learn.step.2.note",
+        "ref": "stapel_courses.views.CourseOutlineView.get",
+        "endpoints": [
+          {
+            "method": "GET",
+            "path": "/courses/api/v1/courses/<slug:slug>/"
+          }
+        ]
+      },
+      {
+        "kind": "http",
+        "order": 3,
+        "note": "Enroll (free, or through a plan entitlement)",
+        "note_key": "flow.courses.learn.step.3.note",
+        "ref": "stapel_courses.views.EnrollView.post",
+        "endpoints": [
+          {
+            "method": "POST",
+            "path": "/courses/api/v1/courses/<slug:slug>/enroll/"
+          }
+        ]
+      },
+      {
+        "kind": "action",
+        "order": 4,
+        "note": "The enrollment is announced",
+        "note_key": "flow.courses.learn.step.4.note",
+        "ref": "courses.enrollment.activated"
+      },
+      {
+        "kind": "http",
+        "order": 5,
+        "note": "Read a lesson: text, video by media id, attachments, embeds",
+        "note_key": "flow.courses.learn.step.5.note",
+        "ref": "stapel_courses.views.LessonView.get",
+        "endpoints": [
+          {
+            "method": "GET",
+            "path": "/courses/api/v1/courses/<slug:slug>/lessons/<int:lesson_id>/"
+          }
+        ]
+      },
+      {
+        "kind": "http",
+        "order": 6,
+        "note": "Save progress; completing the last item completes the course",
+        "note_key": "flow.courses.learn.step.6.note",
+        "ref": "stapel_courses.views.LessonProgressView.post",
+        "endpoints": [
+          {
+            "method": "POST",
+            "path": "/courses/api/v1/courses/<slug:slug>/lessons/<int:lesson_id>/progress/"
+          }
+        ]
+      },
+      {
+        "kind": "action",
+        "order": 7,
+        "note": "Completion is announced",
+        "note_key": "flow.courses.learn.step.7.note",
+        "ref": "courses.course.completed"
+      },
+      {
+        "kind": "action",
+        "order": 8,
+        "note": "A certificate record is issued once",
+        "note_key": "flow.courses.learn.step.8.note",
+        "ref": "courses.certificate.issued"
+      },
+      {
+        "kind": "http",
+        "order": 9,
+        "note": "See my progress: every lesson and quiz standing",
+        "note_key": "flow.courses.learn.step.9.note",
+        "ref": "stapel_courses.views.CourseProgressView.get",
+        "endpoints": [
+          {
+            "method": "GET",
+            "path": "/courses/api/v1/courses/<slug:slug>/progress/"
+          }
+        ]
+      },
+      {
+        "kind": "http",
+        "order": 10,
+        "note": "My courses, newest first",
+        "note_key": "flow.courses.learn.step.10.note",
+        "ref": "stapel_courses.views.MyEnrollmentsView.get",
+        "endpoints": [
+          {
+            "method": "GET",
+            "path": "/courses/api/v1/me/enrollments/"
+          }
+        ]
+      },
+      {
+        "kind": "http",
+        "order": 11,
+        "note": "My certificates",
+        "note_key": "flow.courses.learn.step.11.note",
+        "ref": "stapel_courses.views.MyCertificatesView.get",
+        "endpoints": [
+          {
+            "method": "GET",
+            "path": "/courses/api/v1/me/certificates/"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "courses.purchase",
+    "title": "Buy a course",
+    "title_key": "flow.courses.purchase.title",
+    "description": "A course with the 'purchased' access mode is a purchasable of type 'course' in stapel-orders. The order facts activate the enrollment (on payment by default) and a cancelled or refunded order closes it again.",
+    "description_key": "flow.courses.purchase.description",
+    "actors": [
+      "Learner",
+      "Orders (by fact)"
+    ],
+    "steps": [
+      {
+        "kind": "action",
+        "order": 1,
+        "note": "The order with a course line is placed",
+        "note_key": "flow.courses.purchase.step.1.note",
+        "ref": "orders.order.placed"
+      },
+      {
+        "kind": "action",
+        "order": 2,
+        "note": "Payment activates the enrollment",
+        "note_key": "flow.courses.purchase.step.2.note",
+        "ref": "orders.order.paid"
+      },
+      {
+        "kind": "action",
+        "order": 3,
+        "note": "Access is announced",
+        "note_key": "flow.courses.purchase.step.3.note",
+        "ref": "courses.enrollment.activated"
+      }
+    ]
+  },
+  {
+    "id": "courses.quiz",
+    "title": "Pass a quiz",
+    "title_key": "flow.courses.quiz.title",
+    "description": "The learner starts an attempt (within the attempt limit), sees the questions in the order the attempt's stored seed gives, submits, and the server grades it. Right answers are shown only after submission, as the quiz's reveal mode allows.",
+    "description_key": "flow.courses.quiz.description",
+    "actors": [
+      "Learner"
+    ],
+    "steps": [
+      {
+        "kind": "http",
+        "order": 1,
+        "note": "See the pass mark and the attempts left",
+        "note_key": "flow.courses.quiz.step.1.note",
+        "ref": "stapel_courses.views.QuizView.get",
+        "endpoints": [
+          {
+            "method": "GET",
+            "path": "/courses/api/v1/quizzes/<int:quiz_id>/"
+          }
+        ]
+      },
+      {
+        "kind": "http",
+        "order": 2,
+        "note": "Start an attempt: questions without their answers",
+        "note_key": "flow.courses.quiz.step.2.note",
+        "ref": "stapel_courses.views.QuizAttemptsView.post",
+        "endpoints": [
+          {
+            "method": "POST",
+            "path": "/courses/api/v1/quizzes/<int:quiz_id>/attempts/"
+          }
+        ]
+      },
+      {
+        "kind": "http",
+        "order": 3,
+        "note": "Submit: graded on the server, replay returns the same result",
+        "note_key": "flow.courses.quiz.step.3.note",
+        "ref": "stapel_courses.views.AttemptSubmitView.post",
+        "endpoints": [
+          {
+            "method": "POST",
+            "path": "/courses/api/v1/attempts/<int:attempt_id>/submit/"
+          }
+        ]
+      },
+      {
+        "kind": "http",
+        "order": 4,
+        "note": "Re-open an attempt: same order, same result",
+        "note_key": "flow.courses.quiz.step.4.note",
+        "ref": "stapel_courses.views.AttemptView.get",
+        "endpoints": [
+          {
+            "method": "GET",
+            "path": "/courses/api/v1/attempts/<int:attempt_id>/"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "courses.verify",
+    "title": "Verify a certificate",
+    "title_key": "flow.courses.verify.title",
+    "description": "Anyone with a certificate number checks it is valid and sees only the fields the deployment publishes.",
+    "description_key": "flow.courses.verify.description",
+    "actors": [
+      "Anyone"
+    ],
+    "steps": [
+      {
+        "kind": "http",
+        "order": 1,
+        "note": "Check a certificate number",
+        "note_key": "flow.courses.verify.step.1.note",
+        "ref": "stapel_courses.views.CertificateVerifyView.get",
+        "endpoints": [
+          {
+            "method": "GET",
+            "path": "/courses/api/v1/certificates/<str:number>/"
+          }
+        ]
+      }
+    ]
+  }
+]

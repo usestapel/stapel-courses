@@ -1,0 +1,461 @@
+"""Serializers for the stapel-courses API.
+
+The class names are the codegen contract: drf-spectacular names each
+component after its serializer minus the ``Serializer`` suffix, and the
+React pair generates its client from those names. Every CharField declares
+a ``max_length``; money is a decimal string; instants are ISO 8601 UTC.
+"""
+import datetime
+
+from rest_framework import serializers
+
+from . import access as access_mod
+from . import models as m
+
+UTC = datetime.timezone.utc
+
+LOCK_REASON_CHOICES = list(access_mod.LOCK_REASONS)
+
+
+def _dt(**kwargs):
+    return serializers.DateTimeField(default_timezone=UTC, **kwargs)
+
+
+def _price(**kwargs):
+    return serializers.DecimalField(
+        max_digits=m.PRICE_MAX_DIGITS, decimal_places=m.PRICE_DECIMAL_PLACES,
+        coerce_to_string=True, **kwargs,
+    )
+
+
+def _percent(**kwargs):
+    return serializers.DecimalField(max_digits=5, decimal_places=2, coerce_to_string=True, **kwargs)
+
+
+def _lock_reason():
+    return serializers.ChoiceField(choices=LOCK_REASON_CHOICES, allow_null=True)
+
+
+# ── catalog and outline ───────────────────────────────────────────────────
+
+
+class CourseCardSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    slug = serializers.SlugField(max_length=m.SLUG_MAX_LENGTH)
+    title = serializers.CharField(max_length=m.TITLE_MAX_LENGTH)
+    summary = serializers.CharField(max_length=m.SUMMARY_MAX_LENGTH, allow_blank=True)
+    cover_media_id = serializers.CharField(max_length=m.MEDIA_ID_MAX_LENGTH, allow_null=True)
+    level = serializers.ChoiceField(choices=m.CourseLevel.choices)
+    language = serializers.CharField(max_length=m.LANGUAGE_MAX_LENGTH, allow_null=True)
+    access = serializers.CharField(max_length=m.ACCESS_MAX_LENGTH)
+    price = _price(allow_null=True)
+    currency = serializers.CharField(max_length=m.CURRENCY_MAX_LENGTH, allow_null=True)
+    author_id = serializers.CharField(max_length=m.USER_ID_MAX_LENGTH)
+    scope = serializers.CharField(max_length=m.SCOPE_MAX_LENGTH, allow_null=True)
+    lesson_count = serializers.IntegerField(min_value=0)
+    total_duration_seconds = serializers.IntegerField(min_value=0)
+    published_at = _dt(allow_null=True)
+
+
+class CoursePageSerializer(serializers.Serializer):
+    items = CourseCardSerializer(many=True)
+    next_anchor = serializers.CharField(max_length=32, allow_null=True)
+    prev_anchor = serializers.CharField(max_length=32, allow_null=True)
+    has_next = serializers.BooleanField()
+    has_prev = serializers.BooleanField()
+    count = serializers.IntegerField(min_value=0)
+
+
+class CourseDetailSerializer(CourseCardSerializer):
+    status = serializers.ChoiceField(choices=m.CourseStatus.choices)
+    description = serializers.CharField(max_length=m.DESCRIPTION_MAX_LENGTH, allow_blank=True)
+    drip = serializers.ChoiceField(choices=m.DripMode.choices)
+    sequential = serializers.BooleanField()
+    access_days = serializers.IntegerField(allow_null=True, min_value=1, max_value=m.MAX_ACCESS_DAYS)
+    certificate_enabled = serializers.BooleanField()
+
+
+class EnrollmentSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    course_id = serializers.IntegerField()
+    course_slug = serializers.SlugField(max_length=m.SLUG_MAX_LENGTH)
+    course_title = serializers.CharField(max_length=m.TITLE_MAX_LENGTH)
+    status = serializers.ChoiceField(choices=m.EnrollmentStatus.choices)
+    source = serializers.ChoiceField(choices=m.EnrollmentSource.choices)
+    expires_at = _dt(allow_null=True)
+    activated_at = _dt(allow_null=True)
+    completed_at = _dt(allow_null=True)
+    progress_percent = serializers.IntegerField(min_value=0, max_value=100)
+    completed_lessons = serializers.IntegerField(min_value=0)
+    required_lessons = serializers.IntegerField(min_value=0)
+    passed_quizzes = serializers.IntegerField(min_value=0)
+    required_quizzes = serializers.IntegerField(min_value=0)
+    last_lesson_id = serializers.IntegerField(allow_null=True)
+    created_at = _dt()
+
+
+class EnrollmentPageSerializer(serializers.Serializer):
+    items = EnrollmentSerializer(many=True)
+    next_anchor = serializers.CharField(max_length=32, allow_null=True)
+    prev_anchor = serializers.CharField(max_length=32, allow_null=True)
+    has_next = serializers.BooleanField()
+    has_prev = serializers.BooleanField()
+    count = serializers.IntegerField(min_value=0)
+
+
+class AccessStateSerializer(serializers.Serializer):
+    allowed = serializers.BooleanField()
+    reason = _lock_reason()
+    can_enroll = serializers.BooleanField(help_text="POST enroll/ would succeed for this caller now.")
+    privileged = serializers.BooleanField(help_text="The caller is staff or the course's author.")
+
+
+class OutlineQuizSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    title = serializers.CharField(max_length=m.TITLE_MAX_LENGTH)
+    required = serializers.BooleanField()
+    pass_mark = serializers.IntegerField(min_value=0, max_value=100)
+    locked = serializers.BooleanField()
+    lock_reason = _lock_reason()
+    passed = serializers.BooleanField()
+
+
+class OutlineLessonSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    title = serializers.CharField(max_length=m.TITLE_MAX_LENGTH)
+    position = serializers.IntegerField(min_value=0)
+    duration_seconds = serializers.IntegerField(min_value=0)
+    free_preview = serializers.BooleanField()
+    required = serializers.BooleanField()
+    review_required = serializers.BooleanField()
+    locked = serializers.BooleanField()
+    lock_reason = _lock_reason()
+    unlocks_at = _dt(allow_null=True)
+    after_lesson_id = serializers.IntegerField(allow_null=True)
+    after_quiz_id = serializers.IntegerField(allow_null=True)
+    progress_status = serializers.ChoiceField(choices=m.ProgressStatus.choices, allow_null=True)
+    quizzes = OutlineQuizSerializer(many=True)
+
+
+class OutlineModuleSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    title = serializers.CharField(max_length=m.TITLE_MAX_LENGTH)
+    position = serializers.IntegerField(min_value=0)
+    lessons = OutlineLessonSerializer(many=True)
+    quizzes = OutlineQuizSerializer(many=True)
+
+
+class CourseOutlineSerializer(serializers.Serializer):
+    course = CourseDetailSerializer()
+    access = AccessStateSerializer()
+    enrollment = EnrollmentSerializer(allow_null=True)
+    modules = OutlineModuleSerializer(many=True)
+
+
+# ── lessons and progress ──────────────────────────────────────────────────
+
+
+class LessonProgressStateSerializer(serializers.Serializer):
+    lesson_id = serializers.IntegerField()
+    status = serializers.ChoiceField(choices=m.ProgressStatus.choices)
+    position_seconds = serializers.IntegerField(min_value=0)
+    completed_at = _dt(allow_null=True)
+
+
+class LessonSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    course_slug = serializers.SlugField(max_length=m.SLUG_MAX_LENGTH)
+    module_id = serializers.IntegerField()
+    title = serializers.CharField(max_length=m.TITLE_MAX_LENGTH)
+    position = serializers.IntegerField(min_value=0)
+    blocks = serializers.ListField(
+        child=serializers.DictField(), max_length=m.MAX_BLOCKS_PER_LESSON,
+        help_text="Typed content blocks: text {text, format}, video {media_id, caption}, "
+                  "attachment {media_id, name}, embed {url, title}; plus host-registered types.",
+    )
+    duration_seconds = serializers.IntegerField(min_value=0)
+    free_preview = serializers.BooleanField()
+    review_required = serializers.BooleanField()
+    progress = LessonProgressStateSerializer(allow_null=True)
+    quizzes = OutlineQuizSerializer(many=True)
+    prev_lesson_id = serializers.IntegerField(allow_null=True)
+    next_lesson_id = serializers.IntegerField(allow_null=True)
+
+
+class LessonProgressRequestSerializer(serializers.Serializer):
+    status = serializers.ChoiceField(choices=m.ProgressStatus.choices, required=False)
+    position_seconds = serializers.IntegerField(
+        required=False, min_value=0, max_value=m.MAX_DURATION_SECONDS
+    )
+
+
+class LessonProgressSerializer(serializers.Serializer):
+    progress = LessonProgressStateSerializer()
+    enrollment = EnrollmentSerializer(allow_null=True)
+
+
+class QuizStandingSerializer(serializers.Serializer):
+    quiz_id = serializers.IntegerField()
+    passed = serializers.BooleanField()
+    best_percent = _percent(allow_null=True)
+    attempts_used = serializers.IntegerField(min_value=0)
+
+
+class CourseProgressSerializer(serializers.Serializer):
+    enrollment = EnrollmentSerializer(allow_null=True)
+    lessons = LessonProgressStateSerializer(many=True)
+    quizzes = QuizStandingSerializer(many=True)
+
+
+# ── quizzes and attempts ──────────────────────────────────────────────────
+
+
+class QuizSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    title = serializers.CharField(max_length=m.TITLE_MAX_LENGTH)
+    lesson_id = serializers.IntegerField(allow_null=True)
+    module_id = serializers.IntegerField(allow_null=True)
+    pass_mark = serializers.IntegerField(min_value=0, max_value=100)
+    max_attempts = serializers.IntegerField(min_value=0, help_text="0 = unlimited.")
+    reveal = serializers.ChoiceField(choices=m.RevealMode.choices)
+    question_count = serializers.IntegerField(min_value=0)
+    attempts_used = serializers.IntegerField(min_value=0)
+    attempts_left = serializers.IntegerField(allow_null=True, min_value=0, help_text="null = unlimited.")
+    best_percent = _percent(allow_null=True)
+    passed = serializers.BooleanField()
+    open_attempt_id = serializers.IntegerField(allow_null=True)
+    locked = serializers.BooleanField()
+    lock_reason = _lock_reason()
+
+
+class ChoiceSerializer(serializers.Serializer):
+    id = serializers.CharField(max_length=m.CHOICE_ID_MAX_LENGTH)
+    text = serializers.CharField(max_length=m.CHOICE_TEXT_MAX_LENGTH)
+
+
+class CorrectAnswerSerializer(serializers.Serializer):
+    choice_ids = serializers.ListField(
+        child=serializers.CharField(max_length=m.CHOICE_ID_MAX_LENGTH), allow_null=True,
+        max_length=m.MAX_CHOICES,
+    )
+    value = serializers.BooleanField(allow_null=True)
+    accepted = serializers.ListField(
+        child=serializers.CharField(max_length=m.ACCEPTED_TEXT_MAX_LENGTH), allow_null=True,
+        max_length=m.MAX_ACCEPTED_ANSWERS,
+    )
+
+
+class QuestionResultSerializer(serializers.Serializer):
+    correct = serializers.BooleanField()
+    points = serializers.IntegerField(min_value=0, max_value=m.MAX_POINTS)
+
+
+class AnswerSerializer(serializers.Serializer):
+    """One answer: ``choice_ids`` (single/multiple), ``value`` (true_false) or ``text``."""
+
+    question_id = serializers.IntegerField()
+    choice_ids = serializers.ListField(
+        child=serializers.CharField(max_length=m.CHOICE_ID_MAX_LENGTH), required=False,
+        max_length=m.MAX_CHOICES,
+    )
+    value = serializers.BooleanField(required=False, allow_null=True, default=None)
+    text = serializers.CharField(required=False, max_length=m.ANSWER_TEXT_MAX_LENGTH, allow_blank=True)
+
+
+class AttemptQuestionSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    kind = serializers.ChoiceField(choices=m.QuestionKind.choices)
+    prompt = serializers.CharField(max_length=m.PROMPT_MAX_LENGTH)
+    points = serializers.IntegerField(min_value=1, max_value=m.MAX_POINTS)
+    choices = ChoiceSerializer(many=True)
+    answer = serializers.DictField(allow_null=True, help_text="My submitted answer; null while open.")
+    result = QuestionResultSerializer(allow_null=True)
+    correct_answer = CorrectAnswerSerializer(allow_null=True)
+    explanation = serializers.CharField(max_length=m.EXPLANATION_MAX_LENGTH, allow_null=True)
+
+
+class AttemptSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    quiz_id = serializers.IntegerField()
+    number = serializers.IntegerField(min_value=1)
+    status = serializers.ChoiceField(choices=m.AttemptStatus.choices)
+    started_at = _dt()
+    submitted_at = _dt(allow_null=True)
+    questions = AttemptQuestionSerializer(many=True)
+    score = serializers.IntegerField(allow_null=True, min_value=0)
+    max_score = serializers.IntegerField(min_value=0)
+    percent = _percent(allow_null=True)
+    passed = serializers.BooleanField(allow_null=True)
+    reveals_answers = serializers.BooleanField()
+
+
+class AttemptSubmitRequestSerializer(serializers.Serializer):
+    answers = AnswerSerializer(many=True, max_length=m.MAX_QUESTIONS_PER_QUIZ)
+
+
+# ── certificates ──────────────────────────────────────────────────────────
+
+
+class CertificateSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    number = serializers.CharField(max_length=m.CERTIFICATE_NUMBER_MAX_LENGTH)
+    course_id = serializers.IntegerField()
+    course_slug = serializers.SlugField(max_length=m.SLUG_MAX_LENGTH)
+    course_title = serializers.CharField(max_length=m.TITLE_MAX_LENGTH)
+    holder_name = serializers.CharField(max_length=m.HOLDER_NAME_MAX_LENGTH, allow_blank=True)
+    issued_at = _dt()
+    valid = serializers.BooleanField()
+
+
+class CertificatePageSerializer(serializers.Serializer):
+    items = CertificateSerializer(many=True)
+    next_anchor = serializers.CharField(max_length=32, allow_null=True)
+    prev_anchor = serializers.CharField(max_length=32, allow_null=True)
+    has_next = serializers.BooleanField()
+    has_prev = serializers.BooleanField()
+    count = serializers.IntegerField(min_value=0)
+
+
+class CertificateVerificationSerializer(serializers.Serializer):
+    number = serializers.CharField(max_length=m.CERTIFICATE_NUMBER_MAX_LENGTH)
+    valid = serializers.BooleanField()
+    holder_name = serializers.CharField(max_length=m.HOLDER_NAME_MAX_LENGTH, allow_null=True, allow_blank=True)
+    course_title = serializers.CharField(max_length=m.TITLE_MAX_LENGTH, allow_null=True)
+    course_slug = serializers.SlugField(max_length=m.SLUG_MAX_LENGTH, allow_null=True)
+    issued_at = _dt(allow_null=True)
+
+
+# ── author / staff ────────────────────────────────────────────────────────
+
+
+class AuthorCourseSerializer(serializers.ModelSerializer):
+    slug = serializers.SlugField(max_length=m.SLUG_MAX_LENGTH)
+    price = _price(allow_null=True, required=False, min_value=0)
+    access = serializers.CharField(max_length=m.ACCESS_MAX_LENGTH, required=False)
+    author_id = serializers.CharField(
+        max_length=m.USER_ID_MAX_LENGTH, required=False,
+        help_text="Staff only: whose course it is (default: the caller).",
+    )
+    access_days = serializers.IntegerField(
+        required=False, allow_null=True, min_value=1, max_value=m.MAX_ACCESS_DAYS
+    )
+    published_at = _dt(read_only=True, allow_null=True)
+    created_at = _dt(read_only=True)
+    updated_at = _dt(read_only=True)
+
+    class Meta:
+        model = m.Course
+        fields = (
+            "id", "slug", "title", "summary", "description", "status", "author_id",
+            "cover_media_id", "level", "language", "access", "price", "currency",
+            "entitlement_key", "drip", "sequential", "access_days", "certificate_enabled",
+            "scope", "published_at", "created_at", "updated_at",
+        )
+        read_only_fields = ("id", "status")
+
+
+class AuthorCoursePageSerializer(serializers.Serializer):
+    items = AuthorCourseSerializer(many=True)
+    next_anchor = serializers.CharField(max_length=32, allow_null=True)
+    prev_anchor = serializers.CharField(max_length=32, allow_null=True)
+    has_next = serializers.BooleanField()
+    has_prev = serializers.BooleanField()
+    count = serializers.IntegerField(min_value=0)
+
+
+class AuthorModuleSerializer(serializers.ModelSerializer):
+    position = serializers.IntegerField(required=False, min_value=0, max_value=m.MAX_POSITION)
+
+    class Meta:
+        model = m.Module
+        fields = ("id", "course", "title", "position")
+        read_only_fields = ("id", "course")
+
+
+class AuthorLessonSerializer(serializers.ModelSerializer):
+    position = serializers.IntegerField(required=False, min_value=0, max_value=m.MAX_POSITION)
+    module_id = serializers.IntegerField(required=False)
+    blocks = serializers.ListField(
+        child=serializers.DictField(), required=False, max_length=m.MAX_BLOCKS_PER_LESSON,
+    )
+    duration_seconds = serializers.IntegerField(
+        required=False, min_value=0, max_value=m.MAX_DURATION_SECONDS
+    )
+    unlock_after_days = serializers.IntegerField(
+        required=False, allow_null=True, min_value=0, max_value=m.MAX_ACCESS_DAYS
+    )
+    unlock_at = _dt(required=False, allow_null=True)
+
+    class Meta:
+        model = m.Lesson
+        fields = (
+            "id", "course", "module_id", "title", "position", "blocks", "duration_seconds",
+            "free_preview", "required", "review_required", "unlock_after_days", "unlock_at",
+        )
+        read_only_fields = ("id", "course")
+
+
+class AuthorQuestionSerializer(serializers.ModelSerializer):
+    position = serializers.IntegerField(required=False, min_value=0, max_value=m.MAX_POSITION)
+    points = serializers.IntegerField(required=False, min_value=1, max_value=m.MAX_POINTS)
+    choices = ChoiceSerializer(many=True, required=False, max_length=m.MAX_CHOICES)
+    correct = serializers.JSONField(
+        help_text="single/multiple: [choice id, ...]; true_false: bool; short_text: "
+                  "[accepted answer, ...].",
+    )
+
+    class Meta:
+        model = m.Question
+        fields = (
+            "id", "quiz", "kind", "prompt", "position", "points", "choices", "correct", "match",
+            "explanation",
+        )
+        read_only_fields = ("id", "quiz")
+
+
+class AuthorQuizSerializer(serializers.ModelSerializer):
+    lesson_id = serializers.IntegerField(required=False, allow_null=True)
+    module_id = serializers.IntegerField(required=False, allow_null=True)
+    pass_mark = serializers.IntegerField(required=False, min_value=0, max_value=100)
+    max_attempts = serializers.IntegerField(required=False, min_value=0, max_value=m.MAX_ATTEMPTS)
+    questions = AuthorQuestionSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = m.Quiz
+        fields = (
+            "id", "course", "lesson_id", "module_id", "title", "pass_mark", "max_attempts",
+            "shuffle_questions", "shuffle_choices", "required", "reveal", "questions",
+        )
+        read_only_fields = ("id", "course", "questions")
+
+
+class AuthorCourseTreeModuleSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    title = serializers.CharField(max_length=m.TITLE_MAX_LENGTH)
+    position = serializers.IntegerField(min_value=0)
+    lessons = AuthorLessonSerializer(many=True)
+    quizzes = AuthorQuizSerializer(many=True)
+
+
+class AuthorCourseTreeSerializer(serializers.Serializer):
+    course = AuthorCourseSerializer()
+    modules = AuthorCourseTreeModuleSerializer(many=True)
+
+
+class EnrollmentGrantRequestSerializer(serializers.Serializer):
+    user_id = serializers.CharField(max_length=m.USER_ID_MAX_LENGTH)
+    expires_at = _dt(required=False, allow_null=True)
+
+
+class EnrollmentTransitionRequestSerializer(serializers.Serializer):
+    to = serializers.ChoiceField(choices=[(s, s) for s in ("active", "expired", "cancelled")])
+    reason = serializers.CharField(required=False, max_length=m.REASON_MAX_LENGTH, allow_blank=True)
+
+
+class LessonReviewRequestSerializer(serializers.Serializer):
+    user_id = serializers.CharField(max_length=m.USER_ID_MAX_LENGTH)
+    passed = serializers.BooleanField()
+
+
+class CertificateRevokeRequestSerializer(serializers.Serializer):
+    reason = serializers.CharField(required=False, max_length=m.REASON_MAX_LENGTH, allow_blank=True)

@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "orders.order.refunded",
+  "description": "Consumed (read side only): a refunded order cancels the enrollments it granted. Not emitted by stapel-orders 0.1.0 (upstream ask); the consumer is ready for it.",
+  "type": "object",
+  "properties": {
+    "order_id": {"type": "string"}
+  },
+  "required": ["order_id"],
+  "additionalProperties": true
+}

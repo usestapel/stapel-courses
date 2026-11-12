@@ -1,0 +1,203 @@
+# stapel-courses 0.1.0
+
+Courses for a Stapel education product: Course -> Module -> Lesson (ordered, typed content blocks: text, video and attachments by opaque media id, embeds), enrollment with a lifecycle (pending, active, completed, expired, cancelled), a source (free, purchase, entitlement, staff grant) and an optional expiry, and an access gate per course chosen from a strategy registry (free, enrolled, purchased through stapel-orders, entitlement through stapel-billing). The outline names a lock reason for every lesson (sign in, enroll, buy, plan, drip date, previous lesson). Lesson progress is an idempotent upsert with a per-enrollment progress cache; drip by days since enrollment or by fixed date and a sequential-unlock switch pace a course. Quizzes on a lesson or module (single and multiple choice, true/false, short text) are graded on the server with attempt limits, a pass mark and a stored shuffle seed; answers never leave before submission. Completing every required lesson and quiz completes the course and issues a certificate with a public verification endpoint. A course is sold as orders purchasable type 'course' (resolver Function courses.purchasables); the order facts activate and cancel the enrollment. Courses never imports orders or billing.
+
+Contract: axes 7 · surface 10 · extension points 10 · operations 38 · error codes 71 · flows 5.
+Generated from docs/capabilities.json by `stapel-llms-txt` — do not edit; drift-gated by `make contract-check`.
+
+## Configuration axes — what a product switches on
+Settings keys; `default` is what you get by saying nothing. Turning an axis off unmounts the operations it gates.
+- AUTHORING [enum, default "staff"] — Who creates courses
+  staff (default): only staff create courses. members: any signed-in member creates and edits their own courses (a marketplace of teachers). Values: staff, members.
+- CERTIFICATES [bool, default true] — Certificates
+  true (default): completing a course issues a certificate with a public verification page. false: no certificates. Values: true, false.
+- DEFAULT_ACCESS [enum, default "enrolled"] — Who can open a new course
+  The access mode a new course starts with (each course can change it). free: anyone reads the lessons. enrolled (default): learners enroll for free, then read. purchased: learners buy the course through the shop first. entitlement: a paid plan includes it. Values: free, enrolled, purchased, entitlement.
+- DEFAULT_DRIP [enum, default "none"] — Release lessons over time
+  How a new course releases lessons. none (default): all at once. days: each lesson opens N days after the learner enrolls. date: each lesson opens on a fixed date. Values: none, days, date.
+- DEFAULT_SEQUENTIAL [bool, default false] — Lessons in order
+  false (default): learners open lessons in any order. true: a lesson opens only after every earlier required lesson is completed and its required quizzes are passed. Values: true, false.
+- ENROLLMENT_REQUIRES_ACCOUNT [bool, default true] — Guests can learn
+  true (default): a guest must sign in to enroll, save progress or take a quiz. false: guests can, and their progress moves to the account when they sign in. Values: true, false.
+- PURCHASE_ACTIVATION [enum, default "paid"] — When a bought course opens
+  paid (default): when the order is paid. confirmed: also when staff confirm an order by hand (shops without online payment). placed: as soon as the order is placed. Values: paid, confirmed, placed.
+
+## Usage surface — call these before writing your own
+This is the answer to "does Stapel already have something for X?". `instead of` names the outside symbol this one displaces.
+### gate_function
+- attachment_block — stapel_courses.blocks.attachment_block
+  Built-in validator of an attachment block (opaque media_id, file name).
+- clean_blocks — stapel_courses.blocks.clean_blocks
+  Validate a lesson's blocks list with the registry; raises BlockInvalid carrying the index and a machine reason. Use it instead of storing author JSON unchecked.
+- embed_block — stapel_courses.blocks.embed_block
+  Built-in validator of an embed block (https URL, host in EMBED_HOSTS when set).
+- text_block — stapel_courses.blocks.text_block
+  Built-in validator of a text block (text, format markdown|plain).
+- video_block — stapel_courses.blocks.video_block
+  Built-in validator of a video block (opaque media_id, caption).
+### predicate
+- block_type_paths — stapel_courses.blocks.block_type_paths
+  The effective block type registry (built-ins <- BLOCK_TYPES), type -> validator dotted path.
+- strategy_names — stapel_courses.access.strategy_names
+  The access names a course may carry; the author API refuses others with error.400.course_access_unknown.
+- strategy_paths — stapel_courses.access.strategy_paths
+  The effective access strategy registry (built-ins <- ACCESS_STRATEGIES), name -> dotted path.
+### factory
+- get_strategy — stapel_courses.access.get_strategy
+  The strategy instance for a name; an unknown name gates like 'enrolled' (fail closed).
+- validator — stapel_courses.blocks.validator
+  The validator callable of a block type, or None when the type is not registered.
+
+## Extension points — what a product replaces, fork-free
+- ACCESS_STRATEGIES [merge_registry]
+  Access gate strategies by name, merged over free / enrolled / purchased / entitlement; a dotted path under a built-in name replaces it, None removes it. A strategy answers whether a learner may enroll themself (and with which source) and whether they see the content (with a lock reason).
+- BLOCK_TYPES [merge_registry]
+  Lesson content block validators by type, merged over text / video / attachment / embed. A validator takes the raw block dict and returns the cleaned dict to store or raises BlockInvalid.
+- COMPLETION_RULE [strategy]
+  Dotted path (enrollment) -> bool deciding completion after a lesson completion or a quiz pass; default: every required lesson completed and every required quiz passed.
+- HOLDER_NAME_RESOLVER [strategy]
+  Dotted path (user_id) -> str: the name printed on a certificate (default: the user's full name, else empty).
+- STAPEL_COURSES_COURSE_PRESENTER / _ENROLLMENT_ / _LESSON_ / _QUIZ_ / _ATTEMPT_ / _CERTIFICATE_PRESENTER [presenter]
+  Swap keys (STAPEL_SWAP) for the learner API presenters, so a host changes what the API shows without forking a view.
+- courses.certificate.issued [comm_event]
+  A certificate record was issued; its number is the public verification key.
+- courses.course.completed [comm_event]
+  A learner met the completion rule; emitted once per enrollment.
+- courses.enrollment.activated [comm_event]
+  A learner gained access (self-enrollment, entitlement, paid order, staff grant): enrollment, course, user, source, order, expiry.
+- courses.purchasables [comm_function]
+  The orders purchasable resolver for type 'course': {keys: [course id]} -> {id: {title, price, currency, available, max_quantity: 1, seller_id, image, url}}.
+- orders.order.placed [comm_event]
+  Consumed: course lines open a pending enrollment for the buyer; orders.order.paid (or .status_changed to confirmed, per PURCHASE_ACTIVATION) activates it; cancelled/refunded cancels the enrollment that order granted.
+
+## Fits with — fleet dependencies
+- stapel-auth (optional) — learners are request.user; a guest is a stapel-auth anonymous account, and user.merged moves a guest's enrollments, progress, attempts and certificates to the account on sign-in
+- stapel-billing (optional) — answers billing.check_entitlement for courses with the 'entitlement' access mode (a plan includes the course)
+- stapel-cdn (optional) — resolves the opaque media ids of cover images, video and attachment blocks (the frontend asks it; courses never does)
+- stapel-core (required) — comm bus (courses.* emits, purchasable/status/verify Functions, orders and user.merged consumers), AnchorPagination, GDPR owner protocol, AppSettings, swappable presenters
+- stapel-notifications (optional) — delivers courses.enrollment_activated, courses.completed and courses.certificate_issued
+- stapel-orders (optional) — sells courses: register purchasable type 'course' with resolver courses.purchasables (stapel_courses.preset.SETTINGS_DEFAULTS); orders.order.placed/paid/status_changed activate and cancel enrollments
+
+## HTTP operations (38) — call by operationId, never by a typed path
+Paths are relative to `/courses/api/v1/`.
+### Courses
+- GET /attempts/{attempt_id}/ — courses_attempt_retrieve
+- POST /attempts/{attempt_id}/submit/ — courses_attempt_submit
+- GET /courses/ — courses_catalog_list
+- GET /certificates/{number}/ — courses_certificate_verify
+- POST /courses/{slug}/enroll/ — courses_course_enroll
+- GET /courses/{slug}/progress/ — courses_course_progress
+- GET /courses/{slug}/ — courses_course_retrieve
+- POST /courses/{slug}/lessons/{lesson_id}/progress/ — courses_lesson_progress
+- GET /courses/{slug}/lessons/{lesson_id}/ — courses_lesson_retrieve
+- GET /me/certificates/ — courses_my_certificates_list
+- GET /me/enrollments/ — courses_my_enrollments_list
+- POST /quizzes/{quiz_id}/attempts/ — courses_quiz_attempt_start
+- GET /quizzes/{quiz_id}/ — courses_quiz_retrieve
+### Courses authoring
+- POST /author/certificates/{number}/revoke/ — courses_author_certificate_revoke
+- POST /author/courses/{course_id}/archive/ — courses_author_course_archive
+- DELETE /author/courses/{course_id}/ — courses_author_course_destroy
+- POST /author/courses/{course_id}/publish/ — courses_author_course_publish
+- GET /author/courses/{course_id}/ — courses_author_course_retrieve
+- PATCH /author/courses/{course_id}/ — courses_author_course_update
+- POST /author/courses/ — courses_author_courses_create
+- GET /author/courses/ — courses_author_courses_list
+- POST /author/enrollments/{enrollment_id}/transition/ — courses_author_enrollment_transition
+- POST /author/courses/{course_id}/enrollments/ — courses_author_enrollments_grant
+- GET /author/courses/{course_id}/enrollments/ — courses_author_enrollments_list
+- DELETE /author/lessons/{lesson_id}/ — courses_author_lesson_destroy
+- POST /author/lessons/{lesson_id}/review/ — courses_author_lesson_review
+- PATCH /author/lessons/{lesson_id}/ — courses_author_lesson_update
+- POST /author/modules/{module_id}/lessons/ — courses_author_lessons_create
+- DELETE /author/modules/{module_id}/ — courses_author_module_destroy
+- PATCH /author/modules/{module_id}/ — courses_author_module_update
+- POST /author/courses/{course_id}/modules/ — courses_author_modules_create
+- DELETE /author/questions/{question_id}/ — courses_author_question_destroy
+- PATCH /author/questions/{question_id}/ — courses_author_question_update
+- POST /author/quizzes/{quiz_id}/questions/ — courses_author_questions_create
+- DELETE /author/quizzes/{quiz_id}/ — courses_author_quiz_destroy
+- GET /author/quizzes/{quiz_id}/ — courses_author_quiz_retrieve
+- PATCH /author/quizzes/{quiz_id}/ — courses_author_quiz_update
+- POST /author/quizzes/ — courses_author_quizzes_create
+
+## Error codes (71) — the StapelError envelope
+Render `t(code, params)`; branch UX on the remediation. Localized text lives in docs/errors.<lang>.md, not here.
+- error.400.bad_request [400] fix_input
+- error.400.captcha_invalid [400] retry
+- error.400.captcha_required [400] retry
+- error.400.course_access_unknown [400] fix_input {access}
+- error.400.course_price_required [400] fix_input
+- error.400.course_slug_frozen [400] fix_input
+- error.400.course_slug_taken [400] fix_input
+- error.400.expected_list [400] fix_input
+- error.400.field.blank [400] fix_input {field}
+- error.400.field.does_not_exist [400] fix_input {field}
+- error.400.field.invalid [400] fix_input {field}
+- error.400.field.invalid_choice [400] fix_input {field}
+- error.400.field.max_length [400] fix_input {field,max_length}
+- error.400.field.max_value [400] fix_input {field,max_value}
+- error.400.field.min_length [400] fix_input {field,min_length}
+- error.400.field.min_value [400] fix_input {field,min_value}
+- error.400.field.null [400] fix_input {field}
+- error.400.field.required [400] fix_input {field}
+- error.400.field.unique [400] fix_input {field}
+- error.400.invalid_ad_id [400] fix_input
+- error.400.lesson_block_invalid [400] fix_input {index,reason}
+- error.400.question_invalid [400] fix_input {reason}
+- error.400.quiz_answer_invalid [400] fix_input
+- error.400.quiz_target_invalid [400] fix_input
+- error.400.validation_error [400] fix_input
+- error.400.verification_failed [400] verify
+- error.400.verification_invalid_factor [400] verify
+- error.401.unauthorized [401] reauthenticate
+- error.402.payment_required [402] retry
+- error.403.course_authoring_forbidden [403] retry
+- error.403.course_entitlement_required [403] retry
+- error.403.course_purchase_required [403] retry
+- error.403.enrollment_requires_account [403] reauthenticate
+- error.403.forbidden [403] retry
+- error.403.lesson_locked [403] retry
+- error.403.lesson_review_required [403] retry
+- error.403.network_blocked [403] contact_support
+- error.403.verification_enrollment_required [403] verify
+- error.403.verification_required [403] verify
+- error.404.ad_not_found [404] retry
+- error.404.certificate_not_found [404] retry
+- error.404.course_module_not_found [404] retry
+- error.404.course_not_found [404] retry
+- error.404.enrollment_not_found [404] verify
+- error.404.lesson_not_found [404] retry
+- error.404.not_found [404] retry
+- error.404.question_not_found [404] retry
+- error.404.quiz_attempt_not_found [404] retry
+- error.404.quiz_not_found [404] retry
+- error.404.verification_challenge_not_found [404] verify
+- error.405.method_not_allowed [405] retry
+- error.406.not_acceptable [406] retry
+- error.408.request_timeout [408] retry
+- error.409.conflict [409] fix_input
+- error.409.course_not_draft [409] fix_input
+- error.409.course_not_published [409] fix_input
+- error.409.course_transition_invalid [409] fix_input {from,to}
+- error.409.enrollment_transition_invalid [409] verify {from,to}
+- error.409.quiz_attempts_exhausted [409] fix_input {max}
+- error.409.quiz_empty [409] fix_input
+- error.410.gone [410] retry
+- error.413.payload_too_large [413] retry
+- error.415.unsupported_media_type [415] retry
+- error.422.unprocessable_entity [422] wait_and_retry
+- error.423.locked [423] wait_and_retry
+- error.423.verification_locked [423] wait_and_retry
+- error.429.rate_limit [429] wait_and_retry {retry_after_minutes}
+- error.429.too_many_requests [429] wait_and_retry
+- error.500.internal [500] contact_support
+- error.503.entitlement_unavailable [503] wait_and_retry
+- error.503.mandate_unavailable [503] retry
+
+## Documented flows (5) — full steps in docs/flows.json
+- courses.author — Build and run a course
+- courses.learn — Take a course
+- courses.purchase — Buy a course
+- courses.quiz — Pass a quiz
+- courses.verify — Verify a certificate

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "courses.enrollment.activated",
+  "description": "A learner gained access to a course: a self-enrollment, an entitlement, a paid/confirmed order or a staff grant. Key = enrollment id. Ids and instants only, no names.",
+  "type": "object",
+  "properties": {
+    "enrollment_id": {"type": "string"},
+    "course_id": {"type": "string"},
+    "course_slug": {"type": "string", "maxLength": 80},
+    "user_id": {"type": "string", "maxLength": 64},
+    "source": {"type": "string", "enum": ["free", "purchase", "entitlement", "staff"]},
+    "order_id": {"type": ["string", "null"], "maxLength": 64},
+    "expires_at": {"type": ["string", "null"], "format": "date-time"}
+  },
+  "required": ["enrollment_id", "course_id", "course_slug", "user_id", "source", "order_id", "expires_at"],
+  "additionalProperties": false
+}

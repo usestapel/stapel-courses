@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "orders.order.paid",
+  "description": "Consumed from stapel-orders (read side only): a paid order activates the course enrollments it placed, in every PURCHASE_ACTIVATION mode.",
+  "type": "object",
+  "properties": {
+    "order_id": {"type": "string"}
+  },
+  "required": ["order_id"],
+  "additionalProperties": true
+}

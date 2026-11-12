@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "orders.order.placed",
+  "description": "Consumed from stapel-orders (read side only: the fields stapel-courses reads). Lines of purchasable_type == STAPEL_COURSES['PURCHASABLE_TYPE'] open a pending enrollment for the buyer (active at once under PURCHASE_ACTIVATION='placed'). Other lines are ignored.",
+  "type": "object",
+  "properties": {
+    "order_id": {"type": "string"},
+    "user_id": {"type": "string"},
+    "lines": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "purchasable_type": {"type": "string"},
+          "purchasable_key": {"type": "string"}
+        },
+        "required": ["purchasable_type", "purchasable_key"]
+      }
+    }
+  },
+  "required": ["order_id", "user_id", "lines"],
+  "additionalProperties": true
+}

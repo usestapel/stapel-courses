@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "courses.enrollment.status",
+  "description": "One learner's standing on one course, for another service (a notification, a profile badge). Returns {enrolled: bool, status: str|null, source: str|null, has_access: bool, expires_at: date-time|null, progress_percent: int}. An unknown course id is a lookup error.",
+  "type": "object",
+  "properties": {
+    "user_id": {"type": "string", "minLength": 1, "maxLength": 64},
+    "course_id": {"type": "string", "pattern": "^[0-9]+$"}
+  },
+  "required": ["user_id", "course_id"],
+  "additionalProperties": false
+}

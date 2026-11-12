@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "courses.course.completed",
+  "description": "A learner met the course's completion rule (every required lesson completed and every required quiz passed by default). Emitted once per enrollment. Key = enrollment id.",
+  "type": "object",
+  "properties": {
+    "enrollment_id": {"type": "string"},
+    "course_id": {"type": "string"},
+    "course_slug": {"type": "string", "maxLength": 80},
+    "user_id": {"type": "string", "maxLength": 64},
+    "completed_at": {"type": "string", "format": "date-time"}
+  },
+  "required": ["enrollment_id", "course_id", "course_slug", "user_id", "completed_at"],
+  "additionalProperties": false
+}
