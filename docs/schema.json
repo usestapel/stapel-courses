@@ -1905,6 +1905,35 @@
           "question_id"
         ]
       },
+      "AttachmentBlock": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/AttachmentBlockTypeEnum"
+          },
+          "media_id": {
+            "type": "string",
+            "description": "Opaque media id.",
+            "maxLength": 64
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "media_id",
+          "name",
+          "type"
+        ]
+      },
+      "AttachmentBlockTypeEnum": {
+        "enum": [
+          "attachment"
+        ],
+        "type": "string",
+        "description": "* `attachment` - attachment"
+      },
       "Attempt": {
         "type": "object",
         "properties": {
@@ -2290,8 +2319,7 @@
           "blocks": {
             "type": "array",
             "items": {
-              "type": "object",
-              "additionalProperties": {}
+              "$ref": "#/components/schemas/LessonBlock"
             },
             "maxItems": 50
           },
@@ -2389,7 +2417,20 @@
             }
           },
           "correct": {
-            "description": "single/multiple: [choice id, ...]; true_false: bool; short_text: [accepted answer, ...]."
+            "oneOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "maxItems": 20
+              },
+              {
+                "type": "boolean"
+              }
+            ],
+            "description": "Per kind: single / multiple -> the right choice ids; true_false -> the right bool; short_text -> the accepted answers."
           },
           "match": {
             "$ref": "#/components/schemas/TextMatchEnum"
@@ -2973,6 +3014,28 @@
         "type": "string",
         "description": "* `draft` - Draft\n* `published` - Published\n* `archived` - Archived"
       },
+      "CustomBlock": {
+        "type": "object",
+        "description": "A block type the host registered (BLOCK_TYPES); any type but the built-ins.",
+        "properties": {
+          "type": {
+            "type": "string",
+            "maxLength": 64,
+            "not": {
+              "enum": [
+                "attachment",
+                "embed",
+                "text",
+                "video"
+              ]
+            }
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": true
+      },
       "DripModeEnum": {
         "enum": [
           "none",
@@ -2981,6 +3044,34 @@
         ],
         "type": "string",
         "description": "* `none` - None\n* `days` - Days since enrollment\n* `date` - Fixed date"
+      },
+      "EmbedBlock": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/EmbedBlockTypeEnum"
+          },
+          "url": {
+            "type": "string",
+            "description": "https; the host is in embed_hosts when that list is not empty.",
+            "maxLength": 500
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 300
+          }
+        },
+        "required": [
+          "type",
+          "url"
+        ]
+      },
+      "EmbedBlockTypeEnum": {
+        "enum": [
+          "embed"
+        ],
+        "type": "string",
+        "description": "* `embed` - embed"
       },
       "Enrollment": {
         "type": "object",
@@ -3196,10 +3287,8 @@
           "blocks": {
             "type": "array",
             "items": {
-              "type": "object",
-              "additionalProperties": {}
+              "$ref": "#/components/schemas/LessonBlock"
             },
-            "description": "Typed content blocks: text {text, format}, video {media_id, caption}, attachment {media_id, name}, embed {url, title}; plus host-registered types.",
             "maxItems": 50
           },
           "duration_seconds": {
@@ -3249,6 +3338,25 @@
           "quizzes",
           "review_required",
           "title"
+        ]
+      },
+      "LessonBlock": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/TextBlock"
+          },
+          {
+            "$ref": "#/components/schemas/VideoBlock"
+          },
+          {
+            "$ref": "#/components/schemas/AttachmentBlock"
+          },
+          {
+            "$ref": "#/components/schemas/EmbedBlock"
+          },
+          {
+            "$ref": "#/components/schemas/CustomBlock"
+          }
         ]
       },
       "LessonProgress": {
@@ -3643,8 +3751,7 @@
           "blocks": {
             "type": "array",
             "items": {
-              "type": "object",
-              "additionalProperties": {}
+              "$ref": "#/components/schemas/LessonBlock"
             },
             "maxItems": 50
           },
@@ -3732,7 +3839,20 @@
             }
           },
           "correct": {
-            "description": "single/multiple: [choice id, ...]; true_false: bool; short_text: [accepted answer, ...]."
+            "oneOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "maxItems": 20
+              },
+              {
+                "type": "boolean"
+              }
+            ],
+            "description": "Per kind: single / multiple -> the right choice ids; true_false -> the right bool; short_text -> the accepted answers."
           },
           "match": {
             "$ref": "#/components/schemas/TextMatchEnum"
@@ -3960,6 +4080,45 @@
         "type": "string",
         "description": "* `never` - Never\n* `after_submit` - After each submission\n* `after_pass` - After passing"
       },
+      "TextBlock": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/TextBlockTypeEnum"
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 20000
+          },
+          "format": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TextFormatEnum"
+              }
+            ],
+            "description": "Default markdown.\n\n* `markdown` - markdown\n* `plain` - plain"
+          }
+        },
+        "required": [
+          "text",
+          "type"
+        ]
+      },
+      "TextBlockTypeEnum": {
+        "enum": [
+          "text"
+        ],
+        "type": "string",
+        "description": "* `text` - text"
+      },
+      "TextFormatEnum": {
+        "enum": [
+          "markdown",
+          "plain"
+        ],
+        "type": "string",
+        "description": "* `markdown` - markdown\n* `plain` - plain"
+      },
       "TextMatchEnum": {
         "enum": [
           "exact",
@@ -3967,6 +4126,34 @@
         ],
         "type": "string",
         "description": "* `exact` - Exact\n* `normalised` - Normalised"
+      },
+      "VideoBlock": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/VideoBlockTypeEnum"
+          },
+          "media_id": {
+            "type": "string",
+            "description": "Opaque media id.",
+            "maxLength": 64
+          },
+          "caption": {
+            "type": "string",
+            "maxLength": 300
+          }
+        },
+        "required": [
+          "media_id",
+          "type"
+        ]
+      },
+      "VideoBlockTypeEnum": {
+        "enum": [
+          "video"
+        ],
+        "type": "string",
+        "description": "* `video` - video"
       }
     },
     "securitySchemes": {

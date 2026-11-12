@@ -210,6 +210,13 @@ questions, course enrollments list + staff grant, enrollment transition,
 lesson review, certificate revoke. Authors are `Course.author_id`; staff see
 all. Who may create a course: axis `AUTHORING` (`staff` default | `members`).
 
+Wire types: a lesson's `blocks` is `LessonBlock[]`, a `oneOf` of
+`TextBlock` / `VideoBlock` / `AttachmentBlock` / `EmbedBlock` (each with a
+literal `type`) and `CustomBlock` (any type a host registers through
+`BLOCK_TYPES`, its own fields, never a built-in name). A question's
+`correct` is a string list (single / multiple: choice ids; short_text:
+accepted answers) or a bool (true_false).
+
 Guest stance: catalog/outline/lesson/verify `ANONYMOUS_ALLOWED`; enroll,
 progress, attempts `ANONYMOUS_ALLOWED` declared with
 `ENROLLMENT_REQUIRES_ACCOUNT` (default True → a guest session gets

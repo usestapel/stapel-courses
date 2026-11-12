@@ -111,4 +111,9 @@ def enum_name_overrides() -> dict:
         "AttemptStatusEnum": AttemptStatus,
         "LockReasonEnum": [(r, r) for r in LOCK_REASONS],
         "EnrollmentTransitionTargetEnum": [(s, s) for s in ("active", "expired", "cancelled")],
+        "TextBlockTypeEnum": [("text", "text")],
+        "VideoBlockTypeEnum": [("video", "video")],
+        "AttachmentBlockTypeEnum": [("attachment", "attachment")],
+        "EmbedBlockTypeEnum": [("embed", "embed")],
+        "TextFormatEnum": [("markdown", "markdown"), ("plain", "plain")],
     }

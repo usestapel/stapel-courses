@@ -40,6 +40,10 @@ STABLE_COMPONENTS = {
     "PatchedAuthorLesson", "PatchedAuthorModule", "PatchedAuthorQuestion", "PatchedAuthorQuiz",
     "ProgressStatusEnum", "QuestionKindEnum", "QuestionResult", "Quiz", "QuizStanding",
     "RevealModeEnum", "TextMatchEnum",
+    # typed lesson blocks
+    "AttachmentBlock", "AttachmentBlockTypeEnum", "CustomBlock", "EmbedBlock", "EmbedBlockTypeEnum",
+    "LessonBlock", "TextBlock", "TextBlockTypeEnum", "TextFormatEnum", "VideoBlock",
+    "VideoBlockTypeEnum",
 }
 
 

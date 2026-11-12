@@ -7,9 +7,12 @@ a ``max_length``; money is a decimal string; instants are ISO 8601 UTC.
 """
 import datetime
 
+from drf_spectacular.extensions import OpenApiSerializerExtension
+from drf_spectacular.utils import PolymorphicProxySerializer, extend_schema_field
 from rest_framework import serializers
 
 from . import access as access_mod
+from . import blocks as blocks_mod
 from . import models as m
 
 UTC = datetime.timezone.utc
@@ -34,6 +37,109 @@ def _percent(**kwargs):
 
 def _lock_reason():
     return serializers.ChoiceField(choices=LOCK_REASON_CHOICES, allow_null=True)
+
+
+# ── lesson content blocks ─────────────────────────────────────────────────
+#
+# Schema-only shapes of the built-in block types (``blocks.py`` validates
+# them). ``LessonBlock`` is the union a lesson's ``blocks`` list carries: the
+# four built-ins, each with a literal ``type``, plus ``CustomBlock`` — any
+# type a host registers through ``BLOCK_TYPES``, with its own fields.
+
+
+def _block_type(name):
+    return serializers.ChoiceField(choices=[(name, name)])
+
+
+class TextBlockSerializer(serializers.Serializer):
+    type = _block_type("text")
+    text = serializers.CharField(max_length=blocks_mod.TEXT_MAX_LENGTH)
+    format = serializers.ChoiceField(
+        choices=[("markdown", "markdown"), ("plain", "plain")], required=False,
+        help_text="Default markdown.",
+    )
+
+
+class VideoBlockSerializer(serializers.Serializer):
+    type = _block_type("video")
+    media_id = serializers.CharField(max_length=m.MEDIA_ID_MAX_LENGTH, help_text="Opaque media id.")
+    caption = serializers.CharField(max_length=blocks_mod.CAPTION_MAX_LENGTH, required=False,
+                                    allow_blank=True)
+
+
+class AttachmentBlockSerializer(serializers.Serializer):
+    type = _block_type("attachment")
+    media_id = serializers.CharField(max_length=m.MEDIA_ID_MAX_LENGTH, help_text="Opaque media id.")
+    name = serializers.CharField(max_length=blocks_mod.NAME_MAX_LENGTH)
+
+
+class EmbedBlockSerializer(serializers.Serializer):
+    type = _block_type("embed")
+    url = serializers.CharField(
+        max_length=blocks_mod.URL_MAX_LENGTH,
+        help_text="https; the host is in embed_hosts when that list is not empty.",
+    )
+    title = serializers.CharField(max_length=blocks_mod.CAPTION_MAX_LENGTH, required=False,
+                                  allow_blank=True)
+
+
+class CustomBlockSerializer(serializers.Serializer):
+    """A host-registered block type (``BLOCK_TYPES``); its fields are the host's."""
+
+    type = serializers.CharField(max_length=64)
+
+
+class _CustomBlockSchema(OpenApiSerializerExtension):
+    target_class = "stapel_courses.serializers.CustomBlockSerializer"
+
+    def map_serializer(self, auto_schema, direction):
+        return {
+            "type": "object",
+            "description": "A block type the host registered (BLOCK_TYPES); any type but the built-ins.",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "maxLength": 64,
+                    "not": {"enum": sorted(blocks_mod.BUILTIN_BLOCK_TYPES)},
+                },
+            },
+            "required": ["type"],
+            "additionalProperties": True,
+        }
+
+
+LESSON_BLOCK = PolymorphicProxySerializer(
+    component_name="LessonBlock",
+    serializers=[
+        TextBlockSerializer, VideoBlockSerializer, AttachmentBlockSerializer,
+        EmbedBlockSerializer, CustomBlockSerializer,
+    ],
+    resource_type_field_name=None,
+    many=True,
+)
+
+
+@extend_schema_field(LESSON_BLOCK)
+class BlocksField(serializers.ListField):
+    """A lesson's typed blocks; validated by ``blocks.clean_blocks``, typed as ``LessonBlock[]``."""
+
+    def __init__(self, **kwargs):
+        kwargs.setdefault("child", serializers.DictField())
+        kwargs.setdefault("max_length", m.MAX_BLOCKS_PER_LESSON)
+        super().__init__(**kwargs)
+
+
+@extend_schema_field({
+    "oneOf": [
+        {"type": "array", "items": {"type": "string", "maxLength": m.ACCEPTED_TEXT_MAX_LENGTH},
+         "maxItems": max(m.MAX_CHOICES, m.MAX_ACCEPTED_ANSWERS)},
+        {"type": "boolean"},
+    ],
+    "description": "Per kind: single / multiple -> the right choice ids; true_false -> "
+                   "the right bool; short_text -> the accepted answers.",
+})
+class CorrectField(serializers.JSONField):
+    """A question's answer key: a string list (choice ids / accepted texts) or a bool."""
 
 
 # ── catalog and outline ───────────────────────────────────────────────────
@@ -168,11 +274,7 @@ class LessonSerializer(serializers.Serializer):
     module_id = serializers.IntegerField()
     title = serializers.CharField(max_length=m.TITLE_MAX_LENGTH)
     position = serializers.IntegerField(min_value=0)
-    blocks = serializers.ListField(
-        child=serializers.DictField(), max_length=m.MAX_BLOCKS_PER_LESSON,
-        help_text="Typed content blocks: text {text, format}, video {media_id, caption}, "
-                  "attachment {media_id, name}, embed {url, title}; plus host-registered types.",
-    )
+    blocks = BlocksField()
     duration_seconds = serializers.IntegerField(min_value=0)
     free_preview = serializers.BooleanField()
     review_required = serializers.BooleanField()
@@ -375,9 +477,7 @@ class AuthorModuleSerializer(serializers.ModelSerializer):
 class AuthorLessonSerializer(serializers.ModelSerializer):
     position = serializers.IntegerField(required=False, min_value=0, max_value=m.MAX_POSITION)
     module_id = serializers.IntegerField(required=False)
-    blocks = serializers.ListField(
-        child=serializers.DictField(), required=False, max_length=m.MAX_BLOCKS_PER_LESSON,
-    )
+    blocks = BlocksField(required=False)
     duration_seconds = serializers.IntegerField(
         required=False, min_value=0, max_value=m.MAX_DURATION_SECONDS
     )
@@ -399,10 +499,7 @@ class AuthorQuestionSerializer(serializers.ModelSerializer):
     position = serializers.IntegerField(required=False, min_value=0, max_value=m.MAX_POSITION)
     points = serializers.IntegerField(required=False, min_value=1, max_value=m.MAX_POINTS)
     choices = ChoiceSerializer(many=True, required=False, max_length=m.MAX_CHOICES)
-    correct = serializers.JSONField(
-        help_text="single/multiple: [choice id, ...]; true_false: bool; short_text: "
-                  "[accepted answer, ...].",
-    )
+    correct = CorrectField()
 
     class Meta:
         model = m.Question

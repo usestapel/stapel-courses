@@ -235,8 +235,22 @@ def r_enroll(code):
     return recipe
 
 
+#: One block of every built-in type plus a host-registered one: the lesson
+#: read must validate against the LessonBlock union for all of them.
+EVERY_BLOCK = [
+    {"type": "text", "format": "markdown", "text": "Hello"},
+    {"type": "video", "media_id": "m-1", "caption": ""},
+    {"type": "attachment", "media_id": "m-2", "name": "slides.pdf"},
+    {"type": "embed", "url": "https://example.com/x", "title": ""},
+    {"type": "quote", "text": "A host block", "by": "someone"},
+]
+
+
 def r_lesson(clients):
     clients.enroll()
+    lesson = clients.lessons[0]
+    lesson.blocks = EVERY_BLOCK
+    lesson.save(update_fields=["blocks"])
     return [clients.lc.get(f"{V1}/courses/{clients.course.slug}/lessons/{clients.lessons[0].pk}/")], []
 
 
@@ -357,3 +371,23 @@ def test_the_gate_is_not_blind(client_for, learner, author, staff):
     assert not list(_validator(schema).iter_errors(body))
     assert list(_validator(schema).iter_errors(dict(body, progress_percent="50")))
     assert list(_validator(schema).iter_errors(dict(body, status="lost")))
+
+
+def test_the_block_union_is_not_blind():
+    """Inversion: a built-in block missing its field, or a custom block that
+    claims a built-in type, fails the LessonBlock union."""
+    validator = _validator({"type": "array", "items": {"$ref": "#/components/schemas/LessonBlock"}})
+    assert not list(validator.iter_errors(EVERY_BLOCK))
+    assert list(validator.iter_errors([{"type": "video", "caption": "no media"}]))
+    assert list(validator.iter_errors([{"type": "text", "body": "wrong field"}]))
+    assert list(validator.iter_errors([{"type": "embed"}]))
+
+
+@pytest.mark.parametrize("correct,valid", [
+    (["a", "b"], True), (True, True), ("a", False), ({"a": 1}, False),
+])
+def test_author_question_correct_is_typed(correct, valid):
+    validator = _validator({"$ref": "#/components/schemas/AuthorQuestion"})
+    body = {"id": 1, "quiz": 1, "kind": "single", "prompt": "p", "position": 0, "points": 1,
+            "choices": [], "correct": correct, "match": "exact", "explanation": ""}
+    assert (not list(validator.iter_errors(body))) is valid

@@ -15,7 +15,9 @@ certificates — the base of an education product.
 - **Content**: `Course` (slug, draft/published/archived, author, cover media
   id, level, language, summary, description) → `Module` → `Lesson` (ordered;
   typed content blocks text / video / attachment / embed with a merge
-  registry `BLOCK_TYPES`; duration; free preview; required; review flag).
+  registry `BLOCK_TYPES`, typed on the wire as the `LessonBlock` union with
+  an open `CustomBlock` for host types; duration; free preview; required;
+  review flag).
 - **Enrollment** with a table FSM (pending → active → completed / expired /
   cancelled; re-grant), sources free / purchase / entitlement / staff, an
   optional expiry from `Course.access_days` (beat `expire_enrollments`,
