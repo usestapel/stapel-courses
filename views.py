@@ -33,11 +33,21 @@ from .serializers import (
     AttemptSerializer,
     AttemptSubmitRequestSerializer,
     AuthorCoursePageSerializer,
+    AuthorCoursePatchSerializer,
+    AuthorCourseRequestSerializer,
     AuthorCourseSerializer,
     AuthorCourseTreeSerializer,
+    AuthorLessonPatchSerializer,
+    AuthorLessonRequestSerializer,
     AuthorLessonSerializer,
+    AuthorModulePatchSerializer,
+    AuthorModuleRequestSerializer,
     AuthorModuleSerializer,
+    AuthorQuestionPatchSerializer,
+    AuthorQuestionRequestSerializer,
     AuthorQuestionSerializer,
+    AuthorQuizPatchSerializer,
+    AuthorQuizRequestSerializer,
     AuthorQuizSerializer,
     CertificatePageSerializer,
     CertificateRevokeRequestSerializer,
@@ -355,7 +365,7 @@ class _AuthorView(_CoursesView):
 
 @extend_schema(tags=AUTHOR_TAGS)
 class AuthorCoursesView(_AuthorView):
-    request_serializer_class = AuthorCourseSerializer
+    request_serializer_class = AuthorCourseRequestSerializer
     response_serializer_class = AuthorCourseSerializer
 
     @extend_schema(
@@ -378,7 +388,7 @@ class AuthorCoursesView(_AuthorView):
             lambda page: AuthorCourseSerializer(page, many=True).data,
         )
 
-    @extend_schema(operation_id="courses_author_courses_create", request=AuthorCourseSerializer,
+    @extend_schema(operation_id="courses_author_courses_create", request=AuthorCourseRequestSerializer,
                    responses={201: AuthorCourseSerializer})
     @flow_step(AUTHOR, order=2, note="Create a draft course")
     def post(self, request):
@@ -388,7 +398,7 @@ class AuthorCoursesView(_AuthorView):
 
 @extend_schema(tags=AUTHOR_TAGS)
 class AuthorCourseView(_AuthorView):
-    request_serializer_class = AuthorCourseSerializer
+    request_serializer_class = AuthorCourseRequestSerializer
     response_serializer_class = AuthorCourseSerializer
 
     @extend_schema(operation_id="courses_author_course_retrieve",
@@ -408,7 +418,7 @@ class AuthorCourseView(_AuthorView):
         ]
         return StapelResponse(AuthorCourseTreeSerializer({"course": course, "modules": modules}))
 
-    @extend_schema(operation_id="courses_author_course_update", request=AuthorCourseSerializer,
+    @extend_schema(operation_id="courses_author_course_update", request=AuthorCoursePatchSerializer,
                    responses={200: AuthorCourseSerializer})
     @flow_step(AUTHOR, order=11, note="Edit the course")
     def patch(self, request, course_id):
@@ -450,10 +460,10 @@ class AuthorCourseArchiveView(_AuthorView):
 
 @extend_schema(tags=AUTHOR_TAGS)
 class AuthorModulesView(_AuthorView):
-    request_serializer_class = AuthorModuleSerializer
+    request_serializer_class = AuthorModuleRequestSerializer
     response_serializer_class = AuthorModuleSerializer
 
-    @extend_schema(operation_id="courses_author_modules_create", request=AuthorModuleSerializer,
+    @extend_schema(operation_id="courses_author_modules_create", request=AuthorModuleRequestSerializer,
                    responses={201: AuthorModuleSerializer})
     @flow_step(AUTHOR, order=3, note="Add modules, lessons, quizzes and questions")
     def post(self, request, course_id):
@@ -465,10 +475,10 @@ class AuthorModulesView(_AuthorView):
 
 @extend_schema(tags=AUTHOR_TAGS)
 class AuthorModuleView(_AuthorView):
-    request_serializer_class = AuthorModuleSerializer
+    request_serializer_class = AuthorModuleRequestSerializer
     response_serializer_class = AuthorModuleSerializer
 
-    @extend_schema(operation_id="courses_author_module_update", request=AuthorModuleSerializer,
+    @extend_schema(operation_id="courses_author_module_update", request=AuthorModulePatchSerializer,
                    responses={200: AuthorModuleSerializer})
     @flow_step(AUTHOR, order=13, note="Rename or reorder a module")
     def patch(self, request, module_id):
@@ -484,10 +494,10 @@ class AuthorModuleView(_AuthorView):
 
 @extend_schema(tags=AUTHOR_TAGS)
 class AuthorLessonsView(_AuthorView):
-    request_serializer_class = AuthorLessonSerializer
+    request_serializer_class = AuthorLessonRequestSerializer
     response_serializer_class = AuthorLessonSerializer
 
-    @extend_schema(operation_id="courses_author_lessons_create", request=AuthorLessonSerializer,
+    @extend_schema(operation_id="courses_author_lessons_create", request=AuthorLessonRequestSerializer,
                    responses={201: AuthorLessonSerializer})
     @flow_step(AUTHOR, order=15, note="Add a lesson with typed content blocks")
     def post(self, request, module_id):
@@ -499,10 +509,10 @@ class AuthorLessonsView(_AuthorView):
 
 @extend_schema(tags=AUTHOR_TAGS)
 class AuthorLessonView(_AuthorView):
-    request_serializer_class = AuthorLessonSerializer
+    request_serializer_class = AuthorLessonRequestSerializer
     response_serializer_class = AuthorLessonSerializer
 
-    @extend_schema(operation_id="courses_author_lesson_update", request=AuthorLessonSerializer,
+    @extend_schema(operation_id="courses_author_lesson_update", request=AuthorLessonPatchSerializer,
                    responses={200: AuthorLessonSerializer})
     @flow_step(AUTHOR, order=16, note="Edit a lesson")
     def patch(self, request, lesson_id):
@@ -536,10 +546,10 @@ class AuthorLessonReviewView(_AuthorView):
 
 @extend_schema(tags=AUTHOR_TAGS)
 class AuthorQuizzesView(_AuthorView):
-    request_serializer_class = AuthorQuizSerializer
+    request_serializer_class = AuthorQuizRequestSerializer
     response_serializer_class = AuthorQuizSerializer
 
-    @extend_schema(operation_id="courses_author_quizzes_create", request=AuthorQuizSerializer,
+    @extend_schema(operation_id="courses_author_quizzes_create", request=AuthorQuizRequestSerializer,
                    responses={201: AuthorQuizSerializer})
     @flow_step(AUTHOR, order=18, note="Add a quiz to a lesson or a module")
     def post(self, request):
@@ -551,7 +561,7 @@ class AuthorQuizzesView(_AuthorView):
 class AuthorQuizView(_AuthorView):
     """A quiz with its questions and their right answers (authors only)."""
 
-    request_serializer_class = AuthorQuizSerializer
+    request_serializer_class = AuthorQuizRequestSerializer
     response_serializer_class = AuthorQuizSerializer
 
     @extend_schema(operation_id="courses_author_quiz_retrieve", responses={200: AuthorQuizSerializer})
@@ -559,7 +569,7 @@ class AuthorQuizView(_AuthorView):
     def get(self, request, quiz_id):
         return self.serialized_response(authoring.editable_quiz(request.user, quiz_id))
 
-    @extend_schema(operation_id="courses_author_quiz_update", request=AuthorQuizSerializer,
+    @extend_schema(operation_id="courses_author_quiz_update", request=AuthorQuizPatchSerializer,
                    responses={200: AuthorQuizSerializer})
     @flow_step(AUTHOR, order=20, note="Edit a quiz's rules")
     def patch(self, request, quiz_id):
@@ -582,10 +592,10 @@ def _question_data(data) -> dict:
 
 @extend_schema(tags=AUTHOR_TAGS)
 class AuthorQuestionsView(_AuthorView):
-    request_serializer_class = AuthorQuestionSerializer
+    request_serializer_class = AuthorQuestionRequestSerializer
     response_serializer_class = AuthorQuestionSerializer
 
-    @extend_schema(operation_id="courses_author_questions_create", request=AuthorQuestionSerializer,
+    @extend_schema(operation_id="courses_author_questions_create", request=AuthorQuestionRequestSerializer,
                    responses={201: AuthorQuestionSerializer})
     @flow_step(AUTHOR, order=22, note="Add a question")
     def post(self, request, quiz_id):
@@ -597,10 +607,10 @@ class AuthorQuestionsView(_AuthorView):
 
 @extend_schema(tags=AUTHOR_TAGS)
 class AuthorQuestionView(_AuthorView):
-    request_serializer_class = AuthorQuestionSerializer
+    request_serializer_class = AuthorQuestionRequestSerializer
     response_serializer_class = AuthorQuestionSerializer
 
-    @extend_schema(operation_id="courses_author_question_update", request=AuthorQuestionSerializer,
+    @extend_schema(operation_id="courses_author_question_update", request=AuthorQuestionPatchSerializer,
                    responses={200: AuthorQuestionSerializer})
     @flow_step(AUTHOR, order=23, note="Edit a question")
     def patch(self, request, question_id):

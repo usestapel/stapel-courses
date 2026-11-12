@@ -8,7 +8,11 @@ a ``max_length``; money is a decimal string; instants are ISO 8601 UTC.
 import datetime
 
 from drf_spectacular.extensions import OpenApiSerializerExtension
-from drf_spectacular.utils import PolymorphicProxySerializer, extend_schema_field
+from drf_spectacular.utils import (
+    PolymorphicProxySerializer,
+    extend_schema_field,
+    extend_schema_serializer,
+)
 from rest_framework import serializers
 
 from . import access as access_mod
@@ -430,10 +434,34 @@ class CertificateVerificationSerializer(serializers.Serializer):
 # ── author / staff ────────────────────────────────────────────────────────
 
 
-class AuthorCourseSerializer(serializers.ModelSerializer):
+# Author resources: a ``…RequestSerializer`` is what a client sends (POST
+# body ``<Resource>Request``); the PATCH body keeps the pinned
+# ``Patched<Resource>`` name through :func:`_patch_body` and carries the same
+# writable fields, all optional. The response serializer adds the read-only
+# fields (ids, parents, timestamps, a quiz's questions).
+
+
+def _patch_body(request_cls, resource: str):
+    """The PATCH body of *resource*: *request_cls*, emitted as ``Patched<resource>``."""
+    return extend_schema_serializer(component_name=resource)(
+        type(f"{resource}PatchSerializer", (request_cls,), {"__module__": __name__})
+    )
+
+
+_COURSE_WRITABLE = (
+    "slug", "title", "summary", "description", "author_id", "cover_media_id", "level",
+    "language", "access", "price", "currency", "entitlement_key", "drip", "sequential",
+    "access_days", "certificate_enabled", "scope",
+)
+
+
+class AuthorCourseRequestSerializer(serializers.ModelSerializer):
     slug = serializers.SlugField(max_length=m.SLUG_MAX_LENGTH)
     price = _price(allow_null=True, required=False, min_value=0)
-    access = serializers.CharField(max_length=m.ACCESS_MAX_LENGTH, required=False)
+    access = serializers.CharField(
+        max_length=m.ACCESS_MAX_LENGTH, required=False,
+        help_text="A registered access strategy name (GET author/access-strategies/).",
+    )
     author_id = serializers.CharField(
         max_length=m.USER_ID_MAX_LENGTH, required=False,
         help_text="Staff only: whose course it is (default: the caller).",
@@ -441,19 +469,24 @@ class AuthorCourseSerializer(serializers.ModelSerializer):
     access_days = serializers.IntegerField(
         required=False, allow_null=True, min_value=1, max_value=m.MAX_ACCESS_DAYS
     )
+
+    class Meta:
+        model = m.Course
+        fields = _COURSE_WRITABLE
+
+
+class AuthorCourseSerializer(AuthorCourseRequestSerializer):
     published_at = _dt(read_only=True, allow_null=True)
     created_at = _dt(read_only=True)
     updated_at = _dt(read_only=True)
 
     class Meta:
         model = m.Course
-        fields = (
-            "id", "slug", "title", "summary", "description", "status", "author_id",
-            "cover_media_id", "level", "language", "access", "price", "currency",
-            "entitlement_key", "drip", "sequential", "access_days", "certificate_enabled",
-            "scope", "published_at", "created_at", "updated_at",
-        )
+        fields = ("id", "status", *_COURSE_WRITABLE, "published_at", "created_at", "updated_at")
         read_only_fields = ("id", "status")
+
+
+AuthorCoursePatchSerializer = _patch_body(AuthorCourseRequestSerializer, "AuthorCourse")
 
 
 class AuthorCoursePageSerializer(serializers.Serializer):
@@ -465,16 +498,30 @@ class AuthorCoursePageSerializer(serializers.Serializer):
     count = serializers.IntegerField(min_value=0)
 
 
-class AuthorModuleSerializer(serializers.ModelSerializer):
+class AuthorModuleRequestSerializer(serializers.ModelSerializer):
     position = serializers.IntegerField(required=False, min_value=0, max_value=m.MAX_POSITION)
 
+    class Meta:
+        model = m.Module
+        fields = ("title", "position")
+
+
+class AuthorModuleSerializer(AuthorModuleRequestSerializer):
     class Meta:
         model = m.Module
         fields = ("id", "course", "title", "position")
         read_only_fields = ("id", "course")
 
 
-class AuthorLessonSerializer(serializers.ModelSerializer):
+AuthorModulePatchSerializer = _patch_body(AuthorModuleRequestSerializer, "AuthorModule")
+
+_LESSON_WRITABLE = (
+    "module_id", "title", "position", "blocks", "duration_seconds", "free_preview", "required",
+    "review_required", "unlock_after_days", "unlock_at",
+)
+
+
+class AuthorLessonRequestSerializer(serializers.ModelSerializer):
     position = serializers.IntegerField(required=False, min_value=0, max_value=m.MAX_POSITION)
     module_id = serializers.IntegerField(required=False)
     blocks = BlocksField(required=False)
@@ -488,14 +535,24 @@ class AuthorLessonSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = m.Lesson
-        fields = (
-            "id", "course", "module_id", "title", "position", "blocks", "duration_seconds",
-            "free_preview", "required", "review_required", "unlock_after_days", "unlock_at",
-        )
+        fields = _LESSON_WRITABLE
+
+
+class AuthorLessonSerializer(AuthorLessonRequestSerializer):
+    class Meta:
+        model = m.Lesson
+        fields = ("id", "course", *_LESSON_WRITABLE)
         read_only_fields = ("id", "course")
 
 
-class AuthorQuestionSerializer(serializers.ModelSerializer):
+AuthorLessonPatchSerializer = _patch_body(AuthorLessonRequestSerializer, "AuthorLesson")
+
+_QUESTION_WRITABLE = (
+    "kind", "prompt", "position", "points", "choices", "correct", "match", "explanation",
+)
+
+
+class AuthorQuestionRequestSerializer(serializers.ModelSerializer):
     position = serializers.IntegerField(required=False, min_value=0, max_value=m.MAX_POSITION)
     points = serializers.IntegerField(required=False, min_value=1, max_value=m.MAX_POINTS)
     choices = ChoiceSerializer(many=True, required=False, max_length=m.MAX_CHOICES)
@@ -503,27 +560,45 @@ class AuthorQuestionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = m.Question
-        fields = (
-            "id", "quiz", "kind", "prompt", "position", "points", "choices", "correct", "match",
-            "explanation",
-        )
+        fields = _QUESTION_WRITABLE
+
+
+class AuthorQuestionSerializer(AuthorQuestionRequestSerializer):
+    class Meta:
+        model = m.Question
+        fields = ("id", "quiz", *_QUESTION_WRITABLE)
         read_only_fields = ("id", "quiz")
 
 
-class AuthorQuizSerializer(serializers.ModelSerializer):
+AuthorQuestionPatchSerializer = _patch_body(AuthorQuestionRequestSerializer, "AuthorQuestion")
+
+_QUIZ_WRITABLE = (
+    "lesson_id", "module_id", "title", "pass_mark", "max_attempts", "shuffle_questions",
+    "shuffle_choices", "required", "reveal",
+)
+
+
+class AuthorQuizRequestSerializer(serializers.ModelSerializer):
     lesson_id = serializers.IntegerField(required=False, allow_null=True)
     module_id = serializers.IntegerField(required=False, allow_null=True)
     pass_mark = serializers.IntegerField(required=False, min_value=0, max_value=100)
     max_attempts = serializers.IntegerField(required=False, min_value=0, max_value=m.MAX_ATTEMPTS)
+
+    class Meta:
+        model = m.Quiz
+        fields = _QUIZ_WRITABLE
+
+
+class AuthorQuizSerializer(AuthorQuizRequestSerializer):
     questions = AuthorQuestionSerializer(many=True, read_only=True)
 
     class Meta:
         model = m.Quiz
-        fields = (
-            "id", "course", "lesson_id", "module_id", "title", "pass_mark", "max_attempts",
-            "shuffle_questions", "shuffle_choices", "required", "reveal", "questions",
-        )
+        fields = ("id", "course", *_QUIZ_WRITABLE, "questions")
         read_only_fields = ("id", "course", "questions")
+
+
+AuthorQuizPatchSerializer = _patch_body(AuthorQuizRequestSerializer, "AuthorQuiz")
 
 
 class AuthorCourseTreeModuleSerializer(serializers.Serializer):

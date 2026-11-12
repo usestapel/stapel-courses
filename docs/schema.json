@@ -229,17 +229,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AuthorCourse"
+                "$ref": "#/components/schemas/AuthorCourseRequest"
               }
             },
             "application/x-www-form-urlencoded": {
               "schema": {
-                "$ref": "#/components/schemas/AuthorCourse"
+                "$ref": "#/components/schemas/AuthorCourseRequest"
               }
             },
             "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/AuthorCourse"
+                "$ref": "#/components/schemas/AuthorCourseRequest"
               }
             }
           },
@@ -583,17 +583,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AuthorModule"
+                "$ref": "#/components/schemas/AuthorModuleRequest"
               }
             },
             "application/x-www-form-urlencoded": {
               "schema": {
-                "$ref": "#/components/schemas/AuthorModule"
+                "$ref": "#/components/schemas/AuthorModuleRequest"
               }
             },
             "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/AuthorModule"
+                "$ref": "#/components/schemas/AuthorModuleRequest"
               }
             }
           },
@@ -951,17 +951,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AuthorLesson"
+                "$ref": "#/components/schemas/AuthorLessonRequest"
               }
             },
             "application/x-www-form-urlencoded": {
               "schema": {
-                "$ref": "#/components/schemas/AuthorLesson"
+                "$ref": "#/components/schemas/AuthorLessonRequest"
               }
             },
             "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/AuthorLesson"
+                "$ref": "#/components/schemas/AuthorLessonRequest"
               }
             }
           },
@@ -1079,17 +1079,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AuthorQuiz"
+                "$ref": "#/components/schemas/AuthorQuizRequest"
               }
             },
             "application/x-www-form-urlencoded": {
               "schema": {
-                "$ref": "#/components/schemas/AuthorQuiz"
+                "$ref": "#/components/schemas/AuthorQuizRequest"
               }
             },
             "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/AuthorQuiz"
+                "$ref": "#/components/schemas/AuthorQuizRequest"
               }
             }
           },
@@ -1251,17 +1251,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AuthorQuestion"
+                "$ref": "#/components/schemas/AuthorQuestionRequest"
               }
             },
             "application/x-www-form-urlencoded": {
               "schema": {
-                "$ref": "#/components/schemas/AuthorQuestion"
+                "$ref": "#/components/schemas/AuthorQuestionRequest"
               }
             },
             "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/AuthorQuestion"
+                "$ref": "#/components/schemas/AuthorQuestionRequest"
               }
             }
           },
@@ -2096,6 +2096,14 @@
             "type": "integer",
             "readOnly": true
           },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CourseStatusEnum"
+              }
+            ],
+            "readOnly": true
+          },
           "slug": {
             "type": "string",
             "maxLength": 80,
@@ -2112,14 +2120,6 @@
           "description": {
             "type": "string",
             "maxLength": 20000
-          },
-          "status": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/CourseStatusEnum"
-              }
-            ],
-            "readOnly": true
           },
           "author_id": {
             "type": "string",
@@ -2139,6 +2139,7 @@
           },
           "access": {
             "type": "string",
+            "description": "A registered access strategy name (GET author/access-strategies/).",
             "maxLength": 32
           },
           "price": {
@@ -2238,6 +2239,86 @@
           "items",
           "next_anchor",
           "prev_anchor"
+        ]
+      },
+      "AuthorCourseRequest": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "maxLength": 80,
+            "pattern": "^[-a-zA-Z0-9_]+$"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "summary": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 20000
+          },
+          "author_id": {
+            "type": "string",
+            "description": "Staff only: whose course it is (default: the caller).",
+            "maxLength": 64
+          },
+          "cover_media_id": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "level": {
+            "$ref": "#/components/schemas/CourseLevelEnum"
+          },
+          "language": {
+            "type": "string",
+            "maxLength": 16
+          },
+          "access": {
+            "type": "string",
+            "description": "A registered access strategy name (GET author/access-strategies/).",
+            "maxLength": 32
+          },
+          "price": {
+            "type": "string",
+            "format": "decimal",
+            "pattern": "^-?\\d{0,10}(?:\\.\\d{0,2})?$",
+            "nullable": true
+          },
+          "currency": {
+            "type": "string",
+            "maxLength": 3
+          },
+          "entitlement_key": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "drip": {
+            "$ref": "#/components/schemas/DripModeEnum"
+          },
+          "sequential": {
+            "type": "boolean"
+          },
+          "access_days": {
+            "type": "integer",
+            "maximum": 3650,
+            "minimum": 1,
+            "nullable": true
+          },
+          "certificate_enabled": {
+            "type": "boolean"
+          },
+          "scope": {
+            "type": "string",
+            "maxLength": 64
+          }
+        },
+        "required": [
+          "slug",
+          "title"
         ]
       },
       "AuthorCourseTree": {
@@ -2355,6 +2436,58 @@
           "title"
         ]
       },
+      "AuthorLessonRequest": {
+        "type": "object",
+        "properties": {
+          "module_id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "position": {
+            "type": "integer",
+            "maximum": 10000,
+            "minimum": 0
+          },
+          "blocks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LessonBlock"
+            },
+            "maxItems": 50
+          },
+          "duration_seconds": {
+            "type": "integer",
+            "maximum": 86400,
+            "minimum": 0
+          },
+          "free_preview": {
+            "type": "boolean"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "review_required": {
+            "type": "boolean"
+          },
+          "unlock_after_days": {
+            "type": "integer",
+            "maximum": 3650,
+            "minimum": 0,
+            "nullable": true
+          },
+          "unlock_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "required": [
+          "title"
+        ]
+      },
       "AuthorModule": {
         "type": "object",
         "properties": {
@@ -2379,6 +2512,23 @@
         "required": [
           "course",
           "id",
+          "title"
+        ]
+      },
+      "AuthorModuleRequest": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "position": {
+            "type": "integer",
+            "maximum": 10000,
+            "minimum": 0
+          }
+        },
+        "required": [
           "title"
         ]
       },
@@ -2448,6 +2598,62 @@
           "quiz"
         ]
       },
+      "AuthorQuestionRequest": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/QuestionKindEnum"
+          },
+          "prompt": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "position": {
+            "type": "integer",
+            "maximum": 10000,
+            "minimum": 0
+          },
+          "points": {
+            "type": "integer",
+            "maximum": 100,
+            "minimum": 1
+          },
+          "choices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Choice"
+            }
+          },
+          "correct": {
+            "oneOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "maxItems": 20
+              },
+              {
+                "type": "boolean"
+              }
+            ],
+            "description": "Per kind: single / multiple -> the right choice ids; true_false -> the right bool; short_text -> the accepted answers."
+          },
+          "match": {
+            "$ref": "#/components/schemas/TextMatchEnum"
+          },
+          "explanation": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "correct",
+          "kind",
+          "prompt"
+        ]
+      },
       "AuthorQuiz": {
         "type": "object",
         "properties": {
@@ -2505,6 +2711,48 @@
           "course",
           "id",
           "questions",
+          "title"
+        ]
+      },
+      "AuthorQuizRequest": {
+        "type": "object",
+        "properties": {
+          "lesson_id": {
+            "type": "integer",
+            "nullable": true
+          },
+          "module_id": {
+            "type": "integer",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "pass_mark": {
+            "type": "integer",
+            "maximum": 100,
+            "minimum": 0
+          },
+          "max_attempts": {
+            "type": "integer",
+            "maximum": 100,
+            "minimum": 0
+          },
+          "shuffle_questions": {
+            "type": "boolean"
+          },
+          "shuffle_choices": {
+            "type": "boolean"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "reveal": {
+            "$ref": "#/components/schemas/RevealModeEnum"
+          }
+        },
+        "required": [
           "title"
         ]
       },
@@ -3625,10 +3873,6 @@
       "PatchedAuthorCourse": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "integer",
-            "readOnly": true
-          },
           "slug": {
             "type": "string",
             "maxLength": 80,
@@ -3645,14 +3889,6 @@
           "description": {
             "type": "string",
             "maxLength": 20000
-          },
-          "status": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/CourseStatusEnum"
-              }
-            ],
-            "readOnly": true
           },
           "author_id": {
             "type": "string",
@@ -3672,6 +3908,7 @@
           },
           "access": {
             "type": "string",
+            "description": "A registered access strategy name (GET author/access-strategies/).",
             "maxLength": 32
           },
           "price": {
@@ -3706,36 +3943,12 @@
           "scope": {
             "type": "string",
             "maxLength": 64
-          },
-          "published_at": {
-            "type": "string",
-            "format": "date-time",
-            "readOnly": true,
-            "nullable": true
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time",
-            "readOnly": true
-          },
-          "updated_at": {
-            "type": "string",
-            "format": "date-time",
-            "readOnly": true
           }
         }
       },
       "PatchedAuthorLesson": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "integer",
-            "readOnly": true
-          },
-          "course": {
-            "type": "integer",
-            "readOnly": true
-          },
           "module_id": {
             "type": "integer"
           },
@@ -3785,14 +3998,6 @@
       "PatchedAuthorModule": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "integer",
-            "readOnly": true
-          },
-          "course": {
-            "type": "integer",
-            "readOnly": true
-          },
           "title": {
             "type": "string",
             "maxLength": 200
@@ -3807,14 +4012,6 @@
       "PatchedAuthorQuestion": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "integer",
-            "readOnly": true
-          },
-          "quiz": {
-            "type": "integer",
-            "readOnly": true
-          },
           "kind": {
             "$ref": "#/components/schemas/QuestionKindEnum"
           },
@@ -3866,14 +4063,6 @@
       "PatchedAuthorQuiz": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "integer",
-            "readOnly": true
-          },
-          "course": {
-            "type": "integer",
-            "readOnly": true
-          },
           "lesson_id": {
             "type": "integer",
             "nullable": true
@@ -3907,13 +4096,6 @@
           },
           "reveal": {
             "$ref": "#/components/schemas/RevealModeEnum"
-          },
-          "questions": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/AuthorQuestion"
-            },
-            "readOnly": true
           }
         }
       },

@@ -44,6 +44,9 @@ STABLE_COMPONENTS = {
     "AttachmentBlock", "AttachmentBlockTypeEnum", "CustomBlock", "EmbedBlock", "EmbedBlockTypeEnum",
     "LessonBlock", "TextBlock", "TextBlockTypeEnum", "TextFormatEnum", "VideoBlock",
     "VideoBlockTypeEnum",
+    # author request bodies (no read-only fields)
+    "AuthorCourseRequest", "AuthorLessonRequest", "AuthorModuleRequest", "AuthorQuestionRequest",
+    "AuthorQuizRequest",
 }
 
 
@@ -147,3 +150,46 @@ def test_flows_document_the_product():
     flows = {f["id"] for f in json.loads((DOCS / "flows.json").read_text())}
     assert {"courses.learn", "courses.purchase", "courses.quiz", "courses.author",
             "courses.verify"} <= flows
+
+
+def _request_components():
+    schema = _schema()
+    for path, ops in schema["paths"].items():
+        for method, op in ops.items():
+            body = (op.get("requestBody") or {}).get("content", {}).get("application/json")
+            if body and "$ref" in body["schema"]:
+                yield f"{method.upper()} {path}", body["schema"]["$ref"].rsplit("/", 1)[1]
+
+
+def test_no_request_body_carries_a_read_only_field():
+    comps = _schema()["components"]["schemas"]
+    seen = list(_request_components())
+    assert len(seen) >= 10, seen
+    offenders = [
+        (where, name, prop)
+        for where, name in seen
+        for prop, spec in comps[name].get("properties", {}).items()
+        if spec.get("readOnly")
+    ]
+    assert offenders == []
+
+
+@pytest.mark.parametrize("method,path,component", [
+    ("post", "/courses/api/v1/author/courses/", "AuthorCourseRequest"),
+    ("patch", "/courses/api/v1/author/courses/{course_id}/", "PatchedAuthorCourse"),
+    ("post", "/courses/api/v1/author/courses/{course_id}/modules/", "AuthorModuleRequest"),
+    ("patch", "/courses/api/v1/author/modules/{module_id}/", "PatchedAuthorModule"),
+    ("post", "/courses/api/v1/author/modules/{module_id}/lessons/", "AuthorLessonRequest"),
+    ("patch", "/courses/api/v1/author/lessons/{lesson_id}/", "PatchedAuthorLesson"),
+    ("post", "/courses/api/v1/author/quizzes/", "AuthorQuizRequest"),
+    ("patch", "/courses/api/v1/author/quizzes/{quiz_id}/", "PatchedAuthorQuiz"),
+    ("post", "/courses/api/v1/author/quizzes/{quiz_id}/questions/", "AuthorQuestionRequest"),
+    ("patch", "/courses/api/v1/author/questions/{question_id}/", "PatchedAuthorQuestion"),
+])
+def test_author_bodies_are_request_components(method, path, component):
+    comps = _schema()["components"]["schemas"]
+    op = _schema()["paths"][path][method]
+    ref = op["requestBody"]["content"]["application/json"]["schema"]["$ref"]
+    assert ref.endswith("/" + component)
+    response = comps[component.removeprefix("Patched").removesuffix("Request")]
+    assert "id" in response["properties"] and "id" not in comps[component]["properties"]

@@ -215,7 +215,11 @@ Wire types: a lesson's `blocks` is `LessonBlock[]`, a `oneOf` of
 literal `type`) and `CustomBlock` (any type a host registers through
 `BLOCK_TYPES`, its own fields, never a built-in name). A question's
 `correct` is a string list (single / multiple: choice ids; short_text:
-accepted answers) or a bool (true_false).
+accepted answers) or a bool (true_false). Author resources split request
+from response: POST bodies are `Author<Resource>Request`, PATCH bodies
+`PatchedAuthor<Resource>` (same writable fields, all optional); neither
+carries the read-only fields (ids, parents, timestamps, a quiz's
+questions) the `Author<Resource>` responses add.
 
 Guest stance: catalog/outline/lesson/verify `ANONYMOUS_ALLOWED`; enroll,
 progress, attempts `ANONYMOUS_ALLOWED` declared with

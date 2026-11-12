@@ -82,7 +82,7 @@ that decides what of a question a learner sees.
 |---|---|---|
 | `CatalogView`, `CourseOutlineView`, `LessonView`, `QuizView`, `CertificateVerifyView` | allowed (AllowAny) | content gated by the strategy; drafts 404 |
 | `EnrollView`, `LessonProgressView`, `CourseProgressView`, `My*View`, `QuizAttemptsView`, `Attempt*View` | allowed (IsAuthenticated); body enforces `ENROLLMENT_REQUIRES_ACCOUNT` | attempts scoped to `user_id == me` (404 otherwise) |
-| `Author*View` | denied (IsNotAnonymousUser) | scoped to `author_id == me` or staff; others 404 |
+| `Author*View` | denied (IsNotAnonymousUser) | scoped to `author_id == me` or staff; others 404; bodies are `Author*RequestSerializer` (POST) / `Author*PatchSerializer` (PATCH, emitted `PatchedAuthor*`) |
 
 ### Events & functions (comm surface)
 
