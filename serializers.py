@@ -639,6 +639,29 @@ class AuthorCourseTreeSerializer(serializers.Serializer):
     modules = AuthorCourseTreeModuleSerializer(many=True)
 
 
+class PendingReviewSerializer(serializers.Serializer):
+    id = serializers.IntegerField(help_text="The lesson progress row.")
+    course_id = serializers.IntegerField()
+    course_slug = serializers.SlugField(max_length=m.SLUG_MAX_LENGTH)
+    course_title = serializers.CharField(max_length=m.TITLE_MAX_LENGTH)
+    module_id = serializers.IntegerField()
+    lesson_id = serializers.IntegerField()
+    lesson_title = serializers.CharField(max_length=m.TITLE_MAX_LENGTH)
+    user_id = serializers.CharField(max_length=m.USER_ID_MAX_LENGTH,
+                                    help_text="Pass it to POST author/lessons/{lesson_id}/review/.")
+    learner = LearnerCardSerializer(allow_null=True)
+    submitted_at = _dt()
+
+
+class PendingReviewPageSerializer(serializers.Serializer):
+    items = PendingReviewSerializer(many=True)
+    next_anchor = serializers.CharField(max_length=32, allow_null=True)
+    prev_anchor = serializers.CharField(max_length=32, allow_null=True)
+    has_next = serializers.BooleanField()
+    has_prev = serializers.BooleanField()
+    count = serializers.IntegerField(min_value=0)
+
+
 class EnrollmentGrantRequestSerializer(serializers.Serializer):
     user_id = serializers.CharField(max_length=m.USER_ID_MAX_LENGTH)
     expires_at = _dt(required=False, allow_null=True)

@@ -1,7 +1,16 @@
-"""Learner reads: the catalog, my enrollments, my certificates."""
+"""List reads: the catalog, my enrollments and certificates, and the
+author/staff lists (course enrollments, the review queue, course certificates)."""
 from __future__ import annotations
 
-from ..models import Certificate, Course, CourseLevel, CourseStatus, Enrollment
+from ..models import (
+    Certificate,
+    Course,
+    CourseLevel,
+    CourseStatus,
+    Enrollment,
+    LessonProgress,
+    ProgressStatus,
+)
 
 
 def catalog(level: str | None = None, scope: str | None = None):
@@ -31,3 +40,11 @@ def course_enrollments(course, statuses=None):
     if wanted:
         qs = qs.filter(status__in=wanted)
     return qs
+
+
+def pending_reviews(courses):
+    """Lesson progress submitted for review in *courses* (the editable ones)."""
+    return (
+        LessonProgress.objects.filter(status=ProgressStatus.SUBMITTED, course__in=courses)
+        .select_related("lesson", "course")
+    )

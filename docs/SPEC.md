@@ -207,7 +207,10 @@ certificates/{number}/` (public verification).
 Author/staff (`author/…`): courses list/create/detail/update/delete(draft
 only), `publish/` `archive/`, modules, lessons, quizzes (with answers),
 questions, course enrollments list + staff grant, enrollment transition,
-lesson review, certificate revoke. Authors are `Course.author_id`; staff see
+lesson review, the review queue (`GET author/reviews/?course=`, anchor:
+every lesson progress in `submitted` in the courses the caller may edit,
+with `lesson_id`, `user_id` and the learner card — what `POST
+author/lessons/{id}/review/` needs), certificate revoke. Authors are `Course.author_id`; staff see
 all. Who may create a course: axis `AUTHORING` (`staff` default | `members`).
 
 Wire types: a lesson's `blocks` is `LessonBlock[]`, a `oneOf` of

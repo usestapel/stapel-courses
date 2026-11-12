@@ -46,6 +46,8 @@ certificates — the base of an education product.
   without read-only fields; author/staff enrollments are `AuthorEnrollment`
   with `user_id` and a `LearnerCard` resolved through `CARDS_FUNCTION`
   (`profiles.public_cards`, never imported; absent → `user_id` only).
+- **Review queue** `GET author/reviews/` (anchor, `?course=`): the lessons
+  submitted for review in the caller's courses, with the learner.
 - **Error catalogs** `translations/errors.{ru,es}.json` for every code in
   `errors.py` (with the `.state.json` provenance sidecar), shipped in the
   wheel, and the per-language error reference `docs/errors.{en,ru,es}.md`;

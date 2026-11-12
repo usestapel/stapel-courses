@@ -34,6 +34,7 @@ from .dto import (
     OutlineLessonDTO,
     OutlineModuleDTO,
     OutlineQuizDTO,
+    PendingReviewDTO,
     QuestionResultDTO,
     QuizDTO,
     QuizStandingDTO,
@@ -222,6 +223,23 @@ class LessonPresenter:
             progress=_progress_state(row),
             enrollment=get_enrollment_presenter()().present(enrollment) if enrollment else None,
         )
+
+    def pending_reviews(self, rows) -> list[PendingReviewDTO]:
+        """The review queue: each submitted lesson with its learner."""
+        from .services.learners import learner_cards
+
+        rows = list(rows)
+        cards = learner_cards(row.user_id for row in rows)
+        return [
+            PendingReviewDTO(
+                id=row.pk, course_id=row.course_id, course_slug=row.course.slug,
+                course_title=row.course.title, module_id=row.lesson.module_id,
+                lesson_id=row.lesson_id, lesson_title=row.lesson.title, user_id=str(row.user_id),
+                learner=LearnerCardDTO(**cards[str(row.user_id)]) if str(row.user_id) in cards else None,
+                submitted_at=row.updated_at,
+            )
+            for row in rows
+        ]
 
     def course_progress(self, view) -> CourseProgressDTO:
         from .models import Attempt, AttemptStatus, LessonProgress

@@ -106,6 +106,18 @@ def r_revoke(clients):
     return [clients.ac.post(f"{V1}/author/certificates/{number}/revoke/", {"reason": "test"}, format="json")], []
 
 
+def r_author_reviews(clients):
+    """The review queue: a submitted lesson of a plain (non-sequential) course."""
+    url = f"{V1}/author/reviews/"
+    empty = clients.ac.get(url)
+    course = make_course(clients.author, slug="reviewed")
+    lesson = make_lesson(make_module(course), review_required=True)
+    clients.lc.post(f"{V1}/courses/{course.slug}/enroll/")
+    clients.lc.post(f"{V1}/courses/{course.slug}/lessons/{lesson.pk}/progress/",
+                    {"status": "submitted"}, format="json")
+    return [clients.ac.get(url), clients.ac.get(f"{url}?course={course.pk}")], [empty]
+
+
 def r_author_list(clients):
     empty = clients.client_for(clients.learner).get(f"{V1}/author/courses/")
     return [clients.ac.get(f"{V1}/author/courses/")], [empty]
@@ -315,6 +327,7 @@ RECIPES = {
     ("GET", A + "/courses/", 200): r_author_list,
     ("POST", A + "/courses/", 201): r_author_create,
     ("GET", A + "/courses/{course_id}/", 200): r_author_tree,
+    ("GET", A + "/reviews/", 200): r_author_reviews,
     ("PATCH", A + "/courses/{course_id}/", 200): r_author_patch,
     ("POST", A + "/courses/{course_id}/archive/", 200): r_author_archive,
     ("GET", A + "/courses/{course_id}/enrollments/", 200): r_author_enrollments,

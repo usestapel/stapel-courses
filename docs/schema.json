@@ -1286,6 +1286,70 @@
         }
       }
     },
+    "/courses/api/v1/author/reviews/": {
+      "get": {
+        "operationId": "courses_author_reviews_list",
+        "description": "Lessons submitted for review in the courses I may edit, newest first.\n\n**Permissions:** `IsAuthenticated, IsNotAnonymousUser`",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "anchor",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Opaque anchor from next_anchor/prev_anchor (exclusive)."
+          },
+          {
+            "in": "query",
+            "name": "course",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Only this course (an id the caller may edit; else 404)."
+          },
+          {
+            "in": "query",
+            "name": "direction",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "next",
+                "prev"
+              ]
+            },
+            "description": "Walk direction from the anchor."
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Page size, default 20, max 100."
+          }
+        ],
+        "tags": [
+          "Courses authoring"
+        ],
+        "security": [
+          {
+            "JWTCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingReviewPage"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
     "/courses/api/v1/certificates/{number}/": {
       "get": {
         "operationId": "courses_certificate_verify",
@@ -4265,6 +4329,105 @@
             "$ref": "#/components/schemas/RevealModeEnum"
           }
         }
+      },
+      "PendingReview": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "The lesson progress row."
+          },
+          "course_id": {
+            "type": "integer"
+          },
+          "course_slug": {
+            "type": "string",
+            "maxLength": 80,
+            "pattern": "^[-a-zA-Z0-9_]+$"
+          },
+          "course_title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "module_id": {
+            "type": "integer"
+          },
+          "lesson_id": {
+            "type": "integer"
+          },
+          "lesson_title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "user_id": {
+            "type": "string",
+            "description": "Pass it to POST author/lessons/{lesson_id}/review/.",
+            "maxLength": 64
+          },
+          "learner": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LearnerCard"
+              }
+            ],
+            "nullable": true
+          },
+          "submitted_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "course_id",
+          "course_slug",
+          "course_title",
+          "id",
+          "learner",
+          "lesson_id",
+          "lesson_title",
+          "module_id",
+          "submitted_at",
+          "user_id"
+        ]
+      },
+      "PendingReviewPage": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PendingReview"
+            }
+          },
+          "next_anchor": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 32
+          },
+          "prev_anchor": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 32
+          },
+          "has_next": {
+            "type": "boolean"
+          },
+          "has_prev": {
+            "type": "boolean"
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "count",
+          "has_next",
+          "has_prev",
+          "items",
+          "next_anchor",
+          "prev_anchor"
+        ]
       },
       "ProgressStatusEnum": {
         "enum": [

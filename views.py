@@ -67,6 +67,8 @@ from .serializers import (
     LessonProgressSerializer,
     LessonReviewRequestSerializer,
     LessonSerializer,
+    PendingReviewPageSerializer,
+    PendingReviewSerializer,
     QuizSerializer,
 )
 from .services import user_id_of
@@ -544,6 +546,39 @@ class AuthorLessonReviewView(_AuthorView):
         row = progress_service.review(lesson.course, lesson.pk, data["user_id"], passed=data["passed"])
         enrollment = lesson.course.enrollments.filter(user_id=data["user_id"]).first()
         return self.serialized_response(get_lesson_presenter()().progress(row, enrollment))
+
+
+def _course_filter(request):
+    """The editable courses, or the one ``?course=`` names (404 when not editable)."""
+    course_id = request.query_params.get("course")
+    if not course_id:
+        return authoring.editable_courses(request.user)
+    return [authoring.editable_course(request.user, int(course_id) if course_id.isdigit() else 0)]
+
+
+COURSE_FILTER_PARAMETER = OpenApiParameter(
+    "course", int, OpenApiParameter.QUERY, required=False,
+    description="Only this course (an id the caller may edit; else 404).",
+)
+
+
+@extend_schema(tags=AUTHOR_TAGS)
+class AuthorReviewsView(_AuthorView):
+    """Lessons submitted for review in the courses I may edit, newest first."""
+
+    @extend_schema(
+        operation_id="courses_author_reviews_list",
+        parameters=[COURSE_FILTER_PARAMETER, *_anchor_parameters(IdAnchorPagination)],
+        responses={200: PendingReviewPageSerializer},
+    )
+    @flow_step(AUTHOR, order=7, note="See the lessons waiting for a review verdict")
+    def get(self, request):
+        courses = _course_filter(request)
+        presenter = get_lesson_presenter()()
+        return self._paginate(
+            request, catalog_service.pending_reviews(courses), IdAnchorPagination,
+            lambda page: PendingReviewSerializer(presenter.pending_reviews(page), many=True).data,
+        )
 
 
 @extend_schema(tags=AUTHOR_TAGS)

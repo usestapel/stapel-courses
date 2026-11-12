@@ -90,6 +90,19 @@
       },
       {
         "kind": "http",
+        "order": 7,
+        "note": "See the lessons waiting for a review verdict",
+        "note_key": "flow.courses.author.step.7.note",
+        "ref": "stapel_courses.views.AuthorReviewsView.get",
+        "endpoints": [
+          {
+            "method": "GET",
+            "path": "/courses/api/v1/author/reviews/"
+          }
+        ]
+      },
+      {
+        "kind": "http",
         "order": 8,
         "note": "Revoke a certificate",
         "note_key": "flow.courses.author.step.8.note",

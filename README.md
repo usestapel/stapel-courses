@@ -26,7 +26,7 @@ pip install stapel-courses
 |---|---|
 | Version | `0.1.0` |
 | Python | `>=3.11` (3.11, 3.12, 3.13, 3.14) |
-| HTTP operations | 38 |
+| HTTP operations | 39 |
 | Config axes | 7 |
 | Usage surface | 10 |
 | Extension points | 10 |

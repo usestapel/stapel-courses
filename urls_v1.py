@@ -38,6 +38,7 @@ urlpatterns = [
     path("author/lessons/<int:lesson_id>/", v.AuthorLessonView.as_view(), name="courses-author-lesson"),
     path("author/lessons/<int:lesson_id>/review/", v.AuthorLessonReviewView.as_view(),
          name="courses-author-lesson-review"),
+    path("author/reviews/", v.AuthorReviewsView.as_view(), name="courses-author-reviews"),
     path("author/quizzes/", v.AuthorQuizzesView.as_view(), name="courses-author-quizzes"),
     path("author/quizzes/<int:quiz_id>/", v.AuthorQuizView.as_view(), name="courses-author-quiz"),
     path("author/quizzes/<int:quiz_id>/questions/", v.AuthorQuestionsView.as_view(),

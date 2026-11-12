@@ -306,3 +306,19 @@ class CertificateVerificationDTO:
     course_title: Optional[str]
     course_slug: Optional[str]
     issued_at: Optional[dt.datetime]
+
+
+@dataclass
+class PendingReviewDTO:
+    """A lesson a learner submitted for review, waiting for the verdict."""
+
+    id: int
+    course_id: int
+    course_slug: str
+    course_title: str
+    module_id: int
+    lesson_id: int
+    lesson_title: str
+    user_id: str
+    learner: Optional[LearnerCardDTO]
+    submitted_at: dt.datetime
