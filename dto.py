@@ -145,6 +145,7 @@ class CourseOutlineDTO:
     access: AccessStateDTO
     enrollment: Optional[EnrollmentDTO]
     modules: list = field(default_factory=list)
+    embed_hosts: list = field(default_factory=list)
 
 
 @dataclass
@@ -174,6 +175,7 @@ class LessonDTO:
     quizzes: list
     prev_lesson_id: Optional[int]
     next_lesson_id: Optional[int]
+    embed_hosts: list = field(default_factory=list)
 
 
 @dataclass

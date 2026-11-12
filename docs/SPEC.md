@@ -220,7 +220,11 @@ all. Who may create a course: axis `AUTHORING` (`staff` default | `members`).
 Wire types: a lesson's `blocks` is `LessonBlock[]`, a `oneOf` of
 `TextBlock` / `VideoBlock` / `AttachmentBlock` / `EmbedBlock` (each with a
 literal `type`) and `CustomBlock` (any type a host registers through
-`BLOCK_TYPES`, its own fields, never a built-in name). A question's
+`BLOCK_TYPES`, its own fields, never a built-in name). The outline, the
+lesson read and the author tree carry `embed_hosts` (the `EMBED_HOSTS`
+allowlist, lower-cased; empty = any https host), the list authoring
+enforces, so a renderer frames only those hosts; capabilities axis
+`EMBED_HOSTS` (group `courses.content`). A question's
 `correct` is a string list (single / multiple: choice ids; short_text:
 accepted answers) or a bool (true_false). Author resources split request
 from response: POST bodies are `Author<Resource>Request`, PATCH bodies

@@ -51,6 +51,9 @@ certificates — the base of an education product.
 - **Course certificates** `GET author/courses/{id}/certificates/` (anchor,
   `?revoked=`): number, holder, learner, issue and revocation;
   `POST author/certificates/{number}/revoke/` answers `AuthorCertificate`.
+- **`embed_hosts`** on the outline, the lesson and the author tree (the
+  `EMBED_HOSTS` allowlist authoring enforces); `EMBED_HOSTS` is a
+  capabilities axis.
 - **Error catalogs** `translations/errors.{ru,es}.json` for every code in
   `errors.py` (with the `.state.json` provenance sidecar), shipped in the
   wheel, and the per-language error reference `docs/errors.{en,ru,es}.md`;

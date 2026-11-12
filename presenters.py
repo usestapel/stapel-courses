@@ -13,6 +13,7 @@ from __future__ import annotations
 from django.db.models import Count, Sum
 from stapel_core.django.swappable import declare_swap, get_presenter
 
+from .blocks import embed_hosts
 from .dto import (
     AccessStateDTO,
     AttemptDTO,
@@ -153,6 +154,7 @@ class CoursePresenter:
             ),
             enrollment=get_enrollment_presenter()().present(enrollment) if enrollment else None,
             modules=modules,
+            embed_hosts=embed_hosts(),
         )
 
 
@@ -217,6 +219,7 @@ class LessonPresenter:
             quizzes=[outline_quiz(view, q) for q in view.quizzes_by_lesson.get(lesson.pk, [])],
             prev_lesson_id=ordered[index - 1].pk if index > 0 else None,
             next_lesson_id=ordered[index + 1].pk if index + 1 < len(ordered) else None,
+            embed_hosts=embed_hosts(),
         )
 
     def progress(self, row, enrollment) -> LessonProgressDTO:

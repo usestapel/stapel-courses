@@ -12,6 +12,7 @@ AXES = {
     "DEFAULT_SEQUENTIAL": "courses.pacing",
     "AUTHORING": "courses.authoring",
     "CERTIFICATES": "courses.certificates",
+    "EMBED_HOSTS": "courses.content",
 }
 
 

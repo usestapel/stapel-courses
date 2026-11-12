@@ -2582,10 +2582,19 @@
             "items": {
               "$ref": "#/components/schemas/AuthorCourseTreeModule"
             }
+          },
+          "embed_hosts": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 253
+            },
+            "description": "Hosts an embed block may frame (EMBED_HOSTS); empty = any https host."
           }
         },
         "required": [
           "course",
+          "embed_hosts",
           "modules"
         ]
       },
@@ -3568,11 +3577,20 @@
             "items": {
               "$ref": "#/components/schemas/OutlineModule"
             }
+          },
+          "embed_hosts": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 253
+            },
+            "description": "Hosts an embed block may frame (EMBED_HOSTS); empty = any https host."
           }
         },
         "required": [
           "access",
           "course",
+          "embed_hosts",
           "enrollment",
           "modules"
         ]
@@ -3987,12 +4005,21 @@
           "next_lesson_id": {
             "type": "integer",
             "nullable": true
+          },
+          "embed_hosts": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 253
+            },
+            "description": "Hosts an embed block may frame (EMBED_HOSTS); empty = any https host."
           }
         },
         "required": [
           "blocks",
           "course_slug",
           "duration_seconds",
+          "embed_hosts",
           "free_preview",
           "id",
           "module_id",

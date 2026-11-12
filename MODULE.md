@@ -41,7 +41,7 @@
 | `ENTITLEMENT_FUNCTION` / `ENTITLEMENT_KEY_TEMPLATE` / `ENTITLEMENT_CACHE_SECONDS` | `billing.check_entitlement` / `course:{slug}` / `300` | The billing question, by name. |
 | `BLOCK_TYPES` | `{}` | MERGE registry of block validators. E004. |
 | `CARDS_FUNCTION` | `"profiles.public_cards"` | Learner display cards on the author/staff lists, asked by name, batched per page; `""` or unreachable = `user_id` only. |
-| `EMBED_HOSTS` | `[]` | Embed host allowlist; empty = any https. |
+| `EMBED_HOSTS` | `[]` | Axis. Embed host allowlist; empty = any https. Exposed as `embed_hosts` on the outline, the lesson and the author tree. |
 | `DEFAULT_PASS_MARK` / `DEFAULT_MAX_ATTEMPTS` | `70` / `3` | New quiz defaults. |
 | `COMPLETION_RULE` | `services.progress.default_completion_rule` | REPLACE dotted path `(enrollment) -> bool`. E006. |
 | `CERTIFICATES` | `True` | Axis. Certificates on completion. |

@@ -18,6 +18,7 @@ from stapel_core.django.api.permissions import (
 from stapel_core.django.api.views import StapelAPIView
 from stapel_core.flows import flow_step
 
+from .blocks import embed_hosts
 from .flows import AUTHOR, LEARN, QUIZ, VERIFY
 from .models import CourseLevel, CourseStatus, EnrollmentStatus
 from .pagination import CatalogAnchorPagination, IdAnchorPagination
@@ -422,7 +423,9 @@ class AuthorCourseView(_AuthorView):
             }
             for module in course.modules.all()
         ]
-        return StapelResponse(AuthorCourseTreeSerializer({"course": course, "modules": modules}))
+        return StapelResponse(AuthorCourseTreeSerializer(
+            {"course": course, "modules": modules, "embed_hosts": embed_hosts()}
+        ))
 
     @extend_schema(operation_id="courses_author_course_update", request=AuthorCoursePatchSerializer,
                    responses={200: AuthorCourseSerializer})

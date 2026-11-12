@@ -122,6 +122,11 @@
       "summary": "staff (default): only staff create courses. members: any signed-in member creates and edits their own courses (a marketplace of teachers). Values: staff, members.",
       "behavior": "staff: POST author/courses/ answers error.403.course_authoring_forbidden to non-staff; members: any non-guest account creates courses it then authors."
     },
+    "EMBED_HOSTS": {
+      "business_label": "Embedded content sources",
+      "summary": "Which sites lesson embeds may show. Empty (default): any https address. A list of hosts (for example www.youtube.com, player.vimeo.com): only those. Values: a list of host names.",
+      "behavior": "Authoring refuses an embed block whose host is not listed (error.400.lesson_block_invalid, reason host_not_allowed); the outline, the lesson read and the author tree carry the list as embed_hosts so a renderer frames only those hosts."
+    },
     "CERTIFICATES": {
       "business_label": "Certificates",
       "summary": "true (default): completing a course issues a certificate with a public verification page. false: no certificates. Values: true, false.",
@@ -160,6 +165,7 @@
     "text_block": {"kind": "gate_function", "intent": "Built-in validator of a text block (text, format markdown|plain)."},
     "video_block": {"kind": "gate_function", "intent": "Built-in validator of a video block (opaque media_id, caption)."},
     "attachment_block": {"kind": "gate_function", "intent": "Built-in validator of an attachment block (opaque media_id, file name)."},
+    "embed_hosts": {"kind": "predicate", "intent": "The EMBED_HOSTS allowlist, lower-cased and sorted (empty = any https host); what the payloads expose as embed_hosts."},
     "embed_block": {"kind": "gate_function", "intent": "Built-in validator of an embed block (https URL, host in EMBED_HOSTS when set)."}
   }
 }

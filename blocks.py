@@ -72,14 +72,19 @@ def attachment_block(raw: dict) -> dict:
     }
 
 
-def embed_block(raw: dict) -> dict:
+def embed_hosts() -> list[str]:
+    """The embed host allowlist, lower-cased and sorted; empty = any https host."""
     from .conf import courses_settings
 
+    return sorted({str(h).strip().lower() for h in (courses_settings.EMBED_HOSTS or []) if str(h).strip()})
+
+
+def embed_block(raw: dict) -> dict:
     url = _string(raw, "url", URL_MAX_LENGTH)
     parts = urlsplit(url)
     if parts.scheme != "https" or not parts.hostname:
         raise BlockInvalid("url_not_https")
-    hosts = [h.lower() for h in (courses_settings.EMBED_HOSTS or [])]
+    hosts = embed_hosts()
     if hosts and parts.hostname.lower() not in hosts:
         raise BlockInvalid("host_not_allowed")
     return {

@@ -285,6 +285,10 @@ class CourseOutlineSerializer(serializers.Serializer):
     access = AccessStateSerializer()
     enrollment = EnrollmentSerializer(allow_null=True)
     modules = OutlineModuleSerializer(many=True)
+    embed_hosts = serializers.ListField(
+        child=serializers.CharField(max_length=253),
+        help_text="Hosts an embed block may frame (EMBED_HOSTS); empty = any https host.",
+    )
 
 
 # ── lessons and progress ──────────────────────────────────────────────────
@@ -311,6 +315,10 @@ class LessonSerializer(serializers.Serializer):
     quizzes = OutlineQuizSerializer(many=True)
     prev_lesson_id = serializers.IntegerField(allow_null=True)
     next_lesson_id = serializers.IntegerField(allow_null=True)
+    embed_hosts = serializers.ListField(
+        child=serializers.CharField(max_length=253),
+        help_text="Hosts an embed block may frame (EMBED_HOSTS); empty = any https host.",
+    )
 
 
 class LessonProgressRequestSerializer(serializers.Serializer):
@@ -656,6 +664,10 @@ class AuthorCourseTreeModuleSerializer(serializers.Serializer):
 class AuthorCourseTreeSerializer(serializers.Serializer):
     course = AuthorCourseSerializer()
     modules = AuthorCourseTreeModuleSerializer(many=True)
+    embed_hosts = serializers.ListField(
+        child=serializers.CharField(max_length=253),
+        help_text="Hosts an embed block may frame (EMBED_HOSTS); empty = any https host.",
+    )
 
 
 class PendingReviewSerializer(serializers.Serializer):

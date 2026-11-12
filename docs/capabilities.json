@@ -94,6 +94,21 @@
       }
     },
     {
+      "key": "EMBED_HOSTS",
+      "kind": "list",
+      "default": [],
+      "group": "courses.content",
+      "gates": {
+        "operations": [],
+        "co_gates": [],
+        "behavior": "Authoring refuses an embed block whose host is not listed (error.400.lesson_block_invalid, reason host_not_allowed); the outline, the lesson read and the author tree carry the list as embed_hosts so a renderer frames only those hosts."
+      },
+      "curated": {
+        "summary": "Which sites lesson embeds may show. Empty (default): any https address. A list of hosts (for example www.youtube.com, player.vimeo.com): only those. Values: a list of host names.",
+        "business_label": "Embedded content sources"
+      }
+    },
+    {
       "key": "CERTIFICATES",
       "kind": "bool",
       "default": true,
@@ -203,6 +218,12 @@
       "kind": "gate_function",
       "path": "stapel_courses.blocks.embed_block",
       "intent": "Built-in validator of an embed block (https URL, host in EMBED_HOSTS when set)."
+    },
+    {
+      "name": "embed_hosts",
+      "kind": "predicate",
+      "path": "stapel_courses.blocks.embed_hosts",
+      "intent": "The EMBED_HOSTS allowlist, lower-cased and sorted (empty = any https host); what the payloads expose as embed_hosts."
     },
     {
       "name": "text_block",
