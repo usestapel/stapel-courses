@@ -103,8 +103,11 @@ of strategy, drip and sequence.
 Lock reasons (outline and the 403 `error.403.lesson_locked` params):
 `sign_in_required`, `enrollment_required`, `purchase_required`,
 `entitlement_required`, `enrollment_inactive`, `drip` (with `unlocks_at`),
-`sequential` (with `after_lesson_id`). Order of evaluation: access → drip →
-sequence.
+`sequential` (with `after_lesson_id` or `after_quiz_id`). The 403 always
+carries all four params `reason`, `unlocks_at`, `after_lesson_id`,
+`after_quiz_id` (null when they do not apply), declared in `errors.json`;
+`tests/test_error_params.py` holds every raised error's params to its
+declaration. Order of evaluation: access → drip → sequence.
 
 **Drip** (`Course.drip`, default `DEFAULT_DRIP` = `none`): `days` unlocks a
 lesson `unlock_after_days` after `activated_at`; `date` unlocks it at

@@ -52,9 +52,11 @@
   {
     "code": "error.400.course_slug_taken",
     "status": 400,
-    "params": [],
+    "params": [
+      "slug"
+    ],
     "remediation": "fix_input",
-    "en": "This address is already used by another course",
+    "en": "The address {slug} is already used by another course",
     "owner": "stapel_courses"
   },
   {
@@ -211,9 +213,11 @@
   {
     "code": "error.400.quiz_answer_invalid",
     "status": 400,
-    "params": [],
+    "params": [
+      "question_id"
+    ],
     "remediation": "fix_input",
-    "en": "An answer does not fit its question",
+    "en": "The answer to question {question_id} does not fit it",
     "owner": "stapel_courses"
   },
   {
@@ -307,9 +311,14 @@
   {
     "code": "error.403.lesson_locked",
     "status": 403,
-    "params": [],
+    "params": [
+      "reason",
+      "unlocks_at",
+      "after_lesson_id",
+      "after_quiz_id"
+    ],
     "remediation": "retry",
-    "en": "This lesson is not open yet",
+    "en": "This lesson is not open yet ({reason}; opens at {unlocks_at}; after lesson {after_lesson_id}; after quiz {after_quiz_id})",
     "owner": "stapel_courses"
   },
   {

@@ -46,14 +46,13 @@ class ItemState:
     after_quiz_id: Optional[int] = None
 
     def params(self) -> dict:
-        params = {"reason": self.reason}
-        if self.unlocks_at is not None:
-            params["unlocks_at"] = self.unlocks_at.isoformat()
-        if self.after_lesson_id is not None:
-            params["after_lesson_id"] = self.after_lesson_id
-        if self.after_quiz_id is not None:
-            params["after_quiz_id"] = self.after_quiz_id
-        return params
+        """The ``lesson_locked`` params: every declared key, null when it does not apply."""
+        return {
+            "reason": self.reason,
+            "unlocks_at": self.unlocks_at.isoformat() if self.unlocks_at is not None else None,
+            "after_lesson_id": self.after_lesson_id,
+            "after_quiz_id": self.after_quiz_id,
+        }
 
 
 @dataclass

@@ -22,7 +22,9 @@ certificates — the base of an education product.
   `manage.py courses_housekeeping`).
 - **Access gate**: strategy registry `ACCESS_STRATEGIES` (free, enrolled,
   purchased, entitlement; REPLACE by dotted path), lock reasons per lesson in
-  the outline and in `error.403.lesson_locked`; drip by days since
+  the outline and in `error.403.lesson_locked` (params `reason`,
+  `unlocks_at`, `after_lesson_id`, `after_quiz_id`, declared in
+  `errors.json` and gated by `tests/test_error_params.py`); drip by days since
   enrollment or by fixed date; sequential unlock (required lessons and
   quizzes). An unreachable entitlement Function answers 503, never a guess.
 - **Purchases** through the orders seam: `courses.purchasables` resolver,

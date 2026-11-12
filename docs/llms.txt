@@ -129,7 +129,7 @@ Render `t(code, params)`; branch UX on the remediation. Localized text lives in 
 - error.400.course_access_unknown [400] fix_input {access}
 - error.400.course_price_required [400] fix_input
 - error.400.course_slug_frozen [400] fix_input
-- error.400.course_slug_taken [400] fix_input
+- error.400.course_slug_taken [400] fix_input {slug}
 - error.400.expected_list [400] fix_input
 - error.400.field.blank [400] fix_input {field}
 - error.400.field.does_not_exist [400] fix_input {field}
@@ -145,7 +145,7 @@ Render `t(code, params)`; branch UX on the remediation. Localized text lives in 
 - error.400.invalid_ad_id [400] fix_input
 - error.400.lesson_block_invalid [400] fix_input {index,reason}
 - error.400.question_invalid [400] fix_input {reason}
-- error.400.quiz_answer_invalid [400] fix_input
+- error.400.quiz_answer_invalid [400] fix_input {question_id}
 - error.400.quiz_target_invalid [400] fix_input
 - error.400.validation_error [400] fix_input
 - error.400.verification_failed [400] verify
@@ -157,7 +157,7 @@ Render `t(code, params)`; branch UX on the remediation. Localized text lives in 
 - error.403.course_purchase_required [403] retry
 - error.403.enrollment_requires_account [403] reauthenticate
 - error.403.forbidden [403] retry
-- error.403.lesson_locked [403] retry
+- error.403.lesson_locked [403] retry {reason,unlocks_at,after_lesson_id,after_quiz_id}
 - error.403.lesson_review_required [403] retry
 - error.403.network_blocked [403] contact_support
 - error.403.verification_enrollment_required [403] verify

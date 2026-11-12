@@ -93,7 +93,7 @@ class PurchasedAccess(AccessStrategy):
         from .errors import ERR_403_PURCHASE_REQUIRED
         from .services import CoursesError
 
-        raise CoursesError(403, ERR_403_PURCHASE_REQUIRED, {"course_id": str(course.pk)})
+        raise CoursesError(403, ERR_403_PURCHASE_REQUIRED)
 
 
 class EntitlementAccess(AccessStrategy):
@@ -107,7 +107,7 @@ class EntitlementAccess(AccessStrategy):
         from .services.entitlements import entitled
 
         if not entitled(user_id, course):
-            raise CoursesError(403, ERR_403_ENTITLEMENT_REQUIRED, {"course_id": str(course.pk)})
+            raise CoursesError(403, ERR_403_ENTITLEMENT_REQUIRED)
         return EnrollmentSource.ENTITLEMENT
 
     def content_access(self, course, user_id, enrollment) -> Decision:

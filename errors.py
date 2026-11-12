@@ -41,14 +41,17 @@ STAPEL_COURSES_ERRORS = {
     ERR_400_QUIZ_TARGET_INVALID: "A quiz belongs to exactly one lesson or module of the course",
     ERR_400_ACCESS_UNKNOWN: "Unknown access mode {access}",
     ERR_400_COURSE_PRICE_REQUIRED: "A course sold through orders needs a price and a currency",
-    ERR_400_SLUG_TAKEN: "This address is already used by another course",
+    ERR_400_SLUG_TAKEN: "The address {slug} is already used by another course",
     ERR_400_SLUG_FROZEN: "The address of a published course cannot change",
-    ERR_400_ANSWER_INVALID: "An answer does not fit its question",
+    ERR_400_ANSWER_INVALID: "The answer to question {question_id} does not fit it",
     ERR_403_ENROLLMENT_REQUIRES_ACCOUNT: "Sign in to enroll",
     ERR_403_AUTHORING_FORBIDDEN: "You cannot edit this course",
     ERR_403_PURCHASE_REQUIRED: "Buy this course to start learning",
     ERR_403_ENTITLEMENT_REQUIRED: "Your plan does not include this course",
-    ERR_403_LESSON_LOCKED: "This lesson is not open yet",
+    ERR_403_LESSON_LOCKED: (
+        "This lesson is not open yet ({reason}; opens at {unlocks_at}; "
+        "after lesson {after_lesson_id}; after quiz {after_quiz_id})"
+    ),
     ERR_403_REVIEW_REQUIRED: "This lesson is completed when a reviewer accepts it",
     ERR_404_COURSE_NOT_FOUND: "Course not found",
     ERR_404_MODULE_NOT_FOUND: "Module not found",
