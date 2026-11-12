@@ -693,6 +693,19 @@ class PendingReviewPageSerializer(serializers.Serializer):
     count = serializers.IntegerField(min_value=0)
 
 
+class AccessStrategyOptionSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=m.ACCESS_MAX_LENGTH)
+    builtin = serializers.BooleanField(
+        help_text="The built-in strategy of that name (false: registered or replaced by the host).",
+    )
+
+
+class AccessStrategyListSerializer(serializers.Serializer):
+    items = AccessStrategyOptionSerializer(many=True)
+    default = serializers.CharField(max_length=m.ACCESS_MAX_LENGTH,
+                                    help_text="DEFAULT_ACCESS: what a new course starts with.")
+
+
 class EnrollmentGrantRequestSerializer(serializers.Serializer):
     user_id = serializers.CharField(max_length=m.USER_ID_MAX_LENGTH)
     expires_at = _dt(required=False, allow_null=True)

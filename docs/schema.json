@@ -97,6 +97,32 @@
         }
       }
     },
+    "/courses/api/v1/author/access-strategies/": {
+      "get": {
+        "operationId": "courses_author_access_strategies",
+        "description": "The access strategies a course's ``access`` may name: built-ins and the host's.\n\n**Permissions:** `IsAuthenticated, IsNotAnonymousUser`",
+        "tags": [
+          "Courses authoring"
+        ],
+        "security": [
+          {
+            "JWTCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessStrategyList"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
     "/courses/api/v1/author/certificates/{number}/revoke/": {
       "post": {
         "operationId": "courses_author_certificate_revoke",
@@ -2011,6 +2037,43 @@
           "can_enroll",
           "privileged",
           "reason"
+        ]
+      },
+      "AccessStrategyList": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AccessStrategyOption"
+            }
+          },
+          "default": {
+            "type": "string",
+            "description": "DEFAULT_ACCESS: what a new course starts with.",
+            "maxLength": 32
+          }
+        },
+        "required": [
+          "default",
+          "items"
+        ]
+      },
+      "AccessStrategyOption": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "builtin": {
+            "type": "boolean",
+            "description": "The built-in strategy of that name (false: registered or replaced by the host)."
+          }
+        },
+        "required": [
+          "builtin",
+          "name"
         ]
       },
       "Answer": {

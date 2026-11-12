@@ -214,7 +214,9 @@ author/lessons/{id}/review/` needs), a course's certificates (`GET
 author/courses/{id}/certificates/?revoked=`, anchor: `AuthorCertificate` —
 number, the printed `holder_name`, `user_id` and the learner card,
 `issued_at`, `revoked` / `revoked_at` / `revoke_reason`; the revoke
-answers the same shape), certificate revoke. Authors are `Course.author_id`; staff see
+answers the same shape), certificate revoke, and `GET author/access-strategies/` (the
+registered strategies `{name, builtin}` and `DEFAULT_ACCESS`: what a
+course's `access`, a string, is validated against). Authors are `Course.author_id`; staff see
 all. Who may create a course: axis `AUTHORING` (`staff` default | `members`).
 
 Wire types: a lesson's `blocks` is `LessonBlock[]`, a `oneOf` of

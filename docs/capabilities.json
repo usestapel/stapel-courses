@@ -244,7 +244,7 @@
       "intent": "Built-in validator of a video block (opaque media_id, caption)."
     }
   ],
-  "operations_total": 40,
+  "operations_total": 41,
   "requires": [
     {
       "module": "stapel-core",

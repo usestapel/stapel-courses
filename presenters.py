@@ -15,6 +15,8 @@ from stapel_core.django.swappable import declare_swap, get_presenter
 
 from .blocks import embed_hosts
 from .dto import (
+    AccessStrategyListDTO,
+    AccessStrategyOptionDTO,
     AccessStateDTO,
     AttemptDTO,
     AttemptQuestionDTO,
@@ -113,6 +115,20 @@ class CoursePresenter:
         courses = list(courses)
         stats = lesson_stats(c.pk for c in courses)
         return [CourseCardDTO(**_card_fields(c, stats.get(c.pk, {}))) for c in courses]
+
+    def access_strategies(self) -> AccessStrategyListDTO:
+        """The registry ``Course.access`` is validated against (built-ins + the host's)."""
+        from .access import BUILTIN_STRATEGIES, strategy_paths
+        from .conf import courses_settings
+
+        paths = strategy_paths()
+        return AccessStrategyListDTO(
+            items=[
+                AccessStrategyOptionDTO(name=name, builtin=paths[name] == BUILTIN_STRATEGIES.get(name))
+                for name in sorted(paths)
+            ],
+            default=str(courses_settings.DEFAULT_ACCESS),
+        )
 
     def detail(self, course) -> CourseDetailDTO:
         stats = lesson_stats([course.pk]).get(course.pk, {})

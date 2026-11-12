@@ -62,7 +62,9 @@ class CohortOnly(AccessStrategy):
 STAPEL_COURSES = {"ACCESS_STRATEGIES": {"cohort": "myapp.access.CohortOnly"}}
 ```
 
-Staff and the author bypass strategies; `free_preview` lessons never reach
+`GET author/access-strategies/` lists the effective registry (name,
+built-in or not) and `DEFAULT_ACCESS` for an editor's picker; `Course.access`
+stays a string validated against it. Staff and the author bypass strategies; `free_preview` lessons never reach
 one. An unknown `Course.access` gates like `enrolled` (fail closed).
 
 ### Selling a course (orders, never imported)

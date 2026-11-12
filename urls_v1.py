@@ -22,6 +22,8 @@ urlpatterns = [
     path("attempts/<int:attempt_id>/", v.AttemptView.as_view(), name="courses-attempt"),
     path("attempts/<int:attempt_id>/submit/", v.AttemptSubmitView.as_view(), name="courses-attempt-submit"),
     path("certificates/<str:number>/", v.CertificateVerifyView.as_view(), name="courses-certificate-verify"),
+    path("author/access-strategies/", v.AuthorAccessStrategiesView.as_view(),
+         name="courses-author-access-strategies"),
     path("author/courses/", v.AuthorCoursesView.as_view(), name="courses-author-courses"),
     path("author/courses/<int:course_id>/", v.AuthorCourseView.as_view(), name="courses-author-course"),
     path("author/courses/<int:course_id>/publish/", v.AuthorCoursePublishView.as_view(),

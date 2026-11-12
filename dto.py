@@ -335,3 +335,19 @@ class AuthorCertificateDTO(CertificateDTO):
     revoked: bool = False
     revoked_at: Optional[dt.datetime] = None
     revoke_reason: str = ""
+
+
+@dataclass
+class AccessStrategyOptionDTO:
+    """One registered access strategy a course's ``access`` may name."""
+
+    name: str
+    builtin: bool
+
+
+@dataclass
+class AccessStrategyListDTO:
+    """The registered access strategies and the default a new course starts with."""
+
+    items: list
+    default: str

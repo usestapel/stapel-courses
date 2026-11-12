@@ -53,6 +53,8 @@ STABLE_COMPONENTS = {
     "PendingReview", "PendingReviewPage",
     # a course's certificates
     "AuthorCertificate", "AuthorCertificatePage",
+    # the access strategy registry
+    "AccessStrategyList", "AccessStrategyOption",
 }
 
 

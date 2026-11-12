@@ -360,6 +360,19 @@
             "path": "/courses/api/v1/author/courses/<int:course_id>/certificates/"
           }
         ]
+      },
+      {
+        "kind": "http",
+        "order": 28,
+        "note": "See which access modes a course can use",
+        "note_key": "flow.courses.author.step.28.note",
+        "ref": "stapel_courses.views.AuthorAccessStrategiesView.get",
+        "endpoints": [
+          {
+            "method": "GET",
+            "path": "/courses/api/v1/author/access-strategies/"
+          }
+        ]
       }
     ]
   },

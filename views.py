@@ -31,6 +31,7 @@ from .presenters import (
     get_quiz_presenter,
 )
 from .serializers import (
+    AccessStrategyListSerializer,
     AttemptSerializer,
     AttemptSubmitRequestSerializer,
     AuthorCertificatePageSerializer,
@@ -401,6 +402,19 @@ class AuthorCoursesView(_AuthorView):
     def post(self, request):
         data = self.validated_request_data(request)
         return self.serialized_response(authoring.create_course(request.user, dict(data)), status=201)
+
+
+@extend_schema(tags=AUTHOR_TAGS)
+class AuthorAccessStrategiesView(_AuthorView):
+    """The access strategies a course's ``access`` may name: built-ins and the host's."""
+
+    response_serializer_class = AccessStrategyListSerializer
+
+    @extend_schema(operation_id="courses_author_access_strategies",
+                   responses={200: AccessStrategyListSerializer})
+    @flow_step(AUTHOR, order=28, note="See which access modes a course can use")
+    def get(self, request):
+        return self.serialized_response(get_course_presenter()().access_strategies())
 
 
 @extend_schema(tags=AUTHOR_TAGS)

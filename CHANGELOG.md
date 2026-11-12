@@ -54,6 +54,9 @@ certificates — the base of an education product.
 - **`embed_hosts`** on the outline, the lesson and the author tree (the
   `EMBED_HOSTS` allowlist authoring enforces); `EMBED_HOSTS` is a
   capabilities axis.
+- **`GET author/access-strategies/`**: the registered access strategies
+  (built-ins and the host's `ACCESS_STRATEGIES`) and `DEFAULT_ACCESS`, the
+  set `Course.access` is validated against.
 - **Error catalogs** `translations/errors.{ru,es}.json` for every code in
   `errors.py` (with the `.state.json` provenance sidecar), shipped in the
   wheel, and the per-language error reference `docs/errors.{en,ru,es}.md`;
