@@ -204,6 +204,31 @@ class EnrollmentSerializer(serializers.Serializer):
     created_at = _dt()
 
 
+class LearnerCardSerializer(serializers.Serializer):
+    user_id = serializers.CharField(max_length=m.USER_ID_MAX_LENGTH)
+    display_name = serializers.CharField(max_length=255, allow_blank=True)
+    avatar_ref = serializers.CharField(max_length=255, allow_null=True,
+                                       help_text="Opaque media id of the avatar.")
+
+
+class AuthorEnrollmentSerializer(EnrollmentSerializer):
+    """An enrollment on the author/staff views: the learner is named."""
+
+    user_id = serializers.CharField(max_length=m.USER_ID_MAX_LENGTH)
+    learner = LearnerCardSerializer(
+        allow_null=True, help_text="The learner's display card; null when profiles cannot say.",
+    )
+
+
+class AuthorEnrollmentPageSerializer(serializers.Serializer):
+    items = AuthorEnrollmentSerializer(many=True)
+    next_anchor = serializers.CharField(max_length=32, allow_null=True)
+    prev_anchor = serializers.CharField(max_length=32, allow_null=True)
+    has_next = serializers.BooleanField()
+    has_prev = serializers.BooleanField()
+    count = serializers.IntegerField(min_value=0)
+
+
 class EnrollmentPageSerializer(serializers.Serializer):
     items = EnrollmentSerializer(many=True)
     next_anchor = serializers.CharField(max_length=32, allow_null=True)

@@ -37,6 +37,8 @@ from .serializers import (
     AuthorCourseRequestSerializer,
     AuthorCourseSerializer,
     AuthorCourseTreeSerializer,
+    AuthorEnrollmentPageSerializer,
+    AuthorEnrollmentSerializer,
     AuthorLessonPatchSerializer,
     AuthorLessonRequestSerializer,
     AuthorLessonSerializer,
@@ -631,12 +633,12 @@ class AuthorEnrollmentsView(_AuthorView):
     """A course's enrollments, and the staff/author grant."""
 
     request_serializer_class = EnrollmentGrantRequestSerializer
-    response_serializer_class = EnrollmentSerializer
+    response_serializer_class = AuthorEnrollmentSerializer
 
     @extend_schema(
         operation_id="courses_author_enrollments_list",
         parameters=[ENROLLMENT_STATUS_PARAMETER, *_anchor_parameters(IdAnchorPagination)],
-        responses={200: EnrollmentPageSerializer},
+        responses={200: AuthorEnrollmentPageSerializer},
     )
     @flow_step(AUTHOR, order=25, note="See who is enrolled")
     def get(self, request, course_id):
@@ -645,12 +647,12 @@ class AuthorEnrollmentsView(_AuthorView):
         presenter = get_enrollment_presenter()()
         return self._paginate(
             request, qs, IdAnchorPagination,
-            lambda page: EnrollmentSerializer([presenter.present(e) for e in page], many=True).data,
+            lambda page: AuthorEnrollmentSerializer(presenter.for_staff(page), many=True).data,
         )
 
     @extend_schema(operation_id="courses_author_enrollments_grant",
                    request=EnrollmentGrantRequestSerializer,
-                   responses={201: EnrollmentSerializer, 200: EnrollmentSerializer})
+                   responses={201: AuthorEnrollmentSerializer, 200: AuthorEnrollmentSerializer})
     @flow_step(AUTHOR, order=5, note="Grant a learner access by hand")
     def post(self, request, course_id):
         data = self.validated_request_data(request)
@@ -659,18 +661,18 @@ class AuthorEnrollmentsView(_AuthorView):
             course, data["user_id"], expires_at=data.get("expires_at")
         )
         return self.serialized_response(
-            get_enrollment_presenter()().present(enrollment), status=201 if changed else 200
+            get_enrollment_presenter()().for_staff([enrollment])[0], status=201 if changed else 200
         )
 
 
 @extend_schema(tags=AUTHOR_TAGS)
 class AuthorEnrollmentTransitionView(_AuthorView):
     request_serializer_class = EnrollmentTransitionRequestSerializer
-    response_serializer_class = EnrollmentSerializer
+    response_serializer_class = AuthorEnrollmentSerializer
 
     @extend_schema(operation_id="courses_author_enrollment_transition",
                    request=EnrollmentTransitionRequestSerializer,
-                   responses={200: EnrollmentSerializer})
+                   responses={200: AuthorEnrollmentSerializer})
     @flow_step(AUTHOR, order=26, note="Cancel, expire or reactivate an enrollment")
     def post(self, request, enrollment_id):
         data = self.validated_request_data(request)
@@ -678,7 +680,7 @@ class AuthorEnrollmentTransitionView(_AuthorView):
         enrollment = enrollment_service.staff_transition(
             enrollment_id, data["to"], reason=data.get("reason", ""), course_ids=course_ids,
         )
-        return self.serialized_response(get_enrollment_presenter()().present(enrollment))
+        return self.serialized_response(get_enrollment_presenter()().for_staff([enrollment])[0])
 
 
 @extend_schema(tags=AUTHOR_TAGS)

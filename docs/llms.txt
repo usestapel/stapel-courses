@@ -77,6 +77,7 @@ This is the answer to "does Stapel already have something for X?". `instead of` 
 - stapel-core (required) — comm bus (courses.* emits, purchasable/status/verify Functions, orders and user.merged consumers), AnchorPagination, GDPR owner protocol, AppSettings, swappable presenters
 - stapel-notifications (optional) — delivers courses.enrollment_activated, courses.completed and courses.certificate_issued
 - stapel-orders (optional) — sells courses: register purchasable type 'course' with resolver courses.purchasables (stapel_courses.preset.SETTINGS_DEFAULTS); orders.order.placed/paid/status_changed activate and cancel enrollments
+- stapel-profiles (optional) — profiles.public_cards (CARDS_FUNCTION) names the learner on the author/staff enrollment, review and certificate lists; absent, those lists show user_id only
 
 ## HTTP operations (38) — call by operationId, never by a typed path
 Paths are relative to `/courses/api/v1/`.

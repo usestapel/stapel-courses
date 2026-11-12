@@ -219,7 +219,13 @@ accepted answers) or a bool (true_false). Author resources split request
 from response: POST bodies are `Author<Resource>Request`, PATCH bodies
 `PatchedAuthor<Resource>` (same writable fields, all optional); neither
 carries the read-only fields (ids, parents, timestamps, a quiz's
-questions) the `Author<Resource>` responses add.
+questions) the `Author<Resource>` responses add. The author/staff
+enrollment list, grant and transition answer `AuthorEnrollment`: the
+learner-facing `Enrollment` plus `user_id` and `learner` (`LearnerCard`
+`{user_id, display_name, avatar_ref}` from `CARDS_FUNCTION`, default
+`profiles.public_cards`, one batched call per page; `null` when profiles
+is absent, failing or does not know the id). The learner's own enrollment
+never names anyone.
 
 Guest stance: catalog/outline/lesson/verify `ANONYMOUS_ALLOWED`; enroll,
 progress, attempts `ANONYMOUS_ALLOWED` declared with

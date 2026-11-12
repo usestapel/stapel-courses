@@ -29,6 +29,7 @@ axes.
 | ENTITLEMENT_KEY_TEMPLATE | env | `{slug}` / `{course_id}` template of the entitlement key when a course names none. | no | course:{slug} |
 | ENTITLEMENT_CACHE_SECONDS | env | how long an entitlement answer is cached; 0 = ask every time. | no | 300 |
 | BLOCK_TYPES | settings | lesson block validators `{type: dotted path or None}` merged over text / video / attachment / embed. E004. | no | {} |
+| CARDS_FUNCTION | env | the comm Function asked `{user_ids}` for learner display cards on the author/staff views (profiles.public_cards contract); empty = `user_id` only. | no | profiles.public_cards |
 | EMBED_HOSTS | settings | hosts an embed block may point at; empty = any https host. | no | [] |
 | DEFAULT_PASS_MARK | env | pass mark (percent) of a new quiz. | no | 70 |
 | DEFAULT_MAX_ATTEMPTS | env | attempt limit of a new quiz; 0 = unlimited. | no | 3 |

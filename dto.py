@@ -66,6 +66,23 @@ class EnrollmentDTO:
     created_at: dt.datetime
 
 
+
+@dataclass
+class LearnerCardDTO:
+    """Who a learner is, as the profiles card Function shows them."""
+
+    user_id: str
+    display_name: str
+    avatar_ref: Optional[str]
+
+
+@dataclass
+class AuthorEnrollmentDTO(EnrollmentDTO):
+    """An enrollment as its course's author or staff see it: with the learner."""
+
+    user_id: str = ""
+    learner: Optional[LearnerCardDTO] = None
+
 @dataclass
 class AccessStateDTO:
     """Whether the caller sees the content, why not, and whether enrolling would work."""

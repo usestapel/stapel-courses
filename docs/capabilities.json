@@ -251,6 +251,11 @@
       "reason": "resolves the opaque media ids of cover images, video and attachment blocks (the frontend asks it; courses never does)"
     },
     {
+      "module": "stapel-profiles",
+      "optional": true,
+      "reason": "profiles.public_cards (CARDS_FUNCTION) names the learner on the author/staff enrollment, review and certificate lists; absent, those lists show user_id only"
+    },
+    {
       "module": "stapel-notifications",
       "optional": true,
       "reason": "delivers courses.enrollment_activated, courses.completed and courses.certificate_issued"

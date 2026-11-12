@@ -17,6 +17,7 @@ from .dto import (
     AccessStateDTO,
     AttemptDTO,
     AttemptQuestionDTO,
+    AuthorEnrollmentDTO,
     CertificateDTO,
     CertificateVerificationDTO,
     ChoiceDTO,
@@ -29,6 +30,7 @@ from .dto import (
     LessonDTO,
     LessonProgressDTO,
     LessonProgressStateDTO,
+    LearnerCardDTO,
     OutlineLessonDTO,
     OutlineModuleDTO,
     OutlineQuizDTO,
@@ -165,6 +167,24 @@ class EnrollmentPresenter:
             passed_quizzes=enrollment.passed_quizzes, required_quizzes=enrollment.required_quizzes,
             last_lesson_id=enrollment.last_lesson_id, created_at=enrollment.created_at,
         )
+
+
+    def for_staff(self, enrollments) -> list[AuthorEnrollmentDTO]:
+        """Enrollments with their learner: ``user_id`` and a card when one resolves."""
+        from dataclasses import asdict
+
+        from .services.learners import learner_cards
+
+        enrollments = list(enrollments)
+        cards = learner_cards(e.user_id for e in enrollments)
+        result = []
+        for enrollment in enrollments:
+            card = cards.get(str(enrollment.user_id))
+            result.append(AuthorEnrollmentDTO(
+                **asdict(self.present(enrollment)), user_id=str(enrollment.user_id),
+                learner=LearnerCardDTO(**card) if card else None,
+            ))
+        return result
 
 
 def _progress_state(row) -> LessonProgressStateDTO:

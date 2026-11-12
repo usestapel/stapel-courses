@@ -489,7 +489,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/EnrollmentPage"
+                  "$ref": "#/components/schemas/AuthorEnrollmentPage"
                 }
               }
             },
@@ -543,7 +543,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Enrollment"
+                  "$ref": "#/components/schemas/AuthorEnrollment"
                 }
               }
             },
@@ -553,7 +553,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Enrollment"
+                  "$ref": "#/components/schemas/AuthorEnrollment"
                 }
               }
             },
@@ -701,7 +701,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Enrollment"
+                  "$ref": "#/components/schemas/AuthorEnrollment"
                 }
               }
             },
@@ -2374,6 +2374,149 @@
           "title"
         ]
       },
+      "AuthorEnrollment": {
+        "type": "object",
+        "description": "An enrollment on the author/staff views: the learner is named.",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "course_id": {
+            "type": "integer"
+          },
+          "course_slug": {
+            "type": "string",
+            "maxLength": 80,
+            "pattern": "^[-a-zA-Z0-9_]+$"
+          },
+          "course_title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "status": {
+            "$ref": "#/components/schemas/EnrollmentStatusEnum"
+          },
+          "source": {
+            "$ref": "#/components/schemas/EnrollmentSourceEnum"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "activated_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "completed_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "progress_percent": {
+            "type": "integer",
+            "maximum": 100,
+            "minimum": 0
+          },
+          "completed_lessons": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "required_lessons": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "passed_quizzes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "required_quizzes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "last_lesson_id": {
+            "type": "integer",
+            "nullable": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "user_id": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "learner": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LearnerCard"
+              }
+            ],
+            "nullable": true,
+            "description": "The learner's display card; null when profiles cannot say."
+          }
+        },
+        "required": [
+          "activated_at",
+          "completed_at",
+          "completed_lessons",
+          "course_id",
+          "course_slug",
+          "course_title",
+          "created_at",
+          "expires_at",
+          "id",
+          "last_lesson_id",
+          "learner",
+          "passed_quizzes",
+          "progress_percent",
+          "required_lessons",
+          "required_quizzes",
+          "source",
+          "status",
+          "user_id"
+        ]
+      },
+      "AuthorEnrollmentPage": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AuthorEnrollment"
+            }
+          },
+          "next_anchor": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 32
+          },
+          "prev_anchor": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 32
+          },
+          "has_next": {
+            "type": "boolean"
+          },
+          "has_prev": {
+            "type": "boolean"
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "count",
+          "has_next",
+          "has_prev",
+          "items",
+          "next_anchor",
+          "prev_anchor"
+        ]
+      },
       "AuthorLesson": {
         "type": "object",
         "properties": {
@@ -3509,6 +3652,30 @@
         ],
         "type": "string",
         "description": "* `active` - active\n* `expired` - expired\n* `cancelled` - cancelled"
+      },
+      "LearnerCard": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "display_name": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "avatar_ref": {
+            "type": "string",
+            "nullable": true,
+            "description": "Opaque media id of the avatar.",
+            "maxLength": 255
+          }
+        },
+        "required": [
+          "avatar_ref",
+          "display_name",
+          "user_id"
+        ]
       },
       "Lesson": {
         "type": "object",

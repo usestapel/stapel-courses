@@ -137,9 +137,24 @@ def r_author_publish(clients):
 
 
 def r_author_enrollments(clients):
+    from .factories import FakeFunction
+
     empty = clients.ac.get(f"{V1}/author/courses/{clients.course.pk}/enrollments/")
     clients.finish()
-    return [clients.ac.get(f"{V1}/author/courses/{clients.course.pk}/enrollments/")], [empty]
+    without_cards = clients.ac.get(f"{V1}/author/courses/{clients.course.pk}/enrollments/")
+    uid = str(clients.learner.pk)
+    fake = FakeFunction("profiles.public_cards", {
+        "profiles": {uid: {"user_id": uid, "display_name": "Alice", "avatar": {"ref": "a-1"},
+                           "member_since": None, "seller_type": None}},
+        "missing": [],
+    }).install()
+    try:
+        with_cards = clients.ac.get(f"{V1}/author/courses/{clients.course.pk}/enrollments/")
+    finally:
+        fake.uninstall()
+    assert with_cards.json()["items"][0]["learner"]["display_name"] == "Alice"
+    assert without_cards.json()["items"][0]["learner"] is None
+    return [without_cards, with_cards], [empty]
 
 
 def r_author_grant(code):

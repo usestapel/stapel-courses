@@ -41,6 +41,11 @@ certificates — the base of an education product.
   short text (exact / normalised); server grading, pass mark, attempt limits
   counted under a lock, a stored shuffle seed, reveal modes; no right answer
   is sent before submission.
+- **Author API shapes**: author writes take request components
+  (`Author<Resource>Request` for POST, `PatchedAuthor<Resource>` for PATCH)
+  without read-only fields; author/staff enrollments are `AuthorEnrollment`
+  with `user_id` and a `LearnerCard` resolved through `CARDS_FUNCTION`
+  (`profiles.public_cards`, never imported; absent → `user_id` only).
 - **Error catalogs** `translations/errors.{ru,es}.json` for every code in
   `errors.py` (with the `.state.json` provenance sidecar), shipped in the
   wheel, and the per-language error reference `docs/errors.{en,ru,es}.md`;

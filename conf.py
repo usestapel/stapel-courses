@@ -46,6 +46,10 @@ DEFAULTS = {
     # {block type: "dotted.path.validator" | None}, merged over text / video /
     # attachment / embed (blocks.py).
     "BLOCK_TYPES": {},
+    # Learner display cards on the author/staff views ({user_ids} ->
+    # {profiles, missing}, the profiles.public_cards contract); "" disables
+    # (the views show user_id only).
+    "CARDS_FUNCTION": "profiles.public_cards",
     # Hosts an embed block may point at; empty = any https host.
     "EMBED_HOSTS": [],
     "DEFAULT_PASS_MARK": 70,

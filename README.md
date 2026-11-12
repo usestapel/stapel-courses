@@ -32,7 +32,7 @@ pip install stapel-courses
 | Extension points | 10 |
 | Error codes | 71 |
 | Documented flows | 5 |
-| Fleet dependencies | [`stapel-auth`](https://github.com/usestapel/stapel-auth) (optional) · [`stapel-billing`](https://github.com/usestapel/stapel-billing) (optional) · [`stapel-cdn`](https://github.com/usestapel/stapel-cdn) (optional) · [`stapel-core`](https://github.com/usestapel/stapel-core) · [`stapel-notifications`](https://github.com/usestapel/stapel-notifications) (optional) · [`stapel-orders`](https://github.com/usestapel/stapel-orders) (optional) |
+| Fleet dependencies | [`stapel-auth`](https://github.com/usestapel/stapel-auth) (optional) · [`stapel-billing`](https://github.com/usestapel/stapel-billing) (optional) · [`stapel-cdn`](https://github.com/usestapel/stapel-cdn) (optional) · [`stapel-core`](https://github.com/usestapel/stapel-core) · [`stapel-notifications`](https://github.com/usestapel/stapel-notifications) (optional) · [`stapel-orders`](https://github.com/usestapel/stapel-orders) (optional) · [`stapel-profiles`](https://github.com/usestapel/stapel-profiles) (optional) |
 
 ## Documentation
 

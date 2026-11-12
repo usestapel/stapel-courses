@@ -47,6 +47,8 @@ STABLE_COMPONENTS = {
     # author request bodies (no read-only fields)
     "AuthorCourseRequest", "AuthorLessonRequest", "AuthorModuleRequest", "AuthorQuestionRequest",
     "AuthorQuizRequest",
+    # the learner on author/staff enrollments
+    "AuthorEnrollment", "AuthorEnrollmentPage", "LearnerCard",
 }
 
 
@@ -128,7 +130,7 @@ def test_every_operation_carries_jwt_security():
     ("/courses/api/v1/me/enrollments/", "EnrollmentPage"),
     ("/courses/api/v1/me/certificates/", "CertificatePage"),
     ("/courses/api/v1/author/courses/", "AuthorCoursePage"),
-    ("/courses/api/v1/author/courses/{course_id}/enrollments/", "EnrollmentPage"),
+    ("/courses/api/v1/author/courses/{course_id}/enrollments/", "AuthorEnrollmentPage"),
 ])
 def test_lists_declare_anchor_params_and_page_envelope(path, page):
     op = _schema()["paths"][path]["get"]

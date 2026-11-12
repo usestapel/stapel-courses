@@ -40,6 +40,7 @@
 | `PURCHASE_ACTIVATION` | `"paid"` | Axis. `paid` / `confirmed` / `placed`: which order fact activates. |
 | `ENTITLEMENT_FUNCTION` / `ENTITLEMENT_KEY_TEMPLATE` / `ENTITLEMENT_CACHE_SECONDS` | `billing.check_entitlement` / `course:{slug}` / `300` | The billing question, by name. |
 | `BLOCK_TYPES` | `{}` | MERGE registry of block validators. E004. |
+| `CARDS_FUNCTION` | `"profiles.public_cards"` | Learner display cards on the author/staff lists, asked by name, batched per page; `""` or unreachable = `user_id` only. |
 | `EMBED_HOSTS` | `[]` | Embed host allowlist; empty = any https. |
 | `DEFAULT_PASS_MARK` / `DEFAULT_MAX_ATTEMPTS` | `70` / `3` | New quiz defaults. |
 | `COMPLETION_RULE` | `services.progress.default_completion_rule` | REPLACE dotted path `(enrollment) -> bool`. E006. |
@@ -99,6 +100,7 @@ that decides what of a question a learner sees.
 | Function (provides) | `courses.enrollment.status` | `{user_id, course_id}` → standing | `schemas/functions/` |
 | Function (provides) | `courses.certificate.verify` | `{number}` → public view | `schemas/functions/` |
 | Function (calls) | `ENTITLEMENT_FUNCTION` | `{user_id, key}` → `{allowed, …}` | billing's |
+| Function (calls) | `CARDS_FUNCTION` | `{user_ids}` → `{profiles, missing}` | profiles' `public_cards` |
 | Notification | `courses.enrollment_activated`, `courses.completed`, `courses.certificate_issued` | `services/events.variables` | stapel-notifications (types not in its catalog yet) |
 
 ### Beat and commands

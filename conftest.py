@@ -133,3 +133,31 @@ def billing():
         yield fake
     finally:
         fake.uninstall()
+
+
+@pytest.fixture
+def cards():
+    """A fake ``profiles.public_cards``; ``cards.names[user_id] = name`` gives a card."""
+    from stapel_courses.tests.factories import FakeFunction
+
+    names: dict = {}
+
+    def answer(payload):
+        ids = [str(u) for u in payload["user_ids"]]
+        return {
+            "profiles": {
+                u: {"user_id": u, "display_name": names[u],
+                    "avatar": {"ref": f"avatar-{u}"} if u in names else None,
+                    "member_since": None, "seller_type": None}
+                for u in ids if u in names
+            },
+            "missing": [u for u in ids if u not in names],
+        }
+
+    fake = FakeFunction("profiles.public_cards", answer)
+    fake.names = names
+    fake.install()
+    try:
+        yield fake
+    finally:
+        fake.uninstall()
