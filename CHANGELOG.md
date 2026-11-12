@@ -39,6 +39,11 @@ certificates — the base of an education product.
   short text (exact / normalised); server grading, pass mark, attempt limits
   counted under a lock, a stored shuffle seed, reveal modes; no right answer
   is sent before submission.
+- **Error catalogs** `translations/errors.{ru,es}.json` for every code in
+  `errors.py` (with the `.state.json` provenance sidecar), shipped in the
+  wheel, and the per-language error reference `docs/errors.{en,ru,es}.md`;
+  `tests/test_error_i18n.py` gates coverage, drift, placeholders, foreign
+  keys and packaging.
 - **Certificates**: issued once on completion, `PREFIX-YYYY-XXXXXXXX`
   numbers, public verification showing only `PUBLIC_VERIFY_FIELDS`,
   revocation.

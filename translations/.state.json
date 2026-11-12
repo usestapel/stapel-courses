@@ -1,0 +1,238 @@
+{
+  "errors.es": {
+    "error.400.course_access_unknown": {
+      "hash": "c0ac431271254b9e",
+      "origin": "llm"
+    },
+    "error.400.course_price_required": {
+      "hash": "00326dd58e19b2ca",
+      "origin": "llm"
+    },
+    "error.400.course_slug_frozen": {
+      "hash": "f2cd21a1bc2100fa",
+      "origin": "llm"
+    },
+    "error.400.course_slug_taken": {
+      "hash": "b0d3d229096921bb",
+      "origin": "llm"
+    },
+    "error.400.lesson_block_invalid": {
+      "hash": "68df2e4c44eae13c",
+      "origin": "llm"
+    },
+    "error.400.question_invalid": {
+      "hash": "51866f0edf2e146c",
+      "origin": "llm"
+    },
+    "error.400.quiz_answer_invalid": {
+      "hash": "7e62ac3c3d91bd77",
+      "origin": "llm"
+    },
+    "error.400.quiz_target_invalid": {
+      "hash": "9fce5bec1c2fc228",
+      "origin": "llm"
+    },
+    "error.403.course_authoring_forbidden": {
+      "hash": "74553a4559e2baa4",
+      "origin": "llm"
+    },
+    "error.403.course_entitlement_required": {
+      "hash": "ddf4e2f44d5783d7",
+      "origin": "llm"
+    },
+    "error.403.course_purchase_required": {
+      "hash": "0c2401c6fb0bb470",
+      "origin": "llm"
+    },
+    "error.403.enrollment_requires_account": {
+      "hash": "e1bb4b6483ee2363",
+      "origin": "llm"
+    },
+    "error.403.lesson_locked": {
+      "hash": "f3b0ce1e3bb6c247",
+      "origin": "llm"
+    },
+    "error.403.lesson_review_required": {
+      "hash": "01a7de220375eaeb",
+      "origin": "llm"
+    },
+    "error.404.certificate_not_found": {
+      "hash": "5ae10a11dc645651",
+      "origin": "llm"
+    },
+    "error.404.course_module_not_found": {
+      "hash": "f42ab0cce98652b5",
+      "origin": "llm"
+    },
+    "error.404.course_not_found": {
+      "hash": "50c3c3f08c0b5fa7",
+      "origin": "llm"
+    },
+    "error.404.enrollment_not_found": {
+      "hash": "661fd61341060c25",
+      "origin": "llm"
+    },
+    "error.404.lesson_not_found": {
+      "hash": "0aea58f8c516f0df",
+      "origin": "llm"
+    },
+    "error.404.question_not_found": {
+      "hash": "048373941b1f8bf0",
+      "origin": "llm"
+    },
+    "error.404.quiz_attempt_not_found": {
+      "hash": "07259bdb12ba961e",
+      "origin": "llm"
+    },
+    "error.404.quiz_not_found": {
+      "hash": "ca480964fa3dfb6e",
+      "origin": "llm"
+    },
+    "error.409.course_not_draft": {
+      "hash": "ba238be7369e8763",
+      "origin": "llm"
+    },
+    "error.409.course_not_published": {
+      "hash": "1130a0f473736ae5",
+      "origin": "llm"
+    },
+    "error.409.course_transition_invalid": {
+      "hash": "1c5ff2789102e24d",
+      "origin": "llm"
+    },
+    "error.409.enrollment_transition_invalid": {
+      "hash": "d1324d5176a9db27",
+      "origin": "llm"
+    },
+    "error.409.quiz_attempts_exhausted": {
+      "hash": "4a555336cdd0e978",
+      "origin": "llm"
+    },
+    "error.409.quiz_empty": {
+      "hash": "e5580347c024db12",
+      "origin": "llm"
+    },
+    "error.503.entitlement_unavailable": {
+      "hash": "af1cc09f30f7f94f",
+      "origin": "llm"
+    }
+  },
+  "errors.ru": {
+    "error.400.course_access_unknown": {
+      "hash": "c0ac431271254b9e",
+      "origin": "llm"
+    },
+    "error.400.course_price_required": {
+      "hash": "00326dd58e19b2ca",
+      "origin": "llm"
+    },
+    "error.400.course_slug_frozen": {
+      "hash": "f2cd21a1bc2100fa",
+      "origin": "llm"
+    },
+    "error.400.course_slug_taken": {
+      "hash": "b0d3d229096921bb",
+      "origin": "llm"
+    },
+    "error.400.lesson_block_invalid": {
+      "hash": "68df2e4c44eae13c",
+      "origin": "llm"
+    },
+    "error.400.question_invalid": {
+      "hash": "51866f0edf2e146c",
+      "origin": "llm"
+    },
+    "error.400.quiz_answer_invalid": {
+      "hash": "7e62ac3c3d91bd77",
+      "origin": "llm"
+    },
+    "error.400.quiz_target_invalid": {
+      "hash": "9fce5bec1c2fc228",
+      "origin": "llm"
+    },
+    "error.403.course_authoring_forbidden": {
+      "hash": "74553a4559e2baa4",
+      "origin": "llm"
+    },
+    "error.403.course_entitlement_required": {
+      "hash": "ddf4e2f44d5783d7",
+      "origin": "llm"
+    },
+    "error.403.course_purchase_required": {
+      "hash": "0c2401c6fb0bb470",
+      "origin": "llm"
+    },
+    "error.403.enrollment_requires_account": {
+      "hash": "e1bb4b6483ee2363",
+      "origin": "llm"
+    },
+    "error.403.lesson_locked": {
+      "hash": "f3b0ce1e3bb6c247",
+      "origin": "llm"
+    },
+    "error.403.lesson_review_required": {
+      "hash": "01a7de220375eaeb",
+      "origin": "llm"
+    },
+    "error.404.certificate_not_found": {
+      "hash": "5ae10a11dc645651",
+      "origin": "llm"
+    },
+    "error.404.course_module_not_found": {
+      "hash": "f42ab0cce98652b5",
+      "origin": "llm"
+    },
+    "error.404.course_not_found": {
+      "hash": "50c3c3f08c0b5fa7",
+      "origin": "llm"
+    },
+    "error.404.enrollment_not_found": {
+      "hash": "661fd61341060c25",
+      "origin": "llm"
+    },
+    "error.404.lesson_not_found": {
+      "hash": "0aea58f8c516f0df",
+      "origin": "llm"
+    },
+    "error.404.question_not_found": {
+      "hash": "048373941b1f8bf0",
+      "origin": "llm"
+    },
+    "error.404.quiz_attempt_not_found": {
+      "hash": "07259bdb12ba961e",
+      "origin": "llm"
+    },
+    "error.404.quiz_not_found": {
+      "hash": "ca480964fa3dfb6e",
+      "origin": "llm"
+    },
+    "error.409.course_not_draft": {
+      "hash": "ba238be7369e8763",
+      "origin": "llm"
+    },
+    "error.409.course_not_published": {
+      "hash": "1130a0f473736ae5",
+      "origin": "llm"
+    },
+    "error.409.course_transition_invalid": {
+      "hash": "1c5ff2789102e24d",
+      "origin": "llm"
+    },
+    "error.409.enrollment_transition_invalid": {
+      "hash": "d1324d5176a9db27",
+      "origin": "llm"
+    },
+    "error.409.quiz_attempts_exhausted": {
+      "hash": "4a555336cdd0e978",
+      "origin": "llm"
+    },
+    "error.409.quiz_empty": {
+      "hash": "e5580347c024db12",
+      "origin": "llm"
+    },
+    "error.503.entitlement_unavailable": {
+      "hash": "af1cc09f30f7f94f",
+      "origin": "llm"
+    }
+  }
+}
