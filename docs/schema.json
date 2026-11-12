@@ -143,7 +143,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Certificate"
+                  "$ref": "#/components/schemas/AuthorCertificate"
                 }
               }
             },
@@ -408,6 +408,78 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AuthorCourse"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/courses/api/v1/author/courses/{course_id}/certificates/": {
+      "get": {
+        "operationId": "courses_author_certificates_list",
+        "description": "A course's certificates with their holders, newest first.\n\n**Permissions:** `IsAuthenticated, IsNotAnonymousUser`",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "anchor",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Opaque anchor from next_anchor/prev_anchor (exclusive)."
+          },
+          {
+            "in": "path",
+            "name": "course_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "direction",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "next",
+                "prev"
+              ]
+            },
+            "description": "Walk direction from the anchor."
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Page size, default 20, max 100."
+          },
+          {
+            "in": "query",
+            "name": "revoked",
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "true: only revoked; false: only valid."
+          }
+        ],
+        "tags": [
+          "Courses authoring"
+        ],
+        "security": [
+          {
+            "JWTCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthorCertificatePage"
                 }
               }
             },
@@ -2151,6 +2223,120 @@
         },
         "required": [
           "answers"
+        ]
+      },
+      "AuthorCertificate": {
+        "type": "object",
+        "description": "A certificate on the author/staff views: its holder and its revocation.",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "number": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "course_id": {
+            "type": "integer"
+          },
+          "course_slug": {
+            "type": "string",
+            "maxLength": 80,
+            "pattern": "^[-a-zA-Z0-9_]+$"
+          },
+          "course_title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "holder_name": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "issued_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "valid": {
+            "type": "boolean"
+          },
+          "user_id": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "learner": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LearnerCard"
+              }
+            ],
+            "nullable": true
+          },
+          "revoked": {
+            "type": "boolean"
+          },
+          "revoked_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "revoke_reason": {
+            "type": "string",
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "course_id",
+          "course_slug",
+          "course_title",
+          "holder_name",
+          "id",
+          "issued_at",
+          "learner",
+          "number",
+          "revoke_reason",
+          "revoked",
+          "revoked_at",
+          "user_id",
+          "valid"
+        ]
+      },
+      "AuthorCertificatePage": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AuthorCertificate"
+            }
+          },
+          "next_anchor": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 32
+          },
+          "prev_anchor": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 32
+          },
+          "has_next": {
+            "type": "boolean"
+          },
+          "has_prev": {
+            "type": "boolean"
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "count",
+          "has_next",
+          "has_prev",
+          "items",
+          "next_anchor",
+          "prev_anchor"
         ]
       },
       "AuthorCourse": {

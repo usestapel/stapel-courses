@@ -210,7 +210,11 @@ questions, course enrollments list + staff grant, enrollment transition,
 lesson review, the review queue (`GET author/reviews/?course=`, anchor:
 every lesson progress in `submitted` in the courses the caller may edit,
 with `lesson_id`, `user_id` and the learner card — what `POST
-author/lessons/{id}/review/` needs), certificate revoke. Authors are `Course.author_id`; staff see
+author/lessons/{id}/review/` needs), a course's certificates (`GET
+author/courses/{id}/certificates/?revoked=`, anchor: `AuthorCertificate` —
+number, the printed `holder_name`, `user_id` and the learner card,
+`issued_at`, `revoked` / `revoked_at` / `revoke_reason`; the revoke
+answers the same shape), certificate revoke. Authors are `Course.author_id`; staff see
 all. Who may create a course: axis `AUTHORING` (`staff` default | `members`).
 
 Wire types: a lesson's `blocks` is `LessonBlock[]`, a `oneOf` of

@@ -48,3 +48,10 @@ def pending_reviews(courses):
         LessonProgress.objects.filter(status=ProgressStatus.SUBMITTED, course__in=courses)
         .select_related("lesson", "course")
     )
+
+
+def course_certificates(course, revoked: bool | None = None):
+    qs = Certificate.objects.filter(course=course).select_related("course")
+    if revoked is not None:
+        qs = qs.filter(revoked_at__isnull=not revoked)
+    return qs

@@ -447,6 +447,25 @@ class CertificatePageSerializer(serializers.Serializer):
     count = serializers.IntegerField(min_value=0)
 
 
+class AuthorCertificateSerializer(CertificateSerializer):
+    """A certificate on the author/staff views: its holder and its revocation."""
+
+    user_id = serializers.CharField(max_length=m.USER_ID_MAX_LENGTH)
+    learner = LearnerCardSerializer(allow_null=True)
+    revoked = serializers.BooleanField()
+    revoked_at = _dt(allow_null=True)
+    revoke_reason = serializers.CharField(max_length=m.REASON_MAX_LENGTH, allow_blank=True)
+
+
+class AuthorCertificatePageSerializer(serializers.Serializer):
+    items = AuthorCertificateSerializer(many=True)
+    next_anchor = serializers.CharField(max_length=32, allow_null=True)
+    prev_anchor = serializers.CharField(max_length=32, allow_null=True)
+    has_next = serializers.BooleanField()
+    has_prev = serializers.BooleanField()
+    count = serializers.IntegerField(min_value=0)
+
+
 class CertificateVerificationSerializer(serializers.Serializer):
     number = serializers.CharField(max_length=m.CERTIFICATE_NUMBER_MAX_LENGTH)
     valid = serializers.BooleanField()

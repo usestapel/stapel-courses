@@ -2,7 +2,7 @@
 
 Courses for a Stapel education product: Course -> Module -> Lesson (ordered, typed content blocks: text, video and attachments by opaque media id, embeds), enrollment with a lifecycle (pending, active, completed, expired, cancelled), a source (free, purchase, entitlement, staff grant) and an optional expiry, and an access gate per course chosen from a strategy registry (free, enrolled, purchased through stapel-orders, entitlement through stapel-billing). The outline names a lock reason for every lesson (sign in, enroll, buy, plan, drip date, previous lesson). Lesson progress is an idempotent upsert with a per-enrollment progress cache; drip by days since enrollment or by fixed date and a sequential-unlock switch pace a course. Quizzes on a lesson or module (single and multiple choice, true/false, short text) are graded on the server with attempt limits, a pass mark and a stored shuffle seed; answers never leave before submission. Completing every required lesson and quiz completes the course and issues a certificate with a public verification endpoint. A course is sold as orders purchasable type 'course' (resolver Function courses.purchasables); the order facts activate and cancel the enrollment. Courses never imports orders or billing.
 
-Contract: axes 7 · surface 10 · extension points 10 · operations 39 · error codes 71 · flows 5.
+Contract: axes 7 · surface 10 · extension points 10 · operations 40 · error codes 71 · flows 5.
 Generated from docs/capabilities.json by `stapel-llms-txt` — do not edit; drift-gated by `make contract-check`.
 
 ## Configuration axes — what a product switches on
@@ -79,7 +79,7 @@ This is the answer to "does Stapel already have something for X?". `instead of` 
 - stapel-orders (optional) — sells courses: register purchasable type 'course' with resolver courses.purchasables (stapel_courses.preset.SETTINGS_DEFAULTS); orders.order.placed/paid/status_changed activate and cancel enrollments
 - stapel-profiles (optional) — profiles.public_cards (CARDS_FUNCTION) names the learner on the author/staff enrollment, review and certificate lists; absent, those lists show user_id only
 
-## HTTP operations (39) — call by operationId, never by a typed path
+## HTTP operations (40) — call by operationId, never by a typed path
 Paths are relative to `/courses/api/v1/`.
 ### Courses
 - GET /attempts/{attempt_id}/ — courses_attempt_retrieve
@@ -97,6 +97,7 @@ Paths are relative to `/courses/api/v1/`.
 - GET /quizzes/{quiz_id}/ — courses_quiz_retrieve
 ### Courses authoring
 - POST /author/certificates/{number}/revoke/ — courses_author_certificate_revoke
+- GET /author/courses/{course_id}/certificates/ — courses_author_certificates_list
 - POST /author/courses/{course_id}/archive/ — courses_author_course_archive
 - DELETE /author/courses/{course_id}/ — courses_author_course_destroy
 - POST /author/courses/{course_id}/publish/ — courses_author_course_publish

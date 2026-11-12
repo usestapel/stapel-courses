@@ -32,6 +32,8 @@ urlpatterns = [
          name="courses-author-modules"),
     path("author/courses/<int:course_id>/enrollments/", v.AuthorEnrollmentsView.as_view(),
          name="courses-author-enrollments"),
+    path("author/courses/<int:course_id>/certificates/", v.AuthorCertificatesView.as_view(),
+         name="courses-author-certificates"),
     path("author/modules/<int:module_id>/", v.AuthorModuleView.as_view(), name="courses-author-module"),
     path("author/modules/<int:module_id>/lessons/", v.AuthorLessonsView.as_view(),
          name="courses-author-lessons"),

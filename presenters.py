@@ -17,6 +17,7 @@ from .dto import (
     AccessStateDTO,
     AttemptDTO,
     AttemptQuestionDTO,
+    AuthorCertificateDTO,
     AuthorEnrollmentDTO,
     CertificateDTO,
     CertificateVerificationDTO,
@@ -326,6 +327,25 @@ class CertificatePresenter:
             holder_name=certificate.holder_name, issued_at=certificate.issued_at,
             valid=certificate.valid,
         )
+
+    def for_staff(self, certificates) -> list[AuthorCertificateDTO]:
+        """Certificates with their holder (``user_id`` and a card) and revocation."""
+        from dataclasses import asdict
+
+        from .services.learners import learner_cards
+
+        certificates = list(certificates)
+        cards = learner_cards(c.user_id for c in certificates)
+        result = []
+        for certificate in certificates:
+            card = cards.get(str(certificate.user_id))
+            result.append(AuthorCertificateDTO(
+                **asdict(self.present(certificate)), user_id=str(certificate.user_id),
+                learner=LearnerCardDTO(**card) if card else None,
+                revoked=certificate.revoked_at is not None, revoked_at=certificate.revoked_at,
+                revoke_reason=certificate.revoke_reason,
+            ))
+        return result
 
     def verification(self, view: dict) -> CertificateVerificationDTO:
         return CertificateVerificationDTO(**view)

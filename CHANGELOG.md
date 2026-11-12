@@ -48,6 +48,9 @@ certificates — the base of an education product.
   (`profiles.public_cards`, never imported; absent → `user_id` only).
 - **Review queue** `GET author/reviews/` (anchor, `?course=`): the lessons
   submitted for review in the caller's courses, with the learner.
+- **Course certificates** `GET author/courses/{id}/certificates/` (anchor,
+  `?revoked=`): number, holder, learner, issue and revocation;
+  `POST author/certificates/{number}/revoke/` answers `AuthorCertificate`.
 - **Error catalogs** `translations/errors.{ru,es}.json` for every code in
   `errors.py` (with the `.state.json` provenance sidecar), shipped in the
   wheel, and the per-language error reference `docs/errors.{en,ru,es}.md`;

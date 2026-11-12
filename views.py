@@ -32,6 +32,8 @@ from .presenters import (
 from .serializers import (
     AttemptSerializer,
     AttemptSubmitRequestSerializer,
+    AuthorCertificatePageSerializer,
+    AuthorCertificateSerializer,
     AuthorCoursePageSerializer,
     AuthorCoursePatchSerializer,
     AuthorCourseRequestSerializer,
@@ -719,16 +721,40 @@ class AuthorEnrollmentTransitionView(_AuthorView):
 
 
 @extend_schema(tags=AUTHOR_TAGS)
+class AuthorCertificatesView(_AuthorView):
+    """A course's certificates with their holders, newest first."""
+
+    @extend_schema(
+        operation_id="courses_author_certificates_list",
+        parameters=[
+            OpenApiParameter("revoked", bool, OpenApiParameter.QUERY, required=False,
+                             description="true: only revoked; false: only valid."),
+            *_anchor_parameters(IdAnchorPagination),
+        ],
+        responses={200: AuthorCertificatePageSerializer},
+    )
+    @flow_step(AUTHOR, order=27, note="See who holds a certificate of the course")
+    def get(self, request, course_id):
+        course = authoring.editable_course(request.user, course_id)
+        revoked = {"true": True, "false": False}.get(str(request.query_params.get("revoked")).lower())
+        presenter = get_certificate_presenter()()
+        return self._paginate(
+            request, catalog_service.course_certificates(course, revoked), IdAnchorPagination,
+            lambda page: AuthorCertificateSerializer(presenter.for_staff(page), many=True).data,
+        )
+
+
+@extend_schema(tags=AUTHOR_TAGS)
 class AuthorCertificateRevokeView(_AuthorView):
     request_serializer_class = CertificateRevokeRequestSerializer
-    response_serializer_class = CertificateSerializer
+    response_serializer_class = AuthorCertificateSerializer
 
     @extend_schema(operation_id="courses_author_certificate_revoke",
                    request=CertificateRevokeRequestSerializer,
-                   responses={200: CertificateSerializer})
+                   responses={200: AuthorCertificateSerializer})
     @flow_step(AUTHOR, order=8, note="Revoke a certificate")
     def post(self, request, number):
         data = self.validated_request_data(request)
         certificate = authoring.editable_certificate(request.user, number)
         certificate_service.revoke(certificate, data.get("reason", ""))
-        return self.serialized_response(get_certificate_presenter()().present(certificate))
+        return self.serialized_response(get_certificate_presenter()().for_staff([certificate])[0])

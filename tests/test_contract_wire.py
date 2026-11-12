@@ -118,6 +118,15 @@ def r_author_reviews(clients):
     return [clients.ac.get(url), clients.ac.get(f"{url}?course={course.pk}")], [empty]
 
 
+def r_author_certificates(clients):
+    url = f"{V1}/author/courses/{clients.course.pk}/certificates/"
+    empty = clients.ac.get(url)
+    clients.finish()
+    number = Certificate.objects.get().number
+    clients.ac.post(f"{V1}/author/certificates/{number}/revoke/", {"reason": "test"}, format="json")
+    return [clients.ac.get(url), clients.ac.get(f"{url}?revoked=true")], [empty, clients.ac.get(f"{url}?revoked=false")]
+
+
 def r_author_list(clients):
     empty = clients.client_for(clients.learner).get(f"{V1}/author/courses/")
     return [clients.ac.get(f"{V1}/author/courses/")], [empty]
@@ -328,6 +337,7 @@ RECIPES = {
     ("POST", A + "/courses/", 201): r_author_create,
     ("GET", A + "/courses/{course_id}/", 200): r_author_tree,
     ("GET", A + "/reviews/", 200): r_author_reviews,
+    ("GET", A + "/courses/{course_id}/certificates/", 200): r_author_certificates,
     ("PATCH", A + "/courses/{course_id}/", 200): r_author_patch,
     ("POST", A + "/courses/{course_id}/archive/", 200): r_author_archive,
     ("GET", A + "/courses/{course_id}/enrollments/", 200): r_author_enrollments,

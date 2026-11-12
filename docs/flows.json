@@ -347,6 +347,19 @@
             "path": "/courses/api/v1/author/enrollments/<int:enrollment_id>/transition/"
           }
         ]
+      },
+      {
+        "kind": "http",
+        "order": 27,
+        "note": "See who holds a certificate of the course",
+        "note_key": "flow.courses.author.step.27.note",
+        "ref": "stapel_courses.views.AuthorCertificatesView.get",
+        "endpoints": [
+          {
+            "method": "GET",
+            "path": "/courses/api/v1/author/courses/<int:course_id>/certificates/"
+          }
+        ]
       }
     ]
   },

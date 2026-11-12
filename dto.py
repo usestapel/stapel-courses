@@ -322,3 +322,14 @@ class PendingReviewDTO:
     user_id: str
     learner: Optional[LearnerCardDTO]
     submitted_at: dt.datetime
+
+
+@dataclass
+class AuthorCertificateDTO(CertificateDTO):
+    """A certificate as its course's author or staff see it: holder and revocation."""
+
+    user_id: str = ""
+    learner: Optional[LearnerCardDTO] = None
+    revoked: bool = False
+    revoked_at: Optional[dt.datetime] = None
+    revoke_reason: str = ""

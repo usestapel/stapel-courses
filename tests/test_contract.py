@@ -51,6 +51,8 @@ STABLE_COMPONENTS = {
     "AuthorEnrollment", "AuthorEnrollmentPage", "LearnerCard",
     # the review queue
     "PendingReview", "PendingReviewPage",
+    # a course's certificates
+    "AuthorCertificate", "AuthorCertificatePage",
 }
 
 
@@ -134,6 +136,7 @@ def test_every_operation_carries_jwt_security():
     ("/courses/api/v1/author/courses/", "AuthorCoursePage"),
     ("/courses/api/v1/author/courses/{course_id}/enrollments/", "AuthorEnrollmentPage"),
     ("/courses/api/v1/author/reviews/", "PendingReviewPage"),
+    ("/courses/api/v1/author/courses/{course_id}/certificates/", "AuthorCertificatePage"),
 ])
 def test_lists_declare_anchor_params_and_page_envelope(path, page):
     op = _schema()["paths"][path]["get"]
