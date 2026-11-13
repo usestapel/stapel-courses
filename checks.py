@@ -7,14 +7,19 @@
 - E005  an enumerated setting is out of its vocabulary
         (``DEFAULT_DRIP``, ``AUTHORING``, ``PURCHASE_ACTIVATION``).
 - E006  ``COMPLETION_RULE`` / ``HOLDER_NAME_RESOLVER`` does not import.
+- E007  an ``EMBED_HOSTS`` entry is not a bare host name.
 - W001  ``DEFAULT_ACCESS = "entitlement"`` and the entitlement Function is not
         reachable here (new courses would answer 503 on enroll).
 
 Neither stapel-orders nor stapel-billing is required: with the defaults
 nothing here fires whether they are installed or not.
 """
+import re
+
 from django.core import checks
 from django.utils.module_loading import import_string
+
+_HOST_RE = re.compile(r"^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*$")
 
 
 @checks.register(checks.Tags.compatibility)
@@ -135,3 +140,15 @@ def check_dotted_paths(app_configs, **kwargs):
                 f"STAPEL_COURSES[{key!r}] is not callable.", id="stapel_courses.E006",
             ))
     return findings
+
+
+@checks.register(checks.Tags.compatibility)
+def check_embed_hosts(app_configs, **kwargs):
+    from .conf import courses_settings
+
+    bad_hosts = [h for h in (courses_settings.EMBED_HOSTS or []) if not _HOST_RE.match(str(h))]
+    if bad_hosts:
+        return [checks.Error(
+            f"STAPEL_COURSES['EMBED_HOSTS'] entries must be bare lowercase host names: {bad_hosts}.",
+            hint="Write 'www.youtube.com', not 'https://www.youtube.com/'.", id="stapel_courses.E007")]
+    return []

@@ -18,6 +18,17 @@ DRIP_MODES = ("none", "days", "date")
 AUTHORING_MODES = ("staff", "members")
 PURCHASE_ACTIVATION_MODES = ("paid", "confirmed", "placed")
 
+#: Hosts an ``embed`` block may point at (exact host match, https only).
+DEFAULT_EMBED_HOSTS = [
+    "www.youtube.com",
+    "youtube.com",
+    "www.youtube-nocookie.com",
+    "player.vimeo.com",
+    "vimeo.com",
+    "www.google.com",
+    "maps.google.com",
+]
+
 #: AppSettings-shaped literal dict: a top-level DEFAULTS lets the
 #: capabilities.json emitter introspect axis keys/kinds.
 DEFAULTS = {
@@ -50,8 +61,9 @@ DEFAULTS = {
     # {profiles, missing}, the profiles.public_cards contract); "" disables
     # (the views show user_id only).
     "CARDS_FUNCTION": "profiles.public_cards",
-    # Hosts an embed block may point at; empty = any https host.
-    "EMBED_HOSTS": [],
+    # Exact hosts an embed block may use (https only); empty = no embed
+    # block is accepted.
+    "EMBED_HOSTS": DEFAULT_EMBED_HOSTS,
     "DEFAULT_PASS_MARK": 70,
     "DEFAULT_MAX_ATTEMPTS": 3,
     # (enrollment) -> bool. Default: every required lesson completed and
@@ -80,6 +92,7 @@ courses_settings = AppSettings(
 __all__ = [
     "courses_settings",
     "DEFAULTS",
+    "DEFAULT_EMBED_HOSTS",
     "CERTIFICATE_FIELDS",
     "DRIP_MODES",
     "AUTHORING_MODES",

@@ -9,7 +9,8 @@ machine reason. Built-ins:
 - ``video``      ``{"type", "media_id" ≤ 64, "caption"?}`` — a stapel-cdn or
   stapel-recordings id; courses never resolves it
 - ``attachment`` ``{"type", "media_id", "name" ≤ 200}``
-- ``embed``      ``{"type", "url" (https, host in EMBED_HOSTS when set), "title"?}``
+- ``embed``      ``{"type", "url" (https, host in EMBED_HOSTS), "title"?}``; an
+  empty ``EMBED_HOSTS`` accepts no embed
 
 ``STAPEL_COURSES["BLOCK_TYPES"]`` merges ``{type: "dotted.path" | None}``
 over these; a dotted path under a built-in name replaces it.
@@ -73,19 +74,40 @@ def attachment_block(raw: dict) -> dict:
 
 
 def embed_hosts() -> list[str]:
-    """The embed host allowlist, lower-cased and sorted; empty = any https host."""
+    """The embed host allowlist, lower-cased and sorted; empty = no embed is accepted."""
     from .conf import courses_settings
 
-    return sorted({str(h).strip().lower() for h in (courses_settings.EMBED_HOSTS or []) if str(h).strip()})
+    return sorted({
+        str(h).strip().lower().rstrip(".")
+        for h in (courses_settings.EMBED_HOSTS or []) if str(h).strip()
+    })
+
+
+def embed_host_allowed(url: str, allowed_hosts) -> bool:
+    """Is ``url`` on exactly one of ``allowed_hosts``? An empty list allows none.
+
+    Exact host, case-folded, no userinfo, no port other than 443.
+    """
+    try:
+        parts = urlsplit(url)
+        port = parts.port
+    except ValueError:
+        return False
+    if "@" in (parts.netloc or "") or port not in (None, 443):
+        return False
+    host = (parts.hostname or "").lower().rstrip(".")
+    return host in {str(h).strip().lower().rstrip(".") for h in allowed_hosts or ()}
 
 
 def embed_block(raw: dict) -> dict:
     url = _string(raw, "url", URL_MAX_LENGTH)
-    parts = urlsplit(url)
+    try:
+        parts = urlsplit(url)
+    except ValueError:
+        raise BlockInvalid("url_not_https") from None
     if parts.scheme != "https" or not parts.hostname:
         raise BlockInvalid("url_not_https")
-    hosts = embed_hosts()
-    if hosts and parts.hostname.lower() not in hosts:
+    if not embed_host_allowed(url, embed_hosts()):
         raise BlockInvalid("host_not_allowed")
     return {
         "type": "embed",

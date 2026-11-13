@@ -2652,7 +2652,7 @@
               "type": "string",
               "maxLength": 253
             },
-            "description": "Hosts an embed block may frame (EMBED_HOSTS); empty = any https host."
+            "description": "Hosts an embed block may frame (EMBED_HOSTS); empty = no embed block is accepted."
           }
         },
         "required": [
@@ -3647,7 +3647,7 @@
               "type": "string",
               "maxLength": 253
             },
-            "description": "Hosts an embed block may frame (EMBED_HOSTS); empty = any https host."
+            "description": "Hosts an embed block may frame (EMBED_HOSTS); empty = no embed block is accepted."
           }
         },
         "required": [
@@ -3775,7 +3775,7 @@
           },
           "url": {
             "type": "string",
-            "description": "https; the host is in embed_hosts when that list is not empty.",
+            "description": "https; the host is one of embed_hosts.",
             "maxLength": 500
           },
           "title": {
@@ -4075,7 +4075,7 @@
               "type": "string",
               "maxLength": 253
             },
-            "description": "Hosts an embed block may frame (EMBED_HOSTS); empty = any https host."
+            "description": "Hosts an embed block may frame (EMBED_HOSTS); empty = no embed block is accepted."
           }
         },
         "required": [

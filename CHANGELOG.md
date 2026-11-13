@@ -53,7 +53,10 @@ certificates — the base of an education product.
   `POST author/certificates/{number}/revoke/` answers `AuthorCertificate`.
 - **`embed_hosts`** on the outline, the lesson and the author tree (the
   `EMBED_HOSTS` allowlist authoring enforces); `EMBED_HOSTS` is a
-  capabilities axis.
+  capabilities axis. It fails closed, as in stapel-cms: the default is the
+  YouTube, Vimeo and Google Maps hosts, an empty list accepts no embed block,
+  a host matches exactly (case-folded, no userinfo, no port), and an entry
+  that is not a bare host name is `stapel_courses.E007`.
 - **`GET author/access-strategies/`**: the registered access strategies
   (built-ins and the host's `ACCESS_STRATEGIES`) and `DEFAULT_ACCESS`, the
   set `Course.access` is validated against.

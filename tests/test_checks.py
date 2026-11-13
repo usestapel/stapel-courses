@@ -83,3 +83,14 @@ def test_enum_out_of_vocabulary_is_e005(settings):
 def test_unimportable_rule_is_e006(settings):
     settings.STAPEL_COURSES = {"COMPLETION_RULE": "nowhere.rule"}
     assert ids(c.check_dotted_paths(None)) == ["stapel_courses.E006"]
+
+
+def test_embed_host_that_is_not_a_bare_host_is_e007(settings):
+    settings.STAPEL_COURSES = {"EMBED_HOSTS": ["https://www.youtube.com/", "player.vimeo.com"]}
+    assert ids(c.check_embed_hosts(None)) == ["stapel_courses.E007"]
+
+
+def test_default_and_empty_embed_hosts_are_silent(settings):
+    assert c.check_embed_hosts(None) == []
+    settings.STAPEL_COURSES = {"EMBED_HOSTS": []}
+    assert c.check_embed_hosts(None) == []

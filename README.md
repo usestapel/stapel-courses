@@ -28,7 +28,7 @@ pip install stapel-courses
 | Python | `>=3.11` (3.11, 3.12, 3.13, 3.14) |
 | HTTP operations | 41 |
 | Config axes | 8 |
-| Usage surface | 11 |
+| Usage surface | 12 |
 | Extension points | 10 |
 | Error codes | 71 |
 | Documented flows | 5 |

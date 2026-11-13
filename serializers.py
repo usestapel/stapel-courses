@@ -81,7 +81,7 @@ class EmbedBlockSerializer(serializers.Serializer):
     type = _block_type("embed")
     url = serializers.CharField(
         max_length=blocks_mod.URL_MAX_LENGTH,
-        help_text="https; the host is in embed_hosts when that list is not empty.",
+        help_text="https; the host is one of embed_hosts.",
     )
     title = serializers.CharField(max_length=blocks_mod.CAPTION_MAX_LENGTH, required=False,
                                   allow_blank=True)
@@ -287,7 +287,7 @@ class CourseOutlineSerializer(serializers.Serializer):
     modules = OutlineModuleSerializer(many=True)
     embed_hosts = serializers.ListField(
         child=serializers.CharField(max_length=253),
-        help_text="Hosts an embed block may frame (EMBED_HOSTS); empty = any https host.",
+        help_text="Hosts an embed block may frame (EMBED_HOSTS); empty = no embed block is accepted.",
     )
 
 
@@ -317,7 +317,7 @@ class LessonSerializer(serializers.Serializer):
     next_lesson_id = serializers.IntegerField(allow_null=True)
     embed_hosts = serializers.ListField(
         child=serializers.CharField(max_length=253),
-        help_text="Hosts an embed block may frame (EMBED_HOSTS); empty = any https host.",
+        help_text="Hosts an embed block may frame (EMBED_HOSTS); empty = no embed block is accepted.",
     )
 
 
@@ -666,7 +666,7 @@ class AuthorCourseTreeSerializer(serializers.Serializer):
     modules = AuthorCourseTreeModuleSerializer(many=True)
     embed_hosts = serializers.ListField(
         child=serializers.CharField(max_length=253),
-        help_text="Hosts an embed block may frame (EMBED_HOSTS); empty = any https host.",
+        help_text="Hosts an embed block may frame (EMBED_HOSTS); empty = no embed block is accepted.",
     )
 
 

@@ -104,7 +104,8 @@ class TestLifecycle:
 
 
 class TestContent:
-    def test_module_lesson_crud(self, author_client, author):
+    def test_module_lesson_crud(self, author_client, author, settings):
+        settings.STAPEL_COURSES = {"EMBED_HOSTS": ["video.example"]}
         course = make_course(author, status="draft")
         module = author_client.post(f"{V1}/author/courses/{course.pk}/modules/",
                                     {"title": "M1", "position": 1}, format="json").json()
