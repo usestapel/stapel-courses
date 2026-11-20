@@ -1,6 +1,6 @@
 # Errors — Español
 
-`71` error keys. Canonical texts live in the code (`register_service_errors`); localized texts in `translations/errors.es.json`.
+`72` error keys. Canonical texts live in the code (`register_service_errors`); localized texts in `translations/errors.es.json`.
 
 | Código | Estado | Parámetros | Acción | Texto |
 |---|---|---|---|---|
@@ -28,6 +28,7 @@
 | `error.400.question_invalid` | 400 | `reason` | `fix_input` | La pregunta no es válida ({reason}) |
 | `error.400.quiz_answer_invalid` | 400 | `question_id` | `fix_input` | La respuesta a la pregunta {question_id} no le corresponde |
 | `error.400.quiz_target_invalid` | 400 | — | `fix_input` | Un cuestionario pertenece exactamente a una lección o un módulo del curso |
+| `error.400.too_many_ids` | 400 | `requested`, `limit` | `fix_input` | Demasiados identificadores: {requested} solicitados, como máximo {limit} por solicitud por lotes |
 | `error.400.validation_error` | 400 | — | `fix_input` | Error de validación |
 | `error.400.verification_failed` | 400 | — | `verify` | La verificación ha fallado |
 | `error.400.verification_invalid_factor` | 400 | — | `verify` | Este factor de verificación no está disponible |
@@ -70,7 +71,7 @@
 | `error.422.unprocessable_entity` | 422 | — | `wait_and_retry` | Entidad no procesable |
 | `error.423.locked` | 423 | — | `wait_and_retry` | El recurso está bloqueado |
 | `error.423.verification_locked` | 423 | — | `wait_and_retry` | Demasiados intentos fallidos — verificación bloqueada |
-| `error.429.rate_limit` | 429 | `retry_after_minutes` | `wait_and_retry` | Demasiados intentos. Inténtalo de nuevo en {retry_after_minutes} minutos. |
+| `error.429.rate_limit` | 429 | `retry_after_display`, `retry_after`, `retry_after_minutes` | `wait_and_retry` | Demasiados intentos. Inténtalo de nuevo en {retry_after_display} ({retry_after} s, unos {retry_after_minutes} min). |
 | `error.429.too_many_requests` | 429 | — | `wait_and_retry` | Demasiadas solicitudes. Inténtalo de nuevo más tarde. |
 | `error.500.internal` | 500 | — | `contact_support` | Algo salió mal |
 | `error.503.entitlement_unavailable` | 503 | — | `wait_and_retry` | Ahora no se puede comprobar tu plan; inténtalo de nuevo en breve |

@@ -1,6 +1,6 @@
 # Errors — English
 
-`71` error keys. Canonical texts live in the code (`register_service_errors`); localized texts in `translations/errors.en.json`.
+`72` error keys. Canonical texts live in the code (`register_service_errors`); localized texts in `translations/errors.en.json`.
 
 | Code | Status | Params | Remediation | Text |
 |---|---|---|---|---|
@@ -28,6 +28,7 @@
 | `error.400.question_invalid` | 400 | `reason` | `fix_input` | The question is invalid ({reason}) |
 | `error.400.quiz_answer_invalid` | 400 | `question_id` | `fix_input` | The answer to question {question_id} does not fit it |
 | `error.400.quiz_target_invalid` | 400 | — | `fix_input` | A quiz belongs to exactly one lesson or module of the course |
+| `error.400.too_many_ids` | 400 | `requested`, `limit` | `fix_input` | Too many ids: {requested} requested, at most {limit} per batch request |
 | `error.400.validation_error` | 400 | — | `fix_input` | Validation error |
 | `error.400.verification_failed` | 400 | — | `verify` | Verification failed |
 | `error.400.verification_invalid_factor` | 400 | — | `verify` | This verification factor is not available |
@@ -70,7 +71,7 @@
 | `error.422.unprocessable_entity` | 422 | — | `wait_and_retry` | Unprocessable entity |
 | `error.423.locked` | 423 | — | `wait_and_retry` | Resource is locked |
 | `error.423.verification_locked` | 423 | — | `wait_and_retry` | Too many failed attempts — verification locked |
-| `error.429.rate_limit` | 429 | `retry_after_minutes` | `wait_and_retry` | Too many attempts. Try again in {retry_after_minutes} minutes. |
+| `error.429.rate_limit` | 429 | `retry_after_display`, `retry_after`, `retry_after_minutes` | `wait_and_retry` | Too many attempts. Try again in {retry_after_display} ({retry_after} s, about {retry_after_minutes} min). |
 | `error.429.too_many_requests` | 429 | — | `wait_and_retry` | Too many requests. Please try again later. |
 | `error.500.internal` | 500 | — | `contact_support` | Something went wrong |
 | `error.503.entitlement_unavailable` | 503 | — | `wait_and_retry` | Your plan cannot be checked right now; try again shortly |

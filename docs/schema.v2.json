@@ -1,0 +1,6450 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "",
+    "version": "0.0.0",
+    "x-stapel-contract": 2
+  },
+  "paths": {
+    "/courses/api/v1/attempts/{attempt_id}/": {
+      "get": {
+        "operationId": "courses_attempt_retrieve",
+        "description": "``APIView`` + the serializer seam + the two thin-view moves.\n\nThe base a stapel module's views inherit instead of re-deriving\n``APIView`` and a local seam mixin. The two helpers below are the only\nbehaviour it adds, and both are exactly what the hand-written bodies were\nalready doing, three hundred call sites over:\n\n    def post(self, request):\n        data = self.validated_request_data(request)\n        dto = services.do_the_thing(**data)\n        return self.serialized_response(dto, status=201)\n\nNeither helper is mandatory. A view with a branchy body keeps calling the\ngetters directly; these exist so that the *common* body is one line per\ndirection rather than three.\n\n**Permissions:** `IsAuthenticated`",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "attempt_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "Courses"
+        ],
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Attempt"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Not Found",
+            "x-stapel-errors": [
+              "error.404.quiz_attempt_not_found"
+            ]
+          }
+        },
+        "x-stapel-flows": [
+          "courses.quiz"
+        ]
+      }
+    },
+    "/courses/api/v1/attempts/{attempt_id}/submit/": {
+      "post": {
+        "operationId": "courses_attempt_submit",
+        "description": "``APIView`` + the serializer seam + the two thin-view moves.\n\nThe base a stapel module's views inherit instead of re-deriving\n``APIView`` and a local seam mixin. The two helpers below are the only\nbehaviour it adds, and both are exactly what the hand-written bodies were\nalready doing, three hundred call sites over:\n\n    def post(self, request):\n        data = self.validated_request_data(request)\n        dto = services.do_the_thing(**data)\n        return self.serialized_response(dto, status=201)\n\nNeither helper is mandatory. A view with a branchy body keeps calling the\ngetters directly; these exist so that the *common* body is one line per\ndirection rather than three.\n\n**Permissions:** `IsAuthenticated`",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "attempt_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "Courses"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AttemptSubmitRequest"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/AttemptSubmitRequest"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/AttemptSubmitRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Attempt"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "x-stapel-errors": [
+              "error.400.quiz_answer_invalid"
+            ]
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Not Found",
+            "x-stapel-errors": [
+              "error.404.quiz_attempt_not_found"
+            ]
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Conflict",
+            "x-stapel-errors": [
+              "error.409.enrollment_transition_invalid"
+            ]
+          }
+        },
+        "x-stapel-flows": [
+          "courses.quiz"
+        ]
+      }
+    },
+    "/courses/api/v1/author/access-strategies/": {
+      "get": {
+        "operationId": "courses_author_access_strategies",
+        "description": "The access strategies a course's ``access`` may name: built-ins and the host's.\n\n**Permissions:** `IsAuthenticated, IsNotAnonymousUser`",
+        "tags": [
+          "Courses authoring"
+        ],
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessStrategyList"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "x-stapel-flows": [
+          "courses.author"
+        ]
+      }
+    },
+    "/courses/api/v1/author/certificates/{number}/revoke/": {
+      "post": {
+        "operationId": "courses_author_certificate_revoke",
+        "description": "``APIView`` + the serializer seam + the two thin-view moves.\n\nThe base a stapel module's views inherit instead of re-deriving\n``APIView`` and a local seam mixin. The two helpers below are the only\nbehaviour it adds, and both are exactly what the hand-written bodies were\nalready doing, three hundred call sites over:\n\n    def post(self, request):\n        data = self.validated_request_data(request)\n        dto = services.do_the_thing(**data)\n        return self.serialized_response(dto, status=201)\n\nNeither helper is mandatory. A view with a branchy body keeps calling the\ngetters directly; these exist so that the *common* body is one line per\ndirection rather than three.\n\n**Permissions:** `IsAuthenticated, IsNotAnonymousUser`",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "number",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "Courses authoring"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CertificateRevokeRequest"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/CertificateRevokeRequest"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/CertificateRevokeRequest"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthorCertificate"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Forbidden",
+            "x-stapel-errors": [
+              "error.403.course_authoring_forbidden"
+            ]
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Not Found",
+            "x-stapel-errors": [
+              "error.404.certificate_not_found"
+            ]
+          }
+        },
+        "x-stapel-flows": [
+          "courses.author"
+        ]
+      }
+    },
+    "/courses/api/v1/author/courses/": {
+      "get": {
+        "operationId": "courses_author_courses_list",
+        "description": "``APIView`` + the serializer seam + the two thin-view moves.\n\nThe base a stapel module's views inherit instead of re-deriving\n``APIView`` and a local seam mixin. The two helpers below are the only\nbehaviour it adds, and both are exactly what the hand-written bodies were\nalready doing, three hundred call sites over:\n\n    def post(self, request):\n        data = self.validated_request_data(request)\n        dto = services.do_the_thing(**data)\n        return self.serialized_response(dto, status=201)\n\nNeither helper is mandatory. A view with a branchy body keeps calling the\ngetters directly; these exist so that the *common* body is one line per\ndirection rather than three.\n\n**Permissions:** `IsAuthenticated, IsNotAnonymousUser`",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "anchor",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Opaque anchor from next_anchor/prev_anchor (exclusive)."
+          },
+          {
+            "in": "query",
+            "name": "direction",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "next",
+                "prev"
+              ]
+            },
+            "description": "Walk direction from the anchor."
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Page size, default 20, max 100."
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "archived",
+                "draft",
+                "published"
+              ]
+            }
+          }
+        ],
+        "tags": [
+          "Courses authoring"
+        ],
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthorCoursePage"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Forbidden",
+            "x-stapel-errors": [
+              "error.403.course_authoring_forbidden"
+            ]
+          }
+        },
+        "x-stapel-flows": [
+          "courses.author"
+        ],
+        "x-stapel-pagination": {
+          "style": "anchor",
+          "items": "items",
+          "params": [
+            "anchor",
+            "direction",
+            "limit"
+          ]
+        }
+      },
+      "post": {
+        "operationId": "courses_author_courses_create",
+        "description": "``APIView`` + the serializer seam + the two thin-view moves.\n\nThe base a stapel module's views inherit instead of re-deriving\n``APIView`` and a local seam mixin. The two helpers below are the only\nbehaviour it adds, and both are exactly what the hand-written bodies were\nalready doing, three hundred call sites over:\n\n    def post(self, request):\n        data = self.validated_request_data(request)\n        dto = services.do_the_thing(**data)\n        return self.serialized_response(dto, status=201)\n\nNeither helper is mandatory. A view with a branchy body keeps calling the\ngetters directly; these exist so that the *common* body is one line per\ndirection rather than three.\n\n**Permissions:** `IsAuthenticated, IsNotAnonymousUser`",
+        "tags": [
+          "Courses authoring"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthorCourseRequest"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthorCourseRequest"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthorCourseRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthorCourse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "x-stapel-errors": [
+              "error.400.course_access_unknown",
+              "error.400.course_price_required",
+              "error.400.course_slug_taken"
+            ]
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Forbidden",
+            "x-stapel-errors": [
+              "error.403.course_authoring_forbidden"
+            ]
+          }
+        },
+        "x-stapel-flows": [
+          "courses.author"
+        ]
+      }
+    },
+    "/courses/api/v1/author/courses/{course_id}/": {
+      "get": {
+        "operationId": "courses_author_course_retrieve",
+        "description": "``APIView`` + the serializer seam + the two thin-view moves.\n\nThe base a stapel module's views inherit instead of re-deriving\n``APIView`` and a local seam mixin. The two helpers below are the only\nbehaviour it adds, and both are exactly what the hand-written bodies were\nalready doing, three hundred call sites over:\n\n    def post(self, request):\n        data = self.validated_request_data(request)\n        dto = services.do_the_thing(**data)\n        return self.serialized_response(dto, status=201)\n\nNeither helper is mandatory. A view with a branchy body keeps calling the\ngetters directly; these exist so that the *common* body is one line per\ndirection rather than three.\n\n**Permissions:** `IsAuthenticated, IsNotAnonymousUser`",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "course_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "Courses authoring"
+        ],
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthorCourseTree"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Forbidden",
+            "x-stapel-errors": [
+              "error.403.course_authoring_forbidden"
+            ]
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Not Found",
+            "x-stapel-errors": [
+              "error.404.course_not_found"
+            ]
+          }
+        },
+        "x-stapel-flows": [
+          "courses.author"
+        ]
+      },
+      "patch": {
+        "operationId": "courses_author_course_update",
+        "description": "``APIView`` + the serializer seam + the two thin-view moves.\n\nThe base a stapel module's views inherit instead of re-deriving\n``APIView`` and a local seam mixin. The two helpers below are the only\nbehaviour it adds, and both are exactly what the hand-written bodies were\nalready doing, three hundred call sites over:\n\n    def post(self, request):\n        data = self.validated_request_data(request)\n        dto = services.do_the_thing(**data)\n        return self.serialized_response(dto, status=201)\n\nNeither helper is mandatory. A view with a branchy body keeps calling the\ngetters directly; these exist so that the *common* body is one line per\ndirection rather than three.\n\n**Permissions:** `IsAuthenticated, IsNotAnonymousUser`",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "course_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "Courses authoring"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedAuthorCourse"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedAuthorCourse"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedAuthorCourse"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthorCourse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "x-stapel-errors": [
+              "error.400.course_access_unknown",
+              "error.400.course_price_required",
+              "error.400.course_slug_frozen",
+              "error.400.course_slug_taken"
+            ]
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Forbidden",
+            "x-stapel-errors": [
+              "error.403.course_authoring_forbidden"
+            ]
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Not Found",
+            "x-stapel-errors": [
+              "error.404.course_not_found"
+            ]
+          }
+        },
+        "x-stapel-flows": [
+          "courses.author"
+        ]
+      },
+      "delete": {
+        "operationId": "courses_author_course_destroy",
+        "description": "``APIView`` + the serializer seam + the two thin-view moves.\n\nThe base a stapel module's views inherit instead of re-deriving\n``APIView`` and a local seam mixin. The two helpers below are the only\nbehaviour it adds, and both are exactly what the hand-written bodies were\nalready doing, three hundred call sites over:\n\n    def post(self, request):\n        data = self.validated_request_data(request)\n        dto = services.do_the_thing(**data)\n        return self.serialized_response(dto, status=201)\n\nNeither helper is mandatory. A view with a branchy body keeps calling the\ngetters directly; these exist so that the *common* body is one line per\ndirection rather than three.\n\n**Permissions:** `IsAuthenticated, IsNotAnonymousUser`",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "course_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "Courses authoring"
+        ],
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No response body"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Forbidden",
+            "x-stapel-errors": [
+              "error.403.course_authoring_forbidden"
+            ]
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Not Found",
+            "x-stapel-errors": [
+              "error.404.course_not_found"
+            ]
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Conflict",
+            "x-stapel-errors": [
+              "error.409.course_not_draft"
+            ]
+          }
+        },
+        "x-stapel-flows": [
+          "courses.author"
+        ]
+      }
+    },
+    "/courses/api/v1/author/courses/{course_id}/archive/": {
+      "post": {
+        "operationId": "courses_author_course_archive",
+        "description": "``APIView`` + the serializer seam + the two thin-view moves.\n\nThe base a stapel module's views inherit instead of re-deriving\n``APIView`` and a local seam mixin. The two helpers below are the only\nbehaviour it adds, and both are exactly what the hand-written bodies were\nalready doing, three hundred call sites over:\n\n    def post(self, request):\n        data = self.validated_request_data(request)\n        dto = services.do_the_thing(**data)\n        return self.serialized_response(dto, status=201)\n\nNeither helper is mandatory. A view with a branchy body keeps calling the\ngetters directly; these exist so that the *common* body is one line per\ndirection rather than three.\n\n**Permissions:** `IsAuthenticated, IsNotAnonymousUser`",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "course_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "Courses authoring"
+        ],
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthorCourse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Forbidden",
+            "x-stapel-errors": [
+              "error.403.course_authoring_forbidden"
+            ]
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Not Found",
+            "x-stapel-errors": [
+              "error.404.course_not_found"
+            ]
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Conflict",
+            "x-stapel-errors": [
+              "error.409.course_transition_invalid"
+            ]
+          }
+        },
+        "x-stapel-flows": [
+          "courses.author"
+        ]
+      }
+    },
+    "/courses/api/v1/author/courses/{course_id}/certificates/": {
+      "get": {
+        "operationId": "courses_author_certificates_list",
+        "description": "A course's certificates with their holders, newest first.\n\n**Permissions:** `IsAuthenticated, IsNotAnonymousUser`",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "anchor",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Opaque anchor from next_anchor/prev_anchor (exclusive)."
+          },
+          {
+            "in": "path",
+            "name": "course_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "direction",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "next",
+                "prev"
+              ]
+            },
+            "description": "Walk direction from the anchor."
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Page size, default 20, max 100."
+          },
+          {
+            "in": "query",
+            "name": "revoked",
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "true: only revoked; false: only valid."
+          }
+        ],
+        "tags": [
+          "Courses authoring"
+        ],
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthorCertificatePage"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Forbidden",
+            "x-stapel-errors": [
+              "error.403.course_authoring_forbidden"
+            ]
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Not Found",
+            "x-stapel-errors": [
+              "error.404.course_not_found"
+            ]
+          }
+        },
+        "x-stapel-flows": [
+          "courses.author"
+        ],
+        "x-stapel-pagination": {
+          "style": "anchor",
+          "items": "items",
+          "params": [
+            "anchor",
+            "direction",
+            "limit"
+          ]
+        }
+      }
+    },
+    "/courses/api/v1/author/courses/{course_id}/enrollments/": {
+      "get": {
+        "operationId": "courses_author_enrollments_list",
+        "description": "A course's enrollments, and the staff/author grant.\n\n**Permissions:** `IsAuthenticated, IsNotAnonymousUser`",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "anchor",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Opaque anchor from next_anchor/prev_anchor (exclusive)."
+          },
+          {
+            "in": "path",
+            "name": "course_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "direction",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "next",
+                "prev"
+              ]
+            },
+            "description": "Walk direction from the anchor."
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Page size, default 20, max 100."
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "active",
+                  "cancelled",
+                  "completed",
+                  "expired",
+                  "pending"
+                ]
+              }
+            },
+            "description": "Filter by status (repeatable)."
+          }
+        ],
+        "tags": [
+          "Courses authoring"
+        ],
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthorEnrollmentPage"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Forbidden",
+            "x-stapel-errors": [
+              "error.403.course_authoring_forbidden"
+            ]
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Not Found",
+            "x-stapel-errors": [
+              "error.404.course_not_found"
+            ]
+          }
+        },
+        "x-stapel-flows": [
+          "courses.author"
+        ],
+        "x-stapel-pagination": {
+          "style": "anchor",
+          "items": "items",
+          "params": [
+            "anchor",
+            "direction",
+            "limit"
+          ]
+        }
+      },
+      "post": {
+        "operationId": "courses_author_enrollments_grant",
+        "description": "A course's enrollments, and the staff/author grant.\n\n**Permissions:** `IsAuthenticated, IsNotAnonymousUser`",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "course_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "Courses authoring"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnrollmentGrantRequest"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/EnrollmentGrantRequest"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/EnrollmentGrantRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthorEnrollment"
+                }
+              }
+            },
+            "description": ""
+          },
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthorEnrollment"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Forbidden",
+            "x-stapel-errors": [
+              "error.403.course_authoring_forbidden"
+            ]
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Not Found",
+            "x-stapel-errors": [
+              "error.404.course_not_found"
+            ]
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Conflict",
+            "x-stapel-errors": [
+              "error.409.enrollment_transition_invalid"
+            ]
+          }
+        },
+        "x-stapel-flows": [
+          "courses.author"
+        ]
+      }
+    },
+    "/courses/api/v1/author/courses/{course_id}/modules/": {
+      "post": {
+        "operationId": "courses_author_modules_create",
+        "description": "``APIView`` + the serializer seam + the two thin-view moves.\n\nThe base a stapel module's views inherit instead of re-deriving\n``APIView`` and a local seam mixin. The two helpers below are the only\nbehaviour it adds, and both are exactly what the hand-written bodies were\nalready doing, three hundred call sites over:\n\n    def post(self, request):\n        data = self.validated_request_data(request)\n        dto = services.do_the_thing(**data)\n        return self.serialized_response(dto, status=201)\n\nNeither helper is mandatory. A view with a branchy body keeps calling the\ngetters directly; these exist so that the *common* body is one line per\ndirection rather than three.\n\n**Permissions:** `IsAuthenticated, IsNotAnonymousUser`",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "course_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "Courses authoring"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthorModuleRequest"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthorModuleRequest"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthorModuleRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthorModule"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Forbidden",
+            "x-stapel-errors": [
+              "error.403.course_authoring_forbidden"
+            ]
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Not Found",
+            "x-stapel-errors": [
+              "error.404.course_not_found"
+            ]
+          }
+        },
+        "x-stapel-flows": [
+          "courses.author"
+        ]
+      }
+    },
+    "/courses/api/v1/author/courses/{course_id}/publish/": {
+      "post": {
+        "operationId": "courses_author_course_publish",
+        "description": "``APIView`` + the serializer seam + the two thin-view moves.\n\nThe base a stapel module's views inherit instead of re-deriving\n``APIView`` and a local seam mixin. The two helpers below are the only\nbehaviour it adds, and both are exactly what the hand-written bodies were\nalready doing, three hundred call sites over:\n\n    def post(self, request):\n        data = self.validated_request_data(request)\n        dto = services.do_the_thing(**data)\n        return self.serialized_response(dto, status=201)\n\nNeither helper is mandatory. A view with a branchy body keeps calling the\ngetters directly; these exist so that the *common* body is one line per\ndirection rather than three.\n\n**Permissions:** `IsAuthenticated, IsNotAnonymousUser`",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "course_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "Courses authoring"
+        ],
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthorCourse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Forbidden",
+            "x-stapel-errors": [
+              "error.403.course_authoring_forbidden"
+            ]
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Not Found",
+            "x-stapel-errors": [
+              "error.404.course_not_found"
+            ]
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Conflict",
+            "x-stapel-errors": [
+              "error.409.course_transition_invalid"
+            ]
+          }
+        },
+        "x-stapel-flows": [
+          "courses.author"
+        ]
+      }
+    },
+    "/courses/api/v1/author/enrollments/{enrollment_id}/transition/": {
+      "post": {
+        "operationId": "courses_author_enrollment_transition",
+        "description": "``APIView`` + the serializer seam + the two thin-view moves.\n\nThe base a stapel module's views inherit instead of re-deriving\n``APIView`` and a local seam mixin. The two helpers below are the only\nbehaviour it adds, and both are exactly what the hand-written bodies were\nalready doing, three hundred call sites over:\n\n    def post(self, request):\n        data = self.validated_request_data(request)\n        dto = services.do_the_thing(**data)\n        return self.serialized_response(dto, status=201)\n\nNeither helper is mandatory. A view with a branchy body keeps calling the\ngetters directly; these exist so that the *common* body is one line per\ndirection rather than three.\n\n**Permissions:** `IsAuthenticated, IsNotAnonymousUser`",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "enrollment_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "Courses authoring"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnrollmentTransitionRequest"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/EnrollmentTransitionRequest"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/EnrollmentTransitionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthorEnrollment"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Forbidden",
+            "x-stapel-errors": [
+              "error.403.course_authoring_forbidden"
+            ]
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Not Found",
+            "x-stapel-errors": [
+              "error.404.enrollment_not_found"
+            ]
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Conflict",
+            "x-stapel-errors": [
+              "error.409.enrollment_transition_invalid"
+            ]
+          }
+        },
+        "x-stapel-flows": [
+          "courses.author"
+        ]
+      }
+    },
+    "/courses/api/v1/author/lessons/{lesson_id}/": {
+      "patch": {
+        "operationId": "courses_author_lesson_update",
+        "description": "``APIView`` + the serializer seam + the two thin-view moves.\n\nThe base a stapel module's views inherit instead of re-deriving\n``APIView`` and a local seam mixin. The two helpers below are the only\nbehaviour it adds, and both are exactly what the hand-written bodies were\nalready doing, three hundred call sites over:\n\n    def post(self, request):\n        data = self.validated_request_data(request)\n        dto = services.do_the_thing(**data)\n        return self.serialized_response(dto, status=201)\n\nNeither helper is mandatory. A view with a branchy body keeps calling the\ngetters directly; these exist so that the *common* body is one line per\ndirection rather than three.\n\n**Permissions:** `IsAuthenticated, IsNotAnonymousUser`",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "lesson_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "Courses authoring"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedAuthorLesson"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedAuthorLesson"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedAuthorLesson"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthorLesson"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "x-stapel-errors": [
+              "error.400.lesson_block_invalid"
+            ]
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Forbidden",
+            "x-stapel-errors": [
+              "error.403.course_authoring_forbidden"
+            ]
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Not Found",
+            "x-stapel-errors": [
+              "error.404.course_module_not_found",
+              "error.404.lesson_not_found"
+            ]
+          }
+        },
+        "x-stapel-flows": [
+          "courses.author"
+        ]
+      },
+      "delete": {
+        "operationId": "courses_author_lesson_destroy",
+        "description": "``APIView`` + the serializer seam + the two thin-view moves.\n\nThe base a stapel module's views inherit instead of re-deriving\n``APIView`` and a local seam mixin. The two helpers below are the only\nbehaviour it adds, and both are exactly what the hand-written bodies were\nalready doing, three hundred call sites over:\n\n    def post(self, request):\n        data = self.validated_request_data(request)\n        dto = services.do_the_thing(**data)\n        return self.serialized_response(dto, status=201)\n\nNeither helper is mandatory. A view with a branchy body keeps calling the\ngetters directly; these exist so that the *common* body is one line per\ndirection rather than three.\n\n**Permissions:** `IsAuthenticated, IsNotAnonymousUser`",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "lesson_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "Courses authoring"
+        ],
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No response body"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Forbidden",
+            "x-stapel-errors": [
+              "error.403.course_authoring_forbidden"
+            ]
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Not Found",
+            "x-stapel-errors": [
+              "error.404.lesson_not_found"
+            ]
+          }
+        },
+        "x-stapel-flows": [
+          "courses.author"
+        ]
+      }
+    },
+    "/courses/api/v1/author/lessons/{lesson_id}/review/": {
+      "post": {
+        "operationId": "courses_author_lesson_review",
+        "description": "The simple reviewer verdict on a ``review_required`` lesson.\n\n**Permissions:** `IsAuthenticated, IsNotAnonymousUser`",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "lesson_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "Courses authoring"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LessonReviewRequest"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/LessonReviewRequest"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/LessonReviewRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonProgress"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Forbidden",
+            "x-stapel-errors": [
+              "error.403.course_authoring_forbidden"
+            ]
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Not Found",
+            "x-stapel-errors": [
+              "error.404.lesson_not_found"
+            ]
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Conflict",
+            "x-stapel-errors": [
+              "error.409.enrollment_transition_invalid"
+            ]
+          }
+        },
+        "x-stapel-flows": [
+          "courses.author"
+        ]
+      }
+    },
+    "/courses/api/v1/author/modules/{module_id}/": {
+      "patch": {
+        "operationId": "courses_author_module_update",
+        "description": "``APIView`` + the serializer seam + the two thin-view moves.\n\nThe base a stapel module's views inherit instead of re-deriving\n``APIView`` and a local seam mixin. The two helpers below are the only\nbehaviour it adds, and both are exactly what the hand-written bodies were\nalready doing, three hundred call sites over:\n\n    def post(self, request):\n        data = self.validated_request_data(request)\n        dto = services.do_the_thing(**data)\n        return self.serialized_response(dto, status=201)\n\nNeither helper is mandatory. A view with a branchy body keeps calling the\ngetters directly; these exist so that the *common* body is one line per\ndirection rather than three.\n\n**Permissions:** `IsAuthenticated, IsNotAnonymousUser`",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "module_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "Courses authoring"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedAuthorModule"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedAuthorModule"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedAuthorModule"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthorModule"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Forbidden",
+            "x-stapel-errors": [
+              "error.403.course_authoring_forbidden"
+            ]
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Not Found",
+            "x-stapel-errors": [
+              "error.404.course_module_not_found"
+            ]
+          }
+        },
+        "x-stapel-flows": [
+          "courses.author"
+        ]
+      },
+      "delete": {
+        "operationId": "courses_author_module_destroy",
+        "description": "``APIView`` + the serializer seam + the two thin-view moves.\n\nThe base a stapel module's views inherit instead of re-deriving\n``APIView`` and a local seam mixin. The two helpers below are the only\nbehaviour it adds, and both are exactly what the hand-written bodies were\nalready doing, three hundred call sites over:\n\n    def post(self, request):\n        data = self.validated_request_data(request)\n        dto = services.do_the_thing(**data)\n        return self.serialized_response(dto, status=201)\n\nNeither helper is mandatory. A view with a branchy body keeps calling the\ngetters directly; these exist so that the *common* body is one line per\ndirection rather than three.\n\n**Permissions:** `IsAuthenticated, IsNotAnonymousUser`",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "module_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "Courses authoring"
+        ],
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No response body"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Forbidden",
+            "x-stapel-errors": [
+              "error.403.course_authoring_forbidden"
+            ]
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Not Found",
+            "x-stapel-errors": [
+              "error.404.course_module_not_found"
+            ]
+          }
+        },
+        "x-stapel-flows": [
+          "courses.author"
+        ]
+      }
+    },
+    "/courses/api/v1/author/modules/{module_id}/lessons/": {
+      "post": {
+        "operationId": "courses_author_lessons_create",
+        "description": "``APIView`` + the serializer seam + the two thin-view moves.\n\nThe base a stapel module's views inherit instead of re-deriving\n``APIView`` and a local seam mixin. The two helpers below are the only\nbehaviour it adds, and both are exactly what the hand-written bodies were\nalready doing, three hundred call sites over:\n\n    def post(self, request):\n        data = self.validated_request_data(request)\n        dto = services.do_the_thing(**data)\n        return self.serialized_response(dto, status=201)\n\nNeither helper is mandatory. A view with a branchy body keeps calling the\ngetters directly; these exist so that the *common* body is one line per\ndirection rather than three.\n\n**Permissions:** `IsAuthenticated, IsNotAnonymousUser`",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "module_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "Courses authoring"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthorLessonRequest"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthorLessonRequest"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthorLessonRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthorLesson"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "x-stapel-errors": [
+              "error.400.lesson_block_invalid"
+            ]
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Forbidden",
+            "x-stapel-errors": [
+              "error.403.course_authoring_forbidden"
+            ]
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Not Found",
+            "x-stapel-errors": [
+              "error.404.course_module_not_found"
+            ]
+          }
+        },
+        "x-stapel-flows": [
+          "courses.author"
+        ]
+      }
+    },
+    "/courses/api/v1/author/questions/{question_id}/": {
+      "patch": {
+        "operationId": "courses_author_question_update",
+        "description": "``APIView`` + the serializer seam + the two thin-view moves.\n\nThe base a stapel module's views inherit instead of re-deriving\n``APIView`` and a local seam mixin. The two helpers below are the only\nbehaviour it adds, and both are exactly what the hand-written bodies were\nalready doing, three hundred call sites over:\n\n    def post(self, request):\n        data = self.validated_request_data(request)\n        dto = services.do_the_thing(**data)\n        return self.serialized_response(dto, status=201)\n\nNeither helper is mandatory. A view with a branchy body keeps calling the\ngetters directly; these exist so that the *common* body is one line per\ndirection rather than three.\n\n**Permissions:** `IsAuthenticated, IsNotAnonymousUser`",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "question_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "Courses authoring"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedAuthorQuestion"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedAuthorQuestion"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedAuthorQuestion"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthorQuestion"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "x-stapel-errors": [
+              "error.400.question_invalid"
+            ]
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Forbidden",
+            "x-stapel-errors": [
+              "error.403.course_authoring_forbidden"
+            ]
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Not Found",
+            "x-stapel-errors": [
+              "error.404.question_not_found"
+            ]
+          }
+        },
+        "x-stapel-flows": [
+          "courses.author"
+        ]
+      },
+      "delete": {
+        "operationId": "courses_author_question_destroy",
+        "description": "``APIView`` + the serializer seam + the two thin-view moves.\n\nThe base a stapel module's views inherit instead of re-deriving\n``APIView`` and a local seam mixin. The two helpers below are the only\nbehaviour it adds, and both are exactly what the hand-written bodies were\nalready doing, three hundred call sites over:\n\n    def post(self, request):\n        data = self.validated_request_data(request)\n        dto = services.do_the_thing(**data)\n        return self.serialized_response(dto, status=201)\n\nNeither helper is mandatory. A view with a branchy body keeps calling the\ngetters directly; these exist so that the *common* body is one line per\ndirection rather than three.\n\n**Permissions:** `IsAuthenticated, IsNotAnonymousUser`",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "question_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "Courses authoring"
+        ],
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No response body"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Forbidden",
+            "x-stapel-errors": [
+              "error.403.course_authoring_forbidden"
+            ]
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Not Found",
+            "x-stapel-errors": [
+              "error.404.question_not_found"
+            ]
+          }
+        },
+        "x-stapel-flows": [
+          "courses.author"
+        ]
+      }
+    },
+    "/courses/api/v1/author/quizzes/": {
+      "post": {
+        "operationId": "courses_author_quizzes_create",
+        "description": "``APIView`` + the serializer seam + the two thin-view moves.\n\nThe base a stapel module's views inherit instead of re-deriving\n``APIView`` and a local seam mixin. The two helpers below are the only\nbehaviour it adds, and both are exactly what the hand-written bodies were\nalready doing, three hundred call sites over:\n\n    def post(self, request):\n        data = self.validated_request_data(request)\n        dto = services.do_the_thing(**data)\n        return self.serialized_response(dto, status=201)\n\nNeither helper is mandatory. A view with a branchy body keeps calling the\ngetters directly; these exist so that the *common* body is one line per\ndirection rather than three.\n\n**Permissions:** `IsAuthenticated, IsNotAnonymousUser`",
+        "tags": [
+          "Courses authoring"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthorQuizRequest"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthorQuizRequest"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthorQuizRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthorQuiz"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "x-stapel-errors": [
+              "error.400.quiz_target_invalid"
+            ]
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Forbidden",
+            "x-stapel-errors": [
+              "error.403.course_authoring_forbidden"
+            ]
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Not Found",
+            "x-stapel-errors": [
+              "error.404.course_module_not_found",
+              "error.404.lesson_not_found"
+            ]
+          }
+        },
+        "x-stapel-flows": [
+          "courses.author"
+        ]
+      }
+    },
+    "/courses/api/v1/author/quizzes/{quiz_id}/": {
+      "get": {
+        "operationId": "courses_author_quiz_retrieve",
+        "description": "A quiz with its questions and their right answers (authors only).\n\n**Permissions:** `IsAuthenticated, IsNotAnonymousUser`",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "quiz_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "Courses authoring"
+        ],
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthorQuiz"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Forbidden",
+            "x-stapel-errors": [
+              "error.403.course_authoring_forbidden"
+            ]
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Not Found",
+            "x-stapel-errors": [
+              "error.404.quiz_not_found"
+            ]
+          }
+        },
+        "x-stapel-flows": [
+          "courses.author"
+        ]
+      },
+      "patch": {
+        "operationId": "courses_author_quiz_update",
+        "description": "A quiz with its questions and their right answers (authors only).\n\n**Permissions:** `IsAuthenticated, IsNotAnonymousUser`",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "quiz_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "Courses authoring"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedAuthorQuiz"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedAuthorQuiz"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedAuthorQuiz"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthorQuiz"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Forbidden",
+            "x-stapel-errors": [
+              "error.403.course_authoring_forbidden"
+            ]
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Not Found",
+            "x-stapel-errors": [
+              "error.404.quiz_not_found"
+            ]
+          }
+        },
+        "x-stapel-flows": [
+          "courses.author"
+        ]
+      },
+      "delete": {
+        "operationId": "courses_author_quiz_destroy",
+        "description": "A quiz with its questions and their right answers (authors only).\n\n**Permissions:** `IsAuthenticated, IsNotAnonymousUser`",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "quiz_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "Courses authoring"
+        ],
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No response body"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Forbidden",
+            "x-stapel-errors": [
+              "error.403.course_authoring_forbidden"
+            ]
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Not Found",
+            "x-stapel-errors": [
+              "error.404.quiz_not_found"
+            ]
+          }
+        },
+        "x-stapel-flows": [
+          "courses.author"
+        ]
+      }
+    },
+    "/courses/api/v1/author/quizzes/{quiz_id}/questions/": {
+      "post": {
+        "operationId": "courses_author_questions_create",
+        "description": "``APIView`` + the serializer seam + the two thin-view moves.\n\nThe base a stapel module's views inherit instead of re-deriving\n``APIView`` and a local seam mixin. The two helpers below are the only\nbehaviour it adds, and both are exactly what the hand-written bodies were\nalready doing, three hundred call sites over:\n\n    def post(self, request):\n        data = self.validated_request_data(request)\n        dto = services.do_the_thing(**data)\n        return self.serialized_response(dto, status=201)\n\nNeither helper is mandatory. A view with a branchy body keeps calling the\ngetters directly; these exist so that the *common* body is one line per\ndirection rather than three.\n\n**Permissions:** `IsAuthenticated, IsNotAnonymousUser`",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "quiz_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "Courses authoring"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthorQuestionRequest"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthorQuestionRequest"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthorQuestionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthorQuestion"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "x-stapel-errors": [
+              "error.400.question_invalid"
+            ]
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Forbidden",
+            "x-stapel-errors": [
+              "error.403.course_authoring_forbidden"
+            ]
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Not Found",
+            "x-stapel-errors": [
+              "error.404.quiz_not_found"
+            ]
+          }
+        },
+        "x-stapel-flows": [
+          "courses.author"
+        ]
+      }
+    },
+    "/courses/api/v1/author/reviews/": {
+      "get": {
+        "operationId": "courses_author_reviews_list",
+        "description": "Lessons submitted for review in the courses I may edit, newest first.\n\n**Permissions:** `IsAuthenticated, IsNotAnonymousUser`",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "anchor",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Opaque anchor from next_anchor/prev_anchor (exclusive)."
+          },
+          {
+            "in": "query",
+            "name": "course",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Only this course (an id the caller may edit; else 404)."
+          },
+          {
+            "in": "query",
+            "name": "direction",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "next",
+                "prev"
+              ]
+            },
+            "description": "Walk direction from the anchor."
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Page size, default 20, max 100."
+          }
+        ],
+        "tags": [
+          "Courses authoring"
+        ],
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingReviewPage"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Forbidden",
+            "x-stapel-errors": [
+              "error.403.course_authoring_forbidden"
+            ]
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Not Found",
+            "x-stapel-errors": [
+              "error.404.course_not_found"
+            ]
+          }
+        },
+        "x-stapel-flows": [
+          "courses.author"
+        ],
+        "x-stapel-pagination": {
+          "style": "anchor",
+          "items": "items",
+          "params": [
+            "anchor",
+            "direction",
+            "limit"
+          ]
+        }
+      }
+    },
+    "/courses/api/v1/certificates/{number}/": {
+      "get": {
+        "operationId": "courses_certificate_verify",
+        "description": "Public verification by number; only the configured fields are shown.\n\n**Permissions:** `AllowAny`",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "number",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "Courses"
+        ],
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          },
+          {}
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CertificateVerification"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Not Found",
+            "x-stapel-errors": [
+              "error.404.certificate_not_found"
+            ]
+          }
+        },
+        "x-stapel-flows": [
+          "courses.verify"
+        ]
+      }
+    },
+    "/courses/api/v1/courses/": {
+      "get": {
+        "operationId": "courses_catalog_list",
+        "description": "Published courses, newest first.\n\n**Permissions:** `AllowAny`",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "anchor",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Opaque anchor from next_anchor/prev_anchor (exclusive)."
+          },
+          {
+            "in": "query",
+            "name": "direction",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "next",
+                "prev"
+              ]
+            },
+            "description": "Walk direction from the anchor."
+          },
+          {
+            "in": "query",
+            "name": "level",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "advanced",
+                "all",
+                "beginner",
+                "intermediate"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Page size, default 24, max 100."
+          },
+          {
+            "in": "query",
+            "name": "scope",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Opaque cohort/workspace id the course is scoped to."
+          }
+        ],
+        "tags": [
+          "Courses"
+        ],
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          },
+          {}
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CoursePage"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "x-stapel-flows": [
+          "courses.learn"
+        ],
+        "x-stapel-pagination": {
+          "style": "anchor",
+          "items": "items",
+          "params": [
+            "anchor",
+            "direction",
+            "limit"
+          ]
+        }
+      }
+    },
+    "/courses/api/v1/courses/{slug}/": {
+      "get": {
+        "operationId": "courses_course_retrieve",
+        "description": "A course, my enrollment and its outline with a lock reason per lesson.\n\n**Permissions:** `AllowAny`",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "Courses"
+        ],
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          },
+          {}
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CourseOutline"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Forbidden",
+            "x-stapel-errors": [
+              "error.403.enrollment_requires_account"
+            ]
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Not Found",
+            "x-stapel-errors": [
+              "error.404.course_not_found"
+            ]
+          }
+        },
+        "x-stapel-flows": [
+          "courses.learn"
+        ]
+      }
+    },
+    "/courses/api/v1/courses/{slug}/enroll/": {
+      "post": {
+        "operationId": "courses_course_enroll",
+        "description": "Enroll myself; the course's access strategy decides whether and how.\n\n**Permissions:** `IsAuthenticated`",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "Courses"
+        ],
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Enrollment"
+                }
+              }
+            },
+            "description": ""
+          },
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Enrollment"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Forbidden",
+            "x-stapel-errors": [
+              "error.403.enrollment_requires_account"
+            ]
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Not Found",
+            "x-stapel-errors": [
+              "error.404.course_not_found"
+            ]
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Conflict",
+            "x-stapel-errors": [
+              "error.409.course_not_published",
+              "error.409.enrollment_transition_invalid"
+            ]
+          }
+        },
+        "x-stapel-flows": [
+          "courses.learn"
+        ]
+      }
+    },
+    "/courses/api/v1/courses/{slug}/lessons/{lesson_id}/": {
+      "get": {
+        "operationId": "courses_lesson_retrieve",
+        "description": "A lesson's content — only when the gate opens it (else 403 lesson_locked).\n\n**Permissions:** `AllowAny`",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "lesson_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "slug",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "Courses"
+        ],
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          },
+          {}
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Lesson"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Forbidden",
+            "x-stapel-errors": [
+              "error.403.lesson_locked"
+            ]
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Not Found",
+            "x-stapel-errors": [
+              "error.404.course_not_found",
+              "error.404.lesson_not_found"
+            ]
+          }
+        },
+        "x-stapel-flows": [
+          "courses.learn"
+        ]
+      }
+    },
+    "/courses/api/v1/courses/{slug}/lessons/{lesson_id}/progress/": {
+      "post": {
+        "operationId": "courses_lesson_progress",
+        "description": "Upsert my progress on a lesson (forward-only status, last position).\n\n**Permissions:** `IsAuthenticated`",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "lesson_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "slug",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "Courses"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LessonProgressRequest"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/LessonProgressRequest"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/LessonProgressRequest"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonProgress"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Forbidden",
+            "x-stapel-errors": [
+              "error.403.enrollment_requires_account",
+              "error.403.lesson_locked",
+              "error.403.lesson_review_required"
+            ]
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Not Found",
+            "x-stapel-errors": [
+              "error.404.course_not_found",
+              "error.404.lesson_not_found"
+            ]
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Conflict",
+            "x-stapel-errors": [
+              "error.409.enrollment_transition_invalid"
+            ]
+          }
+        },
+        "x-stapel-flows": [
+          "courses.learn"
+        ]
+      }
+    },
+    "/courses/api/v1/courses/{slug}/progress/": {
+      "get": {
+        "operationId": "courses_course_progress",
+        "description": "My progress on one course: every lesson row and every quiz standing.\n\n**Permissions:** `IsAuthenticated`",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "Courses"
+        ],
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CourseProgress"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Not Found",
+            "x-stapel-errors": [
+              "error.404.course_not_found"
+            ]
+          }
+        },
+        "x-stapel-flows": [
+          "courses.learn"
+        ]
+      }
+    },
+    "/courses/api/v1/me/certificates/": {
+      "get": {
+        "operationId": "courses_my_certificates_list",
+        "description": "``APIView`` + the serializer seam + the two thin-view moves.\n\nThe base a stapel module's views inherit instead of re-deriving\n``APIView`` and a local seam mixin. The two helpers below are the only\nbehaviour it adds, and both are exactly what the hand-written bodies were\nalready doing, three hundred call sites over:\n\n    def post(self, request):\n        data = self.validated_request_data(request)\n        dto = services.do_the_thing(**data)\n        return self.serialized_response(dto, status=201)\n\nNeither helper is mandatory. A view with a branchy body keeps calling the\ngetters directly; these exist so that the *common* body is one line per\ndirection rather than three.\n\n**Permissions:** `IsAuthenticated`",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "anchor",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Opaque anchor from next_anchor/prev_anchor (exclusive)."
+          },
+          {
+            "in": "query",
+            "name": "direction",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "next",
+                "prev"
+              ]
+            },
+            "description": "Walk direction from the anchor."
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Page size, default 20, max 100."
+          }
+        ],
+        "tags": [
+          "Courses"
+        ],
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CertificatePage"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "x-stapel-flows": [
+          "courses.learn"
+        ],
+        "x-stapel-pagination": {
+          "style": "anchor",
+          "items": "items",
+          "params": [
+            "anchor",
+            "direction",
+            "limit"
+          ]
+        }
+      }
+    },
+    "/courses/api/v1/me/enrollments/": {
+      "get": {
+        "operationId": "courses_my_enrollments_list",
+        "description": "My courses, newest enrollment first.\n\n**Permissions:** `IsAuthenticated`",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "anchor",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Opaque anchor from next_anchor/prev_anchor (exclusive)."
+          },
+          {
+            "in": "query",
+            "name": "direction",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "next",
+                "prev"
+              ]
+            },
+            "description": "Walk direction from the anchor."
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Page size, default 20, max 100."
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "active",
+                  "cancelled",
+                  "completed",
+                  "expired",
+                  "pending"
+                ]
+              }
+            },
+            "description": "Filter by status (repeatable)."
+          }
+        ],
+        "tags": [
+          "Courses"
+        ],
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnrollmentPage"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "x-stapel-flows": [
+          "courses.learn"
+        ],
+        "x-stapel-pagination": {
+          "style": "anchor",
+          "items": "items",
+          "params": [
+            "anchor",
+            "direction",
+            "limit"
+          ]
+        }
+      }
+    },
+    "/courses/api/v1/quizzes/{quiz_id}/": {
+      "get": {
+        "operationId": "courses_quiz_retrieve",
+        "description": "A quiz's rules and my standing — never its questions.\n\n**Permissions:** `AllowAny`",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "quiz_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "Courses"
+        ],
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          },
+          {}
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Quiz"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Not Found",
+            "x-stapel-errors": [
+              "error.404.quiz_not_found"
+            ]
+          }
+        },
+        "x-stapel-flows": [
+          "courses.quiz"
+        ]
+      }
+    },
+    "/courses/api/v1/quizzes/{quiz_id}/attempts/": {
+      "post": {
+        "operationId": "courses_quiz_attempt_start",
+        "description": "Start an attempt, or get the open one back (idempotent).\n\n**Permissions:** `IsAuthenticated`",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "quiz_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "Courses"
+        ],
+        "security": [
+          {
+            "JWTCookieAuth": []
+          },
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Attempt"
+                }
+              }
+            },
+            "description": ""
+          },
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Attempt"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Forbidden",
+            "x-stapel-errors": [
+              "error.403.enrollment_requires_account",
+              "error.403.lesson_locked"
+            ]
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Not Found",
+            "x-stapel-errors": [
+              "error.404.quiz_not_found"
+            ]
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StapelError"
+                }
+              }
+            },
+            "description": "Conflict",
+            "x-stapel-errors": [
+              "error.409.quiz_attempts_exhausted",
+              "error.409.quiz_empty"
+            ]
+          }
+        },
+        "x-stapel-flows": [
+          "courses.quiz"
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AccessState": {
+        "type": "object",
+        "properties": {
+          "allowed": {
+            "type": "boolean"
+          },
+          "reason": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/LockReasonEnum"
+              },
+              {
+                "$ref": "#/components/schemas/NullEnum"
+              }
+            ]
+          },
+          "can_enroll": {
+            "type": "boolean",
+            "description": "POST enroll/ would succeed for this caller now."
+          },
+          "privileged": {
+            "type": "boolean",
+            "description": "The caller is staff or the course's author."
+          }
+        },
+        "required": [
+          "allowed",
+          "can_enroll",
+          "privileged",
+          "reason"
+        ]
+      },
+      "AccessStrategyList": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AccessStrategyOption"
+            }
+          },
+          "default": {
+            "type": "string",
+            "description": "DEFAULT_ACCESS: what a new course starts with.",
+            "maxLength": 32
+          }
+        },
+        "required": [
+          "default",
+          "items"
+        ]
+      },
+      "AccessStrategyOption": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "builtin": {
+            "type": "boolean",
+            "description": "The built-in strategy of that name (false: registered or replaced by the host)."
+          }
+        },
+        "required": [
+          "builtin",
+          "name"
+        ]
+      },
+      "Answer": {
+        "type": "object",
+        "description": "One answer: ``choice_ids`` (single/multiple), ``value`` (true_false) or ``text``.",
+        "properties": {
+          "question_id": {
+            "type": "integer"
+          },
+          "choice_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 16
+            },
+            "maxItems": 20
+          },
+          "value": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "question_id"
+        ]
+      },
+      "AttachmentBlock": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/AttachmentBlockTypeEnum"
+          },
+          "media_id": {
+            "type": "string",
+            "description": "Opaque media id.",
+            "maxLength": 64
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "media_id",
+          "name",
+          "type"
+        ]
+      },
+      "AttachmentBlockTypeEnum": {
+        "enum": [
+          "attachment"
+        ],
+        "type": "string",
+        "description": "* `attachment` - attachment"
+      },
+      "Attempt": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "quiz_id": {
+            "type": "integer"
+          },
+          "number": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "status": {
+            "$ref": "#/components/schemas/AttemptStatusEnum"
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "submitted_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "questions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AttemptQuestion"
+            }
+          },
+          "score": {
+            "type": "integer",
+            "minimum": 0,
+            "nullable": true
+          },
+          "max_score": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "percent": {
+            "type": "string",
+            "format": "decimal",
+            "pattern": "^-?\\d{0,3}(?:\\.\\d{0,2})?$",
+            "nullable": true
+          },
+          "passed": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "reveals_answers": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "max_score",
+          "number",
+          "passed",
+          "percent",
+          "questions",
+          "quiz_id",
+          "reveals_answers",
+          "score",
+          "started_at",
+          "status",
+          "submitted_at"
+        ]
+      },
+      "AttemptQuestion": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/QuestionKindEnum"
+          },
+          "prompt": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "points": {
+            "type": "integer",
+            "maximum": 100,
+            "minimum": 1
+          },
+          "choices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Choice"
+            }
+          },
+          "answer": {
+            "type": "object",
+            "additionalProperties": {},
+            "nullable": true,
+            "description": "My submitted answer; null while open."
+          },
+          "result": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/QuestionResult"
+              }
+            ],
+            "nullable": true
+          },
+          "correct_answer": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CorrectAnswer"
+              }
+            ],
+            "nullable": true
+          },
+          "explanation": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "answer",
+          "choices",
+          "correct_answer",
+          "explanation",
+          "id",
+          "kind",
+          "points",
+          "prompt",
+          "result"
+        ]
+      },
+      "AttemptStatusEnum": {
+        "enum": [
+          "in_progress",
+          "submitted"
+        ],
+        "type": "string",
+        "description": "* `in_progress` - In progress\n* `submitted` - Submitted"
+      },
+      "AttemptSubmitRequest": {
+        "type": "object",
+        "properties": {
+          "answers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Answer"
+            }
+          }
+        },
+        "required": [
+          "answers"
+        ]
+      },
+      "AuthorCertificate": {
+        "type": "object",
+        "description": "A certificate on the author/staff views: its holder and its revocation.",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "number": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "course_id": {
+            "type": "integer"
+          },
+          "course_slug": {
+            "type": "string",
+            "maxLength": 80,
+            "pattern": "^[-a-zA-Z0-9_]+$"
+          },
+          "course_title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "holder_name": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "issued_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "valid": {
+            "type": "boolean"
+          },
+          "user_id": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "learner": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LearnerCard"
+              }
+            ],
+            "nullable": true
+          },
+          "revoked": {
+            "type": "boolean"
+          },
+          "revoked_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "revoke_reason": {
+            "type": "string",
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "course_id",
+          "course_slug",
+          "course_title",
+          "holder_name",
+          "id",
+          "issued_at",
+          "learner",
+          "number",
+          "revoke_reason",
+          "revoked",
+          "revoked_at",
+          "user_id",
+          "valid"
+        ]
+      },
+      "AuthorCertificatePage": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AuthorCertificate"
+            }
+          },
+          "next_anchor": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 32
+          },
+          "prev_anchor": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 32
+          },
+          "has_next": {
+            "type": "boolean"
+          },
+          "has_prev": {
+            "type": "boolean"
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "count",
+          "has_next",
+          "has_prev",
+          "items",
+          "next_anchor",
+          "prev_anchor"
+        ],
+        "x-stapel-pagination": {
+          "style": "anchor",
+          "items": "items"
+        }
+      },
+      "AuthorCourse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CourseStatusEnum"
+              }
+            ],
+            "readOnly": true
+          },
+          "slug": {
+            "type": "string",
+            "maxLength": 80,
+            "pattern": "^[-a-zA-Z0-9_]+$"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "summary": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 20000
+          },
+          "author_id": {
+            "type": "string",
+            "description": "Staff only: whose course it is (default: the caller).",
+            "maxLength": 64
+          },
+          "cover_media_id": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "level": {
+            "$ref": "#/components/schemas/CourseLevelEnum"
+          },
+          "language": {
+            "type": "string",
+            "maxLength": 16
+          },
+          "access": {
+            "type": "string",
+            "description": "A registered access strategy name (GET author/access-strategies/).",
+            "maxLength": 32
+          },
+          "price": {
+            "type": "string",
+            "format": "decimal",
+            "pattern": "^-?\\d{0,10}(?:\\.\\d{0,2})?$",
+            "nullable": true
+          },
+          "currency": {
+            "type": "string",
+            "maxLength": 3
+          },
+          "entitlement_key": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "drip": {
+            "$ref": "#/components/schemas/DripModeEnum"
+          },
+          "sequential": {
+            "type": "boolean"
+          },
+          "access_days": {
+            "type": "integer",
+            "maximum": 3650,
+            "minimum": 1,
+            "nullable": true
+          },
+          "certificate_enabled": {
+            "type": "boolean"
+          },
+          "scope": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "published_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true,
+            "nullable": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          }
+        },
+        "required": [
+          "created_at",
+          "id",
+          "published_at",
+          "slug",
+          "status",
+          "title",
+          "updated_at"
+        ]
+      },
+      "AuthorCoursePage": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AuthorCourse"
+            }
+          },
+          "next_anchor": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 32
+          },
+          "prev_anchor": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 32
+          },
+          "has_next": {
+            "type": "boolean"
+          },
+          "has_prev": {
+            "type": "boolean"
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "count",
+          "has_next",
+          "has_prev",
+          "items",
+          "next_anchor",
+          "prev_anchor"
+        ],
+        "x-stapel-pagination": {
+          "style": "anchor",
+          "items": "items"
+        }
+      },
+      "AuthorCourseRequest": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "maxLength": 80,
+            "pattern": "^[-a-zA-Z0-9_]+$"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "summary": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 20000
+          },
+          "author_id": {
+            "type": "string",
+            "description": "Staff only: whose course it is (default: the caller).",
+            "maxLength": 64
+          },
+          "cover_media_id": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "level": {
+            "$ref": "#/components/schemas/CourseLevelEnum"
+          },
+          "language": {
+            "type": "string",
+            "maxLength": 16
+          },
+          "access": {
+            "type": "string",
+            "description": "A registered access strategy name (GET author/access-strategies/).",
+            "maxLength": 32
+          },
+          "price": {
+            "type": "string",
+            "format": "decimal",
+            "pattern": "^-?\\d{0,10}(?:\\.\\d{0,2})?$",
+            "nullable": true
+          },
+          "currency": {
+            "type": "string",
+            "maxLength": 3
+          },
+          "entitlement_key": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "drip": {
+            "$ref": "#/components/schemas/DripModeEnum"
+          },
+          "sequential": {
+            "type": "boolean"
+          },
+          "access_days": {
+            "type": "integer",
+            "maximum": 3650,
+            "minimum": 1,
+            "nullable": true
+          },
+          "certificate_enabled": {
+            "type": "boolean"
+          },
+          "scope": {
+            "type": "string",
+            "maxLength": 64
+          }
+        },
+        "required": [
+          "slug",
+          "title"
+        ]
+      },
+      "AuthorCourseTree": {
+        "type": "object",
+        "properties": {
+          "course": {
+            "$ref": "#/components/schemas/AuthorCourse"
+          },
+          "modules": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AuthorCourseTreeModule"
+            }
+          },
+          "embed_hosts": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 253
+            },
+            "description": "Hosts an embed block may frame (EMBED_HOSTS); empty = no embed block is accepted."
+          }
+        },
+        "required": [
+          "course",
+          "embed_hosts",
+          "modules"
+        ]
+      },
+      "AuthorCourseTreeModule": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "position": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "lessons": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AuthorLesson"
+            }
+          },
+          "quizzes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AuthorQuiz"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "lessons",
+          "position",
+          "quizzes",
+          "title"
+        ]
+      },
+      "AuthorEnrollment": {
+        "type": "object",
+        "description": "An enrollment on the author/staff views: the learner is named.",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "course_id": {
+            "type": "integer"
+          },
+          "course_slug": {
+            "type": "string",
+            "maxLength": 80,
+            "pattern": "^[-a-zA-Z0-9_]+$"
+          },
+          "course_title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "status": {
+            "$ref": "#/components/schemas/EnrollmentStatusEnum"
+          },
+          "source": {
+            "$ref": "#/components/schemas/EnrollmentSourceEnum"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "activated_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "completed_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "progress_percent": {
+            "type": "integer",
+            "maximum": 100,
+            "minimum": 0
+          },
+          "completed_lessons": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "required_lessons": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "passed_quizzes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "required_quizzes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "last_lesson_id": {
+            "type": "integer",
+            "nullable": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "user_id": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "learner": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LearnerCard"
+              }
+            ],
+            "nullable": true,
+            "description": "The learner's display card; null when profiles cannot say."
+          }
+        },
+        "required": [
+          "activated_at",
+          "completed_at",
+          "completed_lessons",
+          "course_id",
+          "course_slug",
+          "course_title",
+          "created_at",
+          "expires_at",
+          "id",
+          "last_lesson_id",
+          "learner",
+          "passed_quizzes",
+          "progress_percent",
+          "required_lessons",
+          "required_quizzes",
+          "source",
+          "status",
+          "user_id"
+        ]
+      },
+      "AuthorEnrollmentPage": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AuthorEnrollment"
+            }
+          },
+          "next_anchor": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 32
+          },
+          "prev_anchor": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 32
+          },
+          "has_next": {
+            "type": "boolean"
+          },
+          "has_prev": {
+            "type": "boolean"
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "count",
+          "has_next",
+          "has_prev",
+          "items",
+          "next_anchor",
+          "prev_anchor"
+        ],
+        "x-stapel-pagination": {
+          "style": "anchor",
+          "items": "items"
+        }
+      },
+      "AuthorLesson": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "course": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "module_id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "position": {
+            "type": "integer",
+            "maximum": 10000,
+            "minimum": 0
+          },
+          "blocks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LessonBlock"
+            },
+            "maxItems": 50
+          },
+          "duration_seconds": {
+            "type": "integer",
+            "maximum": 86400,
+            "minimum": 0
+          },
+          "free_preview": {
+            "type": "boolean"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "review_required": {
+            "type": "boolean"
+          },
+          "unlock_after_days": {
+            "type": "integer",
+            "maximum": 3650,
+            "minimum": 0,
+            "nullable": true
+          },
+          "unlock_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "required": [
+          "course",
+          "id",
+          "title"
+        ]
+      },
+      "AuthorLessonRequest": {
+        "type": "object",
+        "properties": {
+          "module_id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "position": {
+            "type": "integer",
+            "maximum": 10000,
+            "minimum": 0
+          },
+          "blocks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LessonBlock"
+            },
+            "maxItems": 50
+          },
+          "duration_seconds": {
+            "type": "integer",
+            "maximum": 86400,
+            "minimum": 0
+          },
+          "free_preview": {
+            "type": "boolean"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "review_required": {
+            "type": "boolean"
+          },
+          "unlock_after_days": {
+            "type": "integer",
+            "maximum": 3650,
+            "minimum": 0,
+            "nullable": true
+          },
+          "unlock_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "required": [
+          "title"
+        ]
+      },
+      "AuthorModule": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "course": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "position": {
+            "type": "integer",
+            "maximum": 10000,
+            "minimum": 0
+          }
+        },
+        "required": [
+          "course",
+          "id",
+          "title"
+        ]
+      },
+      "AuthorModuleRequest": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "position": {
+            "type": "integer",
+            "maximum": 10000,
+            "minimum": 0
+          }
+        },
+        "required": [
+          "title"
+        ]
+      },
+      "AuthorQuestion": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "quiz": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "kind": {
+            "$ref": "#/components/schemas/QuestionKindEnum"
+          },
+          "prompt": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "position": {
+            "type": "integer",
+            "maximum": 10000,
+            "minimum": 0
+          },
+          "points": {
+            "type": "integer",
+            "maximum": 100,
+            "minimum": 1
+          },
+          "choices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Choice"
+            }
+          },
+          "correct": {
+            "oneOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "maxItems": 20
+              },
+              {
+                "type": "boolean"
+              }
+            ],
+            "description": "Per kind: single / multiple -> the right choice ids; true_false -> the right bool; short_text -> the accepted answers."
+          },
+          "match": {
+            "$ref": "#/components/schemas/TextMatchEnum"
+          },
+          "explanation": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "correct",
+          "id",
+          "kind",
+          "prompt",
+          "quiz"
+        ]
+      },
+      "AuthorQuestionRequest": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/QuestionKindEnum"
+          },
+          "prompt": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "position": {
+            "type": "integer",
+            "maximum": 10000,
+            "minimum": 0
+          },
+          "points": {
+            "type": "integer",
+            "maximum": 100,
+            "minimum": 1
+          },
+          "choices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Choice"
+            }
+          },
+          "correct": {
+            "oneOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "maxItems": 20
+              },
+              {
+                "type": "boolean"
+              }
+            ],
+            "description": "Per kind: single / multiple -> the right choice ids; true_false -> the right bool; short_text -> the accepted answers."
+          },
+          "match": {
+            "$ref": "#/components/schemas/TextMatchEnum"
+          },
+          "explanation": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "correct",
+          "kind",
+          "prompt"
+        ]
+      },
+      "AuthorQuiz": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "course": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "lesson_id": {
+            "type": "integer",
+            "nullable": true
+          },
+          "module_id": {
+            "type": "integer",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "pass_mark": {
+            "type": "integer",
+            "maximum": 100,
+            "minimum": 0
+          },
+          "max_attempts": {
+            "type": "integer",
+            "maximum": 100,
+            "minimum": 0
+          },
+          "shuffle_questions": {
+            "type": "boolean"
+          },
+          "shuffle_choices": {
+            "type": "boolean"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "reveal": {
+            "$ref": "#/components/schemas/RevealModeEnum"
+          },
+          "questions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AuthorQuestion"
+            },
+            "readOnly": true
+          }
+        },
+        "required": [
+          "course",
+          "id",
+          "questions",
+          "title"
+        ]
+      },
+      "AuthorQuizRequest": {
+        "type": "object",
+        "properties": {
+          "lesson_id": {
+            "type": "integer",
+            "nullable": true
+          },
+          "module_id": {
+            "type": "integer",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "pass_mark": {
+            "type": "integer",
+            "maximum": 100,
+            "minimum": 0
+          },
+          "max_attempts": {
+            "type": "integer",
+            "maximum": 100,
+            "minimum": 0
+          },
+          "shuffle_questions": {
+            "type": "boolean"
+          },
+          "shuffle_choices": {
+            "type": "boolean"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "reveal": {
+            "$ref": "#/components/schemas/RevealModeEnum"
+          }
+        },
+        "required": [
+          "title"
+        ]
+      },
+      "Certificate": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "number": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "course_id": {
+            "type": "integer"
+          },
+          "course_slug": {
+            "type": "string",
+            "maxLength": 80,
+            "pattern": "^[-a-zA-Z0-9_]+$"
+          },
+          "course_title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "holder_name": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "issued_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "valid": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "course_id",
+          "course_slug",
+          "course_title",
+          "holder_name",
+          "id",
+          "issued_at",
+          "number",
+          "valid"
+        ]
+      },
+      "CertificatePage": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Certificate"
+            }
+          },
+          "next_anchor": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 32
+          },
+          "prev_anchor": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 32
+          },
+          "has_next": {
+            "type": "boolean"
+          },
+          "has_prev": {
+            "type": "boolean"
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "count",
+          "has_next",
+          "has_prev",
+          "items",
+          "next_anchor",
+          "prev_anchor"
+        ],
+        "x-stapel-pagination": {
+          "style": "anchor",
+          "items": "items"
+        }
+      },
+      "CertificateRevokeRequest": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "maxLength": 200
+          }
+        }
+      },
+      "CertificateVerification": {
+        "type": "object",
+        "properties": {
+          "number": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "valid": {
+            "type": "boolean"
+          },
+          "holder_name": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 200
+          },
+          "course_title": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 200
+          },
+          "course_slug": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 80,
+            "pattern": "^[-a-zA-Z0-9_]+$"
+          },
+          "issued_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "required": [
+          "course_slug",
+          "course_title",
+          "holder_name",
+          "issued_at",
+          "number",
+          "valid"
+        ]
+      },
+      "Choice": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 16
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "id",
+          "text"
+        ]
+      },
+      "CorrectAnswer": {
+        "type": "object",
+        "properties": {
+          "choice_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 16
+            },
+            "nullable": true,
+            "maxItems": 20
+          },
+          "value": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "accepted": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "nullable": true,
+            "maxItems": 20
+          }
+        },
+        "required": [
+          "accepted",
+          "choice_ids",
+          "value"
+        ]
+      },
+      "CourseCard": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "slug": {
+            "type": "string",
+            "maxLength": 80,
+            "pattern": "^[-a-zA-Z0-9_]+$"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "summary": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "cover_media_id": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 64
+          },
+          "level": {
+            "$ref": "#/components/schemas/CourseLevelEnum"
+          },
+          "language": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 16
+          },
+          "access": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "price": {
+            "type": "string",
+            "format": "decimal",
+            "pattern": "^-?\\d{0,10}(?:\\.\\d{0,2})?$",
+            "nullable": true
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 3
+          },
+          "author_id": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "scope": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 64
+          },
+          "lesson_count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "total_duration_seconds": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "published_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "required": [
+          "access",
+          "author_id",
+          "cover_media_id",
+          "currency",
+          "id",
+          "language",
+          "lesson_count",
+          "level",
+          "price",
+          "published_at",
+          "scope",
+          "slug",
+          "summary",
+          "title",
+          "total_duration_seconds"
+        ]
+      },
+      "CourseDetail": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "slug": {
+            "type": "string",
+            "maxLength": 80,
+            "pattern": "^[-a-zA-Z0-9_]+$"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "summary": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "cover_media_id": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 64
+          },
+          "level": {
+            "$ref": "#/components/schemas/CourseLevelEnum"
+          },
+          "language": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 16
+          },
+          "access": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "price": {
+            "type": "string",
+            "format": "decimal",
+            "pattern": "^-?\\d{0,10}(?:\\.\\d{0,2})?$",
+            "nullable": true
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 3
+          },
+          "author_id": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "scope": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 64
+          },
+          "lesson_count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "total_duration_seconds": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "published_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "status": {
+            "$ref": "#/components/schemas/CourseStatusEnum"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 20000
+          },
+          "drip": {
+            "$ref": "#/components/schemas/DripModeEnum"
+          },
+          "sequential": {
+            "type": "boolean"
+          },
+          "access_days": {
+            "type": "integer",
+            "maximum": 3650,
+            "minimum": 1,
+            "nullable": true
+          },
+          "certificate_enabled": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "access",
+          "access_days",
+          "author_id",
+          "certificate_enabled",
+          "cover_media_id",
+          "currency",
+          "description",
+          "drip",
+          "id",
+          "language",
+          "lesson_count",
+          "level",
+          "price",
+          "published_at",
+          "scope",
+          "sequential",
+          "slug",
+          "status",
+          "summary",
+          "title",
+          "total_duration_seconds"
+        ]
+      },
+      "CourseLevelEnum": {
+        "enum": [
+          "all",
+          "beginner",
+          "intermediate",
+          "advanced"
+        ],
+        "type": "string",
+        "description": "* `all` - All levels\n* `beginner` - Beginner\n* `intermediate` - Intermediate\n* `advanced` - Advanced"
+      },
+      "CourseOutline": {
+        "type": "object",
+        "properties": {
+          "course": {
+            "$ref": "#/components/schemas/CourseDetail"
+          },
+          "access": {
+            "$ref": "#/components/schemas/AccessState"
+          },
+          "enrollment": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Enrollment"
+              }
+            ],
+            "nullable": true
+          },
+          "modules": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OutlineModule"
+            }
+          },
+          "embed_hosts": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 253
+            },
+            "description": "Hosts an embed block may frame (EMBED_HOSTS); empty = no embed block is accepted."
+          }
+        },
+        "required": [
+          "access",
+          "course",
+          "embed_hosts",
+          "enrollment",
+          "modules"
+        ]
+      },
+      "CoursePage": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CourseCard"
+            }
+          },
+          "next_anchor": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 32
+          },
+          "prev_anchor": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 32
+          },
+          "has_next": {
+            "type": "boolean"
+          },
+          "has_prev": {
+            "type": "boolean"
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "count",
+          "has_next",
+          "has_prev",
+          "items",
+          "next_anchor",
+          "prev_anchor"
+        ],
+        "x-stapel-pagination": {
+          "style": "anchor",
+          "items": "items"
+        }
+      },
+      "CourseProgress": {
+        "type": "object",
+        "properties": {
+          "enrollment": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Enrollment"
+              }
+            ],
+            "nullable": true
+          },
+          "lessons": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LessonProgressState"
+            }
+          },
+          "quizzes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QuizStanding"
+            }
+          }
+        },
+        "required": [
+          "enrollment",
+          "lessons",
+          "quizzes"
+        ]
+      },
+      "CourseStatusEnum": {
+        "enum": [
+          "draft",
+          "published",
+          "archived"
+        ],
+        "type": "string",
+        "description": "* `draft` - Draft\n* `published` - Published\n* `archived` - Archived"
+      },
+      "CustomBlock": {
+        "type": "object",
+        "description": "A block type the host registered (BLOCK_TYPES); any type but the built-ins.",
+        "properties": {
+          "type": {
+            "type": "string",
+            "maxLength": 64,
+            "not": {
+              "enum": [
+                "attachment",
+                "embed",
+                "text",
+                "video"
+              ]
+            }
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": true
+      },
+      "DripModeEnum": {
+        "enum": [
+          "none",
+          "days",
+          "date"
+        ],
+        "type": "string",
+        "description": "* `none` - None\n* `days` - Days since enrollment\n* `date` - Fixed date"
+      },
+      "EmbedBlock": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/EmbedBlockTypeEnum"
+          },
+          "url": {
+            "type": "string",
+            "description": "https; the host is one of embed_hosts.",
+            "maxLength": 500
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 300
+          }
+        },
+        "required": [
+          "type",
+          "url"
+        ]
+      },
+      "EmbedBlockTypeEnum": {
+        "enum": [
+          "embed"
+        ],
+        "type": "string",
+        "description": "* `embed` - embed"
+      },
+      "Enrollment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "course_id": {
+            "type": "integer"
+          },
+          "course_slug": {
+            "type": "string",
+            "maxLength": 80,
+            "pattern": "^[-a-zA-Z0-9_]+$"
+          },
+          "course_title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "status": {
+            "$ref": "#/components/schemas/EnrollmentStatusEnum"
+          },
+          "source": {
+            "$ref": "#/components/schemas/EnrollmentSourceEnum"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "activated_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "completed_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "progress_percent": {
+            "type": "integer",
+            "maximum": 100,
+            "minimum": 0
+          },
+          "completed_lessons": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "required_lessons": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "passed_quizzes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "required_quizzes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "last_lesson_id": {
+            "type": "integer",
+            "nullable": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "activated_at",
+          "completed_at",
+          "completed_lessons",
+          "course_id",
+          "course_slug",
+          "course_title",
+          "created_at",
+          "expires_at",
+          "id",
+          "last_lesson_id",
+          "passed_quizzes",
+          "progress_percent",
+          "required_lessons",
+          "required_quizzes",
+          "source",
+          "status"
+        ]
+      },
+      "EnrollmentGrantRequest": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "required": [
+          "user_id"
+        ]
+      },
+      "EnrollmentPage": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Enrollment"
+            }
+          },
+          "next_anchor": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 32
+          },
+          "prev_anchor": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 32
+          },
+          "has_next": {
+            "type": "boolean"
+          },
+          "has_prev": {
+            "type": "boolean"
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "count",
+          "has_next",
+          "has_prev",
+          "items",
+          "next_anchor",
+          "prev_anchor"
+        ],
+        "x-stapel-pagination": {
+          "style": "anchor",
+          "items": "items"
+        }
+      },
+      "EnrollmentSourceEnum": {
+        "enum": [
+          "free",
+          "purchase",
+          "entitlement",
+          "staff"
+        ],
+        "type": "string",
+        "description": "* `free` - Free\n* `purchase` - Purchase\n* `entitlement` - Entitlement\n* `staff` - Staff grant"
+      },
+      "EnrollmentStatusEnum": {
+        "enum": [
+          "pending",
+          "active",
+          "completed",
+          "expired",
+          "cancelled"
+        ],
+        "type": "string",
+        "description": "* `pending` - Pending\n* `active` - Active\n* `completed` - Completed\n* `expired` - Expired\n* `cancelled` - Cancelled"
+      },
+      "EnrollmentTransitionRequest": {
+        "type": "object",
+        "properties": {
+          "to": {
+            "$ref": "#/components/schemas/EnrollmentTransitionTargetEnum"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "to"
+        ]
+      },
+      "EnrollmentTransitionTargetEnum": {
+        "enum": [
+          "active",
+          "expired",
+          "cancelled"
+        ],
+        "type": "string",
+        "description": "* `active` - active\n* `expired` - expired\n* `cancelled` - cancelled"
+      },
+      "LearnerCard": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "display_name": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "avatar_ref": {
+            "type": "string",
+            "nullable": true,
+            "description": "Opaque media id of the avatar.",
+            "maxLength": 255
+          }
+        },
+        "required": [
+          "avatar_ref",
+          "display_name",
+          "user_id"
+        ]
+      },
+      "Lesson": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "course_slug": {
+            "type": "string",
+            "maxLength": 80,
+            "pattern": "^[-a-zA-Z0-9_]+$"
+          },
+          "module_id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "position": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "blocks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LessonBlock"
+            },
+            "maxItems": 50
+          },
+          "duration_seconds": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "free_preview": {
+            "type": "boolean"
+          },
+          "review_required": {
+            "type": "boolean"
+          },
+          "progress": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LessonProgressState"
+              }
+            ],
+            "nullable": true
+          },
+          "quizzes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OutlineQuiz"
+            }
+          },
+          "prev_lesson_id": {
+            "type": "integer",
+            "nullable": true
+          },
+          "next_lesson_id": {
+            "type": "integer",
+            "nullable": true
+          },
+          "embed_hosts": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 253
+            },
+            "description": "Hosts an embed block may frame (EMBED_HOSTS); empty = no embed block is accepted."
+          }
+        },
+        "required": [
+          "blocks",
+          "course_slug",
+          "duration_seconds",
+          "embed_hosts",
+          "free_preview",
+          "id",
+          "module_id",
+          "next_lesson_id",
+          "position",
+          "prev_lesson_id",
+          "progress",
+          "quizzes",
+          "review_required",
+          "title"
+        ]
+      },
+      "LessonBlock": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/TextBlock"
+          },
+          {
+            "$ref": "#/components/schemas/VideoBlock"
+          },
+          {
+            "$ref": "#/components/schemas/AttachmentBlock"
+          },
+          {
+            "$ref": "#/components/schemas/EmbedBlock"
+          },
+          {
+            "$ref": "#/components/schemas/CustomBlock"
+          }
+        ]
+      },
+      "LessonProgress": {
+        "type": "object",
+        "properties": {
+          "progress": {
+            "$ref": "#/components/schemas/LessonProgressState"
+          },
+          "enrollment": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Enrollment"
+              }
+            ],
+            "nullable": true
+          }
+        },
+        "required": [
+          "enrollment",
+          "progress"
+        ]
+      },
+      "LessonProgressRequest": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/ProgressStatusEnum"
+          },
+          "position_seconds": {
+            "type": "integer",
+            "maximum": 86400,
+            "minimum": 0
+          }
+        }
+      },
+      "LessonProgressState": {
+        "type": "object",
+        "properties": {
+          "lesson_id": {
+            "type": "integer"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ProgressStatusEnum"
+          },
+          "position_seconds": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "completed_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "required": [
+          "completed_at",
+          "lesson_id",
+          "position_seconds",
+          "status"
+        ]
+      },
+      "LessonReviewRequest": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "passed": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "passed",
+          "user_id"
+        ]
+      },
+      "LockReasonEnum": {
+        "enum": [
+          "sign_in_required",
+          "enrollment_required",
+          "purchase_required",
+          "entitlement_required",
+          "enrollment_inactive",
+          "drip",
+          "sequential"
+        ],
+        "type": "string",
+        "description": "* `sign_in_required` - sign_in_required\n* `enrollment_required` - enrollment_required\n* `purchase_required` - purchase_required\n* `entitlement_required` - entitlement_required\n* `enrollment_inactive` - enrollment_inactive\n* `drip` - drip\n* `sequential` - sequential"
+      },
+      "NullEnum": {
+        "enum": [
+          null
+        ]
+      },
+      "OutlineLesson": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "position": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "duration_seconds": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "free_preview": {
+            "type": "boolean"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "review_required": {
+            "type": "boolean"
+          },
+          "locked": {
+            "type": "boolean"
+          },
+          "lock_reason": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/LockReasonEnum"
+              },
+              {
+                "$ref": "#/components/schemas/NullEnum"
+              }
+            ]
+          },
+          "unlocks_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "after_lesson_id": {
+            "type": "integer",
+            "nullable": true
+          },
+          "after_quiz_id": {
+            "type": "integer",
+            "nullable": true
+          },
+          "progress_status": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ProgressStatusEnum"
+              },
+              {
+                "$ref": "#/components/schemas/NullEnum"
+              }
+            ]
+          },
+          "quizzes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OutlineQuiz"
+            }
+          }
+        },
+        "required": [
+          "after_lesson_id",
+          "after_quiz_id",
+          "duration_seconds",
+          "free_preview",
+          "id",
+          "lock_reason",
+          "locked",
+          "position",
+          "progress_status",
+          "quizzes",
+          "required",
+          "review_required",
+          "title",
+          "unlocks_at"
+        ]
+      },
+      "OutlineModule": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "position": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "lessons": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OutlineLesson"
+            }
+          },
+          "quizzes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OutlineQuiz"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "lessons",
+          "position",
+          "quizzes",
+          "title"
+        ]
+      },
+      "OutlineQuiz": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "pass_mark": {
+            "type": "integer",
+            "maximum": 100,
+            "minimum": 0
+          },
+          "locked": {
+            "type": "boolean"
+          },
+          "lock_reason": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/LockReasonEnum"
+              },
+              {
+                "$ref": "#/components/schemas/NullEnum"
+              }
+            ]
+          },
+          "passed": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "lock_reason",
+          "locked",
+          "pass_mark",
+          "passed",
+          "required",
+          "title"
+        ]
+      },
+      "PatchedAuthorCourse": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "maxLength": 80,
+            "pattern": "^[-a-zA-Z0-9_]+$"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "summary": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 20000
+          },
+          "author_id": {
+            "type": "string",
+            "description": "Staff only: whose course it is (default: the caller).",
+            "maxLength": 64
+          },
+          "cover_media_id": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "level": {
+            "$ref": "#/components/schemas/CourseLevelEnum"
+          },
+          "language": {
+            "type": "string",
+            "maxLength": 16
+          },
+          "access": {
+            "type": "string",
+            "description": "A registered access strategy name (GET author/access-strategies/).",
+            "maxLength": 32
+          },
+          "price": {
+            "type": "string",
+            "format": "decimal",
+            "pattern": "^-?\\d{0,10}(?:\\.\\d{0,2})?$",
+            "nullable": true
+          },
+          "currency": {
+            "type": "string",
+            "maxLength": 3
+          },
+          "entitlement_key": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "drip": {
+            "$ref": "#/components/schemas/DripModeEnum"
+          },
+          "sequential": {
+            "type": "boolean"
+          },
+          "access_days": {
+            "type": "integer",
+            "maximum": 3650,
+            "minimum": 1,
+            "nullable": true
+          },
+          "certificate_enabled": {
+            "type": "boolean"
+          },
+          "scope": {
+            "type": "string",
+            "maxLength": 64
+          }
+        }
+      },
+      "PatchedAuthorLesson": {
+        "type": "object",
+        "properties": {
+          "module_id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "position": {
+            "type": "integer",
+            "maximum": 10000,
+            "minimum": 0
+          },
+          "blocks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LessonBlock"
+            },
+            "maxItems": 50
+          },
+          "duration_seconds": {
+            "type": "integer",
+            "maximum": 86400,
+            "minimum": 0
+          },
+          "free_preview": {
+            "type": "boolean"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "review_required": {
+            "type": "boolean"
+          },
+          "unlock_after_days": {
+            "type": "integer",
+            "maximum": 3650,
+            "minimum": 0,
+            "nullable": true
+          },
+          "unlock_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        }
+      },
+      "PatchedAuthorModule": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "position": {
+            "type": "integer",
+            "maximum": 10000,
+            "minimum": 0
+          }
+        }
+      },
+      "PatchedAuthorQuestion": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/QuestionKindEnum"
+          },
+          "prompt": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "position": {
+            "type": "integer",
+            "maximum": 10000,
+            "minimum": 0
+          },
+          "points": {
+            "type": "integer",
+            "maximum": 100,
+            "minimum": 1
+          },
+          "choices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Choice"
+            }
+          },
+          "correct": {
+            "oneOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "maxItems": 20
+              },
+              {
+                "type": "boolean"
+              }
+            ],
+            "description": "Per kind: single / multiple -> the right choice ids; true_false -> the right bool; short_text -> the accepted answers."
+          },
+          "match": {
+            "$ref": "#/components/schemas/TextMatchEnum"
+          },
+          "explanation": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        }
+      },
+      "PatchedAuthorQuiz": {
+        "type": "object",
+        "properties": {
+          "lesson_id": {
+            "type": "integer",
+            "nullable": true
+          },
+          "module_id": {
+            "type": "integer",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "pass_mark": {
+            "type": "integer",
+            "maximum": 100,
+            "minimum": 0
+          },
+          "max_attempts": {
+            "type": "integer",
+            "maximum": 100,
+            "minimum": 0
+          },
+          "shuffle_questions": {
+            "type": "boolean"
+          },
+          "shuffle_choices": {
+            "type": "boolean"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "reveal": {
+            "$ref": "#/components/schemas/RevealModeEnum"
+          }
+        }
+      },
+      "PendingReview": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "The lesson progress row."
+          },
+          "course_id": {
+            "type": "integer"
+          },
+          "course_slug": {
+            "type": "string",
+            "maxLength": 80,
+            "pattern": "^[-a-zA-Z0-9_]+$"
+          },
+          "course_title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "module_id": {
+            "type": "integer"
+          },
+          "lesson_id": {
+            "type": "integer"
+          },
+          "lesson_title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "user_id": {
+            "type": "string",
+            "description": "Pass it to POST author/lessons/{lesson_id}/review/.",
+            "maxLength": 64
+          },
+          "learner": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LearnerCard"
+              }
+            ],
+            "nullable": true
+          },
+          "submitted_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "course_id",
+          "course_slug",
+          "course_title",
+          "id",
+          "learner",
+          "lesson_id",
+          "lesson_title",
+          "module_id",
+          "submitted_at",
+          "user_id"
+        ]
+      },
+      "PendingReviewPage": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PendingReview"
+            }
+          },
+          "next_anchor": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 32
+          },
+          "prev_anchor": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 32
+          },
+          "has_next": {
+            "type": "boolean"
+          },
+          "has_prev": {
+            "type": "boolean"
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "count",
+          "has_next",
+          "has_prev",
+          "items",
+          "next_anchor",
+          "prev_anchor"
+        ],
+        "x-stapel-pagination": {
+          "style": "anchor",
+          "items": "items"
+        }
+      },
+      "ProgressStatusEnum": {
+        "enum": [
+          "started",
+          "submitted",
+          "completed"
+        ],
+        "type": "string",
+        "description": "* `started` - Started\n* `submitted` - Submitted for review\n* `completed` - Completed"
+      },
+      "QuestionKindEnum": {
+        "enum": [
+          "single",
+          "multiple",
+          "true_false",
+          "short_text"
+        ],
+        "type": "string",
+        "description": "* `single` - Single choice\n* `multiple` - Multiple choice\n* `true_false` - True / false\n* `short_text` - Short text"
+      },
+      "QuestionResult": {
+        "type": "object",
+        "properties": {
+          "correct": {
+            "type": "boolean"
+          },
+          "points": {
+            "type": "integer",
+            "maximum": 100,
+            "minimum": 0
+          }
+        },
+        "required": [
+          "correct",
+          "points"
+        ]
+      },
+      "Quiz": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "lesson_id": {
+            "type": "integer",
+            "nullable": true
+          },
+          "module_id": {
+            "type": "integer",
+            "nullable": true
+          },
+          "pass_mark": {
+            "type": "integer",
+            "maximum": 100,
+            "minimum": 0
+          },
+          "max_attempts": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "0 = unlimited."
+          },
+          "reveal": {
+            "$ref": "#/components/schemas/RevealModeEnum"
+          },
+          "question_count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "attempts_used": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "attempts_left": {
+            "type": "integer",
+            "minimum": 0,
+            "nullable": true,
+            "description": "null = unlimited."
+          },
+          "best_percent": {
+            "type": "string",
+            "format": "decimal",
+            "pattern": "^-?\\d{0,3}(?:\\.\\d{0,2})?$",
+            "nullable": true
+          },
+          "passed": {
+            "type": "boolean"
+          },
+          "open_attempt_id": {
+            "type": "integer",
+            "nullable": true
+          },
+          "locked": {
+            "type": "boolean"
+          },
+          "lock_reason": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/LockReasonEnum"
+              },
+              {
+                "$ref": "#/components/schemas/NullEnum"
+              }
+            ]
+          }
+        },
+        "required": [
+          "attempts_left",
+          "attempts_used",
+          "best_percent",
+          "id",
+          "lesson_id",
+          "lock_reason",
+          "locked",
+          "max_attempts",
+          "module_id",
+          "open_attempt_id",
+          "pass_mark",
+          "passed",
+          "question_count",
+          "reveal",
+          "title"
+        ]
+      },
+      "QuizStanding": {
+        "type": "object",
+        "properties": {
+          "quiz_id": {
+            "type": "integer"
+          },
+          "passed": {
+            "type": "boolean"
+          },
+          "best_percent": {
+            "type": "string",
+            "format": "decimal",
+            "pattern": "^-?\\d{0,3}(?:\\.\\d{0,2})?$",
+            "nullable": true
+          },
+          "attempts_used": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "attempts_used",
+          "best_percent",
+          "passed",
+          "quiz_id"
+        ]
+      },
+      "RevealModeEnum": {
+        "enum": [
+          "never",
+          "after_submit",
+          "after_pass"
+        ],
+        "type": "string",
+        "description": "* `never` - Never\n* `after_submit` - After each submission\n* `after_pass` - After passing"
+      },
+      "StapelError": {
+        "type": "object",
+        "description": "Structured error returned by all Stapel API endpoints.",
+        "properties": {
+          "localizable_error": {
+            "type": "string",
+            "description": "Translation key for client-side localization",
+            "example": "error.404.not_found"
+          },
+          "error": {
+            "type": "string",
+            "description": "Human-readable fallback/debug message — not reliably English,"
+          },
+          "params": {
+            "type": "object",
+            "additionalProperties": {},
+            "description": "Context values for template placeholders",
+            "example": {
+              "retry_after": 30
+            }
+          },
+          "error_language": {
+            "type": "string",
+            "description": "The language `error` is written in (e.g. 'en', 'ru'),"
+          }
+        },
+        "required": [
+          "error",
+          "localizable_error"
+        ]
+      },
+      "TextBlock": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/TextBlockTypeEnum"
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 20000
+          },
+          "format": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TextFormatEnum"
+              }
+            ],
+            "description": "Default markdown.\n\n* `markdown` - markdown\n* `plain` - plain"
+          }
+        },
+        "required": [
+          "text",
+          "type"
+        ]
+      },
+      "TextBlockTypeEnum": {
+        "enum": [
+          "text"
+        ],
+        "type": "string",
+        "description": "* `text` - text"
+      },
+      "TextFormatEnum": {
+        "enum": [
+          "markdown",
+          "plain"
+        ],
+        "type": "string",
+        "description": "* `markdown` - markdown\n* `plain` - plain"
+      },
+      "TextMatchEnum": {
+        "enum": [
+          "exact",
+          "normalised"
+        ],
+        "type": "string",
+        "description": "* `exact` - Exact\n* `normalised` - Normalised"
+      },
+      "VideoBlock": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/VideoBlockTypeEnum"
+          },
+          "media_id": {
+            "type": "string",
+            "description": "Opaque media id.",
+            "maxLength": 64
+          },
+          "caption": {
+            "type": "string",
+            "maxLength": 300
+          }
+        },
+        "required": [
+          "media_id",
+          "type"
+        ]
+      },
+      "VideoBlockTypeEnum": {
+        "enum": [
+          "video"
+        ],
+        "type": "string",
+        "description": "* `video` - video"
+      }
+    },
+    "securitySchemes": {
+      "JWTBearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "JWT access token in the `Authorization: Bearer <token>` header — the credential a native client sends. When the JWT cookie is also present, the cookie wins."
+      },
+      "JWTCookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "stapel_jwt",
+        "description": "JWT token stored in cookie. Login via /auth/admin/ to get the cookie."
+      }
+    }
+  }
+}
